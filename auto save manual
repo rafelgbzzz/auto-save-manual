@@ -8,7 +8,7 @@ local HttpService = game:GetService("HttpService")
 
 -- 👇 Masukkan waypoint hasil salin clipboard ke sini (nama + posisi)
 local waypoints = {
-    {name = "Gunung Cicok", pos = Vector3.new(123.45, 67.89, 101.23)},
+    {name = "Gunung Cicok", pos = Vector3.new(-434.08, 177.54, -286.28)},
     {name = "Puncak Lava", pos = Vector3.new(150.12, 80.77, 90.55)},
     {name = "Summit Salju", pos = Vector3.new(180.77, 92.15, 75.32)}
 }

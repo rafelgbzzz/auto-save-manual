@@ -1,4 +1,4 @@
--- RAFEEYL Auto Teleport (Local Version - Fixed)
+-- RAFEEYL Auto Teleport (Local Version - Fixed - tes)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -172,7 +172,12 @@ function loadMainGUI()
         bodyGyro = Instance.new("BodyGyro")
         bodyGyro.P = 9e4
         bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-        bodyGyro.CFrame = hrp.CFrame
+        
+        -- Set initial orientation
+        local cam = workspace.CurrentCamera
+        local lookVector = cam.CFrame.LookVector
+        lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
+        bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + lookVector)
         bodyGyro.Parent = hrp
 
         bodyVel = Instance.new("BodyVelocity")
@@ -180,20 +185,35 @@ function loadMainGUI()
         bodyVel.MaxForce = Vector3.new(9e9, 9e9, 9e9)
         bodyVel.Parent = hrp
 
-        local cam = workspace.CurrentCamera
         flyConnection = RunService.RenderStepped:Connect(function()
             if not flying or not hrp or not hrp.Parent then return end
-            bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + cam.CFrame.LookVector)
+
+            local cam = workspace.CurrentCamera
+            local lookVector = cam.CFrame.LookVector
+            lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
+            bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + lookVector)
 
             local moveDir = Vector3.zero
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir += cam.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= cam.CFrame.LookVector end
+
+            -- Keyboard controls
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir += lookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir -= cam.CFrame.RightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += cam.CFrame.RightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0, 1, 0) end
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0, 1, 0) end
 
-            bodyVel.Velocity = moveDir.Magnitude > 0 and moveDir.Unit * flySpeed or Vector3.zero
+            -- Mobile joystick controls (Humanoid.MoveDirection)
+            local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.MoveDirection.Magnitude > 0 then
+                moveDir = Vector3.new(humanoid.MoveDirection.X, 0, humanoid.MoveDirection.Z)
+            end
+
+            if moveDir.Magnitude > 0 then
+                bodyVel.Velocity = moveDir.Unit * flySpeed
+            else
+                bodyVel.Velocity = Vector3.zero
+            end
         end)
     end
 
@@ -212,7 +232,6 @@ function loadMainGUI()
             string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })
 
-    -- Tab Teleport (tombol waypoint)
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
     for _, wp in ipairs(waypoints) do
         TabTeleport:CreateButton({
@@ -221,7 +240,6 @@ function loadMainGUI()
         })
     end
 
-    -- Tab Kecepatan (fly ON/OFF + slider)
     local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
     TabSpeed:CreateButton({
         Name = "🕊️ Fly (ON/OFF)",

@@ -1,0 +1,174 @@
+-- RAFEEYL AUTO TELEPORT with Auto Respawn
+-- dibuat sesuai perintah kamu 💪
+
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local HttpService = game:GetService("HttpService")
+
+local waypoints = {}
+local running = false
+local autoRespawn = false
+local delaySeconds = 1
+local loopCoroutine
+
+-- Helper
+local function getHRP()
+    local c = player.Character
+    if not c then return nil end
+    return c:FindFirstChild("HumanoidRootPart")
+end
+
+local function teleportTo(pos)
+    local hrp = getHRP()
+    if hrp then
+        hrp.CFrame = CFrame.new(pos + Vector3.new(0,3,0))
+    end
+end
+
+-- 🔁 Fitur Auto Respawn
+local function autoPressRespawn()
+    task.spawn(function()
+        task.wait(1)
+        local playerGui = player:FindFirstChildOfClass("PlayerGui")
+        if not playerGui then return end
+
+        for _, gui in ipairs(playerGui:GetDescendants()) do
+            if gui:IsA("TextButton") or gui:IsA("ImageButton") then
+                local nama = string.lower(gui.Name)
+                local teks = string.lower(gui.Text or "")
+                if string.find(nama, "respawn") or string.find(teks, "respawn") then
+                    pcall(function()
+                        gui:Activate()
+                        gui.MouseButton1Click:Connect(function() end)
+                    end)
+                    Rayfield:Notify({
+                        Title = "Auto Respawn",
+                        Content = "Respawn diklik otomatis!",
+                        Duration = 2
+                    })
+                    break
+                end
+            end
+        end
+    end)
+end
+
+local function waitForAlive()
+    while true do
+        local c = player.Character
+        local humanoid = c and c:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.Health > 0 then return end
+        if not autoRespawn then
+            running = false
+            return
+        end
+        Rayfield:Notify({
+            Title = "Auto Respawn",
+            Content = "Menunggu respawn...",
+            Duration = 2
+        })
+        autoPressRespawn()
+        repeat task.wait(0.5)
+        until player.Character and player.Character:FindFirstChildOfClass("Humanoid") and player.Character:FindFirstChildOfClass("Humanoid").Health > 0
+        Rayfield:Notify({
+            Title = "Respawned!",
+            Content = "Karakter hidup lagi, lanjut teleport.",
+            Duration = 2
+        })
+        return
+    end
+end
+
+local function startLoop()
+    if running or #waypoints == 0 then return end
+    running = true
+    loopCoroutine = coroutine.create(function()
+        local idx = 1
+        while running do
+            if not getHRP() then
+                if autoRespawn then
+                    waitForAlive()
+                else
+                    running = false
+                    break
+                end
+            end
+            teleportTo(waypoints[idx])
+            idx = idx + 1
+            if idx > #waypoints then idx = 1 end
+            local t = 0
+            while t < delaySeconds and running do
+                task.wait(0.2)
+                t += 0.2
+            end
+        end
+    end)
+    coroutine.resume(loopCoroutine)
+end
+
+local function stopLoop()
+    running = false
+end
+
+-- GUI Rayfield
+local Window = Rayfield:CreateWindow({
+   Name = "RAFEEYL - Auto Teleport",
+   LoadingTitle = "RAFEEYL",
+   LoadingSubtitle = "by Rafeeyl",
+   ConfigurationSaving = {Enabled = false}
+})
+
+local Tab = Window:CreateTab("Teleport", 4483362458)
+
+Tab:CreateButton({
+   Name = "SAVE",
+   Callback = function()
+      local hrp = getHRP()
+      if hrp then
+          table.insert(waypoints, hrp.Position)
+          Rayfield:Notify({
+              Title = "Saved!",
+              Content = "Waypoint ditambahkan. Total: "..#waypoints,
+              Duration = 2
+          })
+      end
+   end
+})
+
+Tab:CreateButton({
+   Name = "Start",
+   Callback = function()
+      startLoop()
+      Rayfield:Notify({
+         Title="Started",
+         Content="Auto Teleport ON",
+         Duration=2
+      })
+   end
+})
+
+Tab:CreateButton({
+   Name = "⏹ Stop",
+   Callback = function()
+      stopLoop()
+      Rayfield:Notify({
+         Title="Stopped",
+         Content="Auto Teleport OFF",
+         Duration=2
+      })
+   end
+})
+
+Tab:CreateSlider({
+   Name = "Delay (seconds)",
+   Range = {2, 60},
+   Increment = 1,
+   Suffix = "s",
+   CurrentValue = 5,
+   Flag = "DelaySlider",
+   Callback = function(Value)
+      delaySeconds = Value
+   end
+})

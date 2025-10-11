@@ -241,8 +241,12 @@ function loadMainGUI()
         })
     end
 
-    -- 💾 COPY KOORDINAT SEKARANG
-    TabTeleport:CreateButton({
+    -------------------------------------------------
+    -- ⚙️ TAB FITUR
+    -------------------------------------------------
+    local TabFitur = Window:CreateTab("Fitur", 4483362458)
+
+    TabFitur:CreateButton({
         Name = "💾 Copy Koordinat Sekarang",
         Callback = function()
             local hrp = getHRP()

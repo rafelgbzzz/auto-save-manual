@@ -134,8 +134,10 @@ function loadMainGUI()
     local flying = false
     local flySpeed = 60
     local walkSpeed = 16
+    local antiAFKEnabled = false
     local bodyGyro, bodyVel
     local flyConnection
+    local antiAFKConnection
 
     local function getHRP()
         local c = player.Character
@@ -246,6 +248,7 @@ function loadMainGUI()
     -------------------------------------------------
     local TabFitur = Window:CreateTab("Fitur", 4483362458)
 
+    -- 💾 Copy Koordinat
     TabFitur:CreateButton({
         Name = "💾 Copy Koordinat Sekarang",
         Callback = function()
@@ -266,6 +269,38 @@ function loadMainGUI()
                 Content = koordinat,
                 Duration = 4
             })
+        end
+    })
+
+    -- 💤 Anti AFK Toggle
+    TabFitur:CreateToggle({
+        Name = "🛡️ Anti AFK (ON/OFF)",
+        CurrentValue = false,
+        Callback = function(value)
+            antiAFKEnabled = value
+            if value then
+                if antiAFKConnection then antiAFKConnection:Disconnect() end
+                antiAFKConnection = player.Idled:Connect(function()
+                    VirtualUser = game:service('VirtualUser')
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end)
+                Rayfield:Notify({
+                    Title = "🛡️ Anti AFK Aktif",
+                    Content = "Kamu aman dari kick AFK!",
+                    Duration = 4
+                })
+            else
+                if antiAFKConnection then
+                    antiAFKConnection:Disconnect()
+                    antiAFKConnection = nil
+                end
+                Rayfield:Notify({
+                    Title = "💤 Anti AFK Nonaktif",
+                    Content = "AFK protection dimatikan.",
+                    Duration = 3
+                })
+            end
         end
     })
 

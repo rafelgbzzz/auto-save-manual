@@ -1,5 +1,5 @@
 -- RAFEEYL Auto Teleport (Waypoint Permanen + Save + Copy + Auto Respawn + Fly Universal)
--- Fly Support PC + HP + Slider Speed + Tombol Naik/Turun (HP Friendly)
+-- Fly arah kamera (naik-turun otomatis) | Support PC + HP | Slider Speed
 
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Players = game:GetService("Players")
@@ -7,33 +7,33 @@ local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
--- 👇 Masukkan waypoint hasil salin clipboard ke sini
+-- 🧭 Daftar Waypoint (isi posisi kamu di sini)
 local waypoints = {
     {name = "Gunung Cicok", pos = Vector3.new(-161.89, 1598.15, -2141.80)},
     {name = "Puncak Lava", pos = Vector3.new(150.12, 80.77, 90.55)},
     {name = "Summit Salju", pos = Vector3.new(180.77, 92.15, 75.32)}
 }
 
--- 🧩 Setting awal
+-- 🔧 Variabel utama
 local running = false
 local autoRespawn = true
 local delaySeconds = 5
 local loopCoroutine
 local respawnLoop
 
--- ✈️ Fly settings
+-- ✈️ Fly Settings
 local flying = false
 local flySpeed = 60
 local bodyGyro, bodyVel
-local flyVertical = 0 -- buat naik/turun dari tombol HP
 
--- Helper
+-- 🧩 Helper: Ambil HRP
 local function getHRP()
     local c = player.Character
     if not c then return nil end
     return c:FindFirstChild("HumanoidRootPart")
 end
 
+-- 📍 Teleport ke posisi
 local function teleportTo(pos)
     local hrp = getHRP()
     if hrp then
@@ -41,7 +41,7 @@ local function teleportTo(pos)
     end
 end
 
--- 🔁 Auto respawn
+-- 🔁 Auto Respawn Loop
 local function startAutoRespawn()
     if respawnLoop then return end
     respawnLoop = coroutine.create(function()
@@ -63,7 +63,7 @@ local function stopAutoRespawn()
     respawnLoop = nil
 end
 
--- 🚀 Fly universal (PC + HP)
+-- 🚀 Fly Universal (Arah Kamera Naik–Turun Otomatis)
 local function startFly()
     local hrp = getHRP()
     if not hrp then return end
@@ -82,8 +82,8 @@ local function startFly()
 
     Rayfield:Notify({
         Title = "🕊️ Fly Aktif",
-        Content = "PC: W A S D / Space / Shift | HP: Gunakan joystick + tombol Naik/Turun",
-        Duration = 5
+        Content = "Gerak mengikuti arah kamera! (Joystick / WASD)",
+        Duration = 4
     })
 
     local cam = workspace.CurrentCamera
@@ -93,25 +93,36 @@ local function startFly()
             bodyGyro.CFrame = cam.CFrame
             local moveDir = Vector3.zero
 
-            -- Kontrol PC
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir += cam.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= cam.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir -= cam.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += cam.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0, 1, 0) end
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0, 1, 0) end
-
-            -- Kontrol HP (Joystick)
-            local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid and humanoid.MoveDirection.Magnitude > 0 then
-                moveDir = humanoid.MoveDirection
+            -- 💻 PC Controls (WASD mengikuti kamera)
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDir += cam.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDir -= cam.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDir -= cam.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDir += cam.CFrame.RightVector
             end
 
-            -- Tambah naik/turun manual
-            moveDir += Vector3.new(0, flyVertical, 0)
+            -- 📱 HP Controls (Joystick kiri mengikuti kamera)
+            local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.MoveDirection.Magnitude > 0 then
+                local camLook = cam.CFrame.LookVector
+                local camRight = cam.CFrame.RightVector
+                local move = humanoid.MoveDirection
+                moveDir = (camLook * move.Z) + (camRight * move.X)
+            end
 
-            bodyVel.Velocity = moveDir * flySpeed
-        elseif not flying then
+            -- 🔼 Update kecepatan
+            if moveDir.Magnitude > 0 then
+                bodyVel.Velocity = moveDir.Unit * flySpeed
+            else
+                bodyVel.Velocity = Vector3.zero
+            end
+        else
             if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
             if bodyVel then bodyVel:Destroy() bodyVel = nil end
         end
@@ -120,17 +131,16 @@ end
 
 local function stopFly()
     flying = false
-    flyVertical = 0
     if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
     if bodyVel then bodyVel:Destroy() bodyVel = nil end
     Rayfield:Notify({
         Title = "🕊️ Fly Nonaktif",
-        Content = "Mode terbang dimatikan.",
+        Content = "Kamu telah menonaktifkan mode terbang.",
         Duration = 2
     })
 end
 
--- 🔁 Auto teleport loop
+-- 🔁 Auto Teleport Loop
 local function startLoop()
     if running or #waypoints == 0 then
         warn("[RAFEEYL] Tidak ada waypoint permanen!")
@@ -138,7 +148,9 @@ local function startLoop()
     end
     running = true
 
-    if autoRespawn then startAutoRespawn() end
+    if autoRespawn then
+        startAutoRespawn()
+    end
 
     loopCoroutine = coroutine.create(function()
         local idx = 1
@@ -158,7 +170,7 @@ local function startLoop()
     coroutine.resume(loopCoroutine)
 end
 
--- 🪟 GUI
+-- 🪟 GUI SETUP
 local Window = Rayfield:CreateWindow({
     Name = "RAFEEYL - Auto Teleport",
     LoadingTitle = "RAFEEYL",
@@ -167,11 +179,12 @@ local Window = Rayfield:CreateWindow({
 
 local Tab = Window:CreateTab("Teleport", 4483362458)
 
--- 💾 Save Posisi
+-- 💾 Save Posisi (Copy ke Clipboard)
 Tab:CreateButton({
     Name = "💾 Save Posisi (Copy ke Clipboard)",
     Callback = function()
-        local hrp = getHRP()
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart", 2)
         if not hrp then
             Rayfield:Notify({
                 Title = "Gagal",
@@ -187,8 +200,8 @@ Tab:CreateButton({
             setclipboard(text)
             Rayfield:Notify({
                 Title = "Posisi Disalin!",
-                Content = text,
-                Duration = 3
+                Content = "Koordinat berhasil disalin ke clipboard:\n" .. text,
+                Duration = 4
             })
         else
             Rayfield:Notify({
@@ -224,17 +237,21 @@ Tab:CreateButton({
         stopFly()
         Rayfield:Notify({
             Title = "Stopped",
-            Content = "Semua fitur dihentikan.",
+            Content = "Auto Teleport, Respawn, dan Fly dihentikan.",
             Duration = 2
         })
     end
 })
 
--- 🕊️ Fly Toggle
+-- 🕊️ Fly (ON/OFF)
 Tab:CreateButton({
     Name = "🕊️ Fly (ON/OFF)",
     Callback = function()
-        if flying then stopFly() else startFly() end
+        if flying then
+            stopFly()
+        else
+            startFly()
+        end
     end
 })
 
@@ -249,27 +266,9 @@ Tab:CreateSlider({
         flySpeed = v
         Rayfield:Notify({
             Title = "Kecepatan Fly",
-            Content = "Kecepatan diubah ke " .. tostring(v),
+            Content = "Kecepatan diubah menjadi: " .. tostring(v),
             Duration = 2
         })
-    end
-})
-
--- 🔼 Tombol Naik
-Tab:CreateButton({
-    Name = "🔼 Naik (HP)",
-    Callback = function()
-        flyVertical = 1
-        task.delay(0.5, function() flyVertical = 0 end)
-    end
-})
-
--- 🔽 Tombol Turun
-Tab:CreateButton({
-    Name = "🔽 Turun (HP)",
-    Callback = function()
-        flyVertical = -1
-        task.delay(0.5, function() flyVertical = 0 end)
     end
 })
 
@@ -281,7 +280,7 @@ for _, wp in ipairs(waypoints) do
             teleportTo(wp.pos)
             Rayfield:Notify({
                 Title = "Teleport Manual",
-                Content = "Berhasil teleport ke " .. wp.name,
+                Content = "Berhasil teleport ke: " .. wp.name,
                 Duration = 2
             })
         end

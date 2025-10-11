@@ -234,52 +234,49 @@ function loadMainGUI()
         })
     end
 
-    -- 🌟 TAB TELEPORT PLAYER
-    local TabTeleportPlayer = Window:CreateTab("Teleport Player", 4483362458)
-    local playerEntries = {}
+    -------------------------------------------------
+-- 🌟 TAB TELEPORT PLAYER RINGKAS
+-------------------------------------------------
+local TabTeleportPlayer = Window:CreateTab("Teleport Player", 4483362458)
 
-    local function teleportToPlayer(targetPlayer)
-        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0,3,0)
-        else
-            Rayfield:Notify({
-                Title = "⚠️ Gagal Teleport",
-                Content = "Character player "..targetPlayer.Name.." belum siap",
-                Duration = 2
-            })
-        end
-    end
-
-    local function refreshPlayerList()
-        for _, entry in pairs(playerEntries) do
-            if entry.Button then entry.Button:Remove() end
-        end
-        playerEntries = {}
-
+-- Tombol utama
+TabTeleportPlayer:CreateButton({
+    Name = "🌐 Pilih Player untuk Teleport",
+    Callback = function()
+        -- Ambil daftar nama player selain diri sendiri
+        local playerNames = {}
         for _, plr in pairs(Players:GetPlayers()) do
             if plr ~= player then
-                local button = TabTeleportPlayer:CreateButton({
-                    Name = "Teleport ke "..plr.Name,
-                    Callback = function() teleportToPlayer(plr) end
-                })
-                table.insert(playerEntries, {Player = plr, Button = button})
+                table.insert(playerNames, plr.Name)
             end
         end
+
+        -- Buat dropdown sementara
+        local dropdown = TabTeleportPlayer:CreateDropdown({
+            Name = "Pilih Player",
+            Options = playerNames,
+            CurrentOption = nil,
+            MultiSelect = false,
+            Callback = function(selectedName)
+                local targetPlayer = Players:FindFirstChild(selectedName)
+                if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0,3,0)
+                    Rayfield:Notify({
+                        Title = "✅ Teleport Berhasil",
+                        Content = "Kamu teleport ke "..selectedName,
+                        Duration = 2
+                    })
+                else
+                    Rayfield:Notify({
+                        Title = "⚠️ Gagal Teleport",
+                        Content = "Character "..selectedName.." belum siap",
+                        Duration = 2
+                    })
+                end
+            end
+        })
     end
-
-    refreshPlayerList()
-    Players.PlayerAdded:Connect(refreshPlayerList)
-    Players.PlayerRemoving:Connect(refreshPlayerList)
-
-    TabTeleportPlayer:CreateButton({
-        Name = "Teleport ke Semua Player",
-        Callback = function()
-            for _, entry in pairs(playerEntries) do
-                teleportToPlayer(entry.Player)
-                wait(0.3)
-            end
-        end
-    })
+})
 
     -------------------------------------------------
     -- ⚙️ TAB FITUR

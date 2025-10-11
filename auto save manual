@@ -1,5 +1,4 @@
 -- RAFEEYL Auto Teleport (Remote Key GitHub + Server Time + Fly + Teleport)
--- Aman dari ubah tanggal lokal, langsung ambil waktu UTC dari GitHub
 
 local HttpService = game:GetService("HttpService")
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
@@ -66,7 +65,7 @@ local function validateKey(inputKey, keyList, now)
 end
 
 -------------------------------------------------
--- 🔑 SYSTEM LOGIN (Key Input)
+-- 🔑 SYSTEM LOGIN (Key Input) REVISI
 -------------------------------------------------
 local keyVerified = false
 local expiryDate = nil
@@ -114,14 +113,27 @@ Tab:CreateInput({
 		if valid then
 			keyVerified = true
 			expiryDate = info
+
 			Rayfield:Notify({
 				Title = "✅ Key Diterima",
 				Content = "Akses disetujui hingga " .. string.format("%02d/%02d/%04d", info.day, info.month, info.year),
 				Duration = 5
 			})
-			task.wait(1)
+
+			-- Tambahkan sedikit delay sebelum loadMainGUI
+			task.wait(0.1)
 			KeyWindow:Destroy()
-			loadMainGUI()
+
+			-- Debug notification
+			print("Key verified:", keyVerified)
+			print("Expiry date:", expiryDate.day, expiryDate.month, expiryDate.year)
+			Rayfield:Notify({
+				Title = "🔑 Loading Menu Utama",
+				Content = "GUI utama akan muncul...",
+				Duration = 2
+			})
+
+			loadMainGUI() -- pastikan GUI utama dipanggil
 		else
 			if info == "expired" then
 				Rayfield:Notify({

@@ -58,7 +58,7 @@ end
 -------------------------------------------------
 local keyVerified = false
 local expiryDate = nil
-local KeyWindow = nil -- Simpan agar bisa cek validitas sebelum destroy
+local KeyWindow = nil
 
 local function showKeyWindow()
     KeyWindow = Rayfield:CreateWindow({
@@ -121,7 +121,7 @@ local function showKeyWindow()
 end
 
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Speed)
+-- ✈️ MAIN GUI (Fly + Teleport + Speed + Copy Pos)
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end
@@ -156,6 +156,7 @@ function loadMainGUI()
         end
     end
 
+    -- ✈️ Fly System
     local function startFly()
         local hrp = getHRP()
         if not hrp then
@@ -231,6 +232,7 @@ function loadMainGUI()
             string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })
 
+    -- 🌍 TAB TELEPORT
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
     for _, wp in ipairs(waypoints) do
         TabTeleport:CreateButton({
@@ -239,7 +241,31 @@ function loadMainGUI()
         })
     end
 
-    -- ⚡ Tab Kecepatan (Fly + Lari)
+    -- 💾 COPY KOORDINAT SEKARANG
+    TabTeleport:CreateButton({
+        Name = "💾 Copy Koordinat Sekarang",
+        Callback = function()
+            local hrp = getHRP()
+            if not hrp then
+                Rayfield:Notify({
+                    Title = "⚠️ Gagal",
+                    Content = "Character belum siap.",
+                    Duration = 2
+                })
+                return
+            end
+            local pos = hrp.Position
+            local koordinat = string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X, pos.Y, pos.Z)
+            setclipboard(koordinat)
+            Rayfield:Notify({
+                Title = "✅ Koordinat Disalin",
+                Content = koordinat,
+                Duration = 4
+            })
+        end
+    })
+
+    -- ⚡ TAB KECEPATAN
     local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
 
     -- Fly Control
@@ -299,5 +325,5 @@ function loadMainGUI()
     end)
 end
 
--- 🔑 Mulai tampilan Key GUI
+-- 🔑 Tampilkan GUI Key
 showKeyWindow()

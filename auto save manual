@@ -1,8 +1,9 @@
--- RAFEEYL Auto Teleport (Waypoint Permanen Manual + Auto Respawn Loop)
+-- RAFEEYL Auto Teleport (Waypoint Permanen + Save + Copy + Auto Respawn)
 
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
+local HttpService = game:GetService("HttpService")
 
 -- 👇 Masukkan waypoint hasil salin clipboard ke sini (nama + posisi)
 local waypoints = {
@@ -13,7 +14,7 @@ local waypoints = {
 
 -- 🧩 Setting awal
 local running = false
-local autoRespawn = true  -- aktifkan auto respawn loop
+local autoRespawn = true
 local delaySeconds = 5
 local loopCoroutine
 local respawnLoop
@@ -28,10 +29,11 @@ end
 local function teleportTo(pos)
     local hrp = getHRP()
     if hrp then
-        hrp.CFrame = CFrame.new(pos + Vector3.new(0,3,0))
+        hrp.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
     end
 end
 
+-- 🔁 Auto respawn loop (langsung respawn tanpa nunggu mati)
 local function startAutoRespawn()
     if respawnLoop then return end
     respawnLoop = coroutine.create(function()
@@ -39,7 +41,7 @@ local function startAutoRespawn()
             player:LoadCharacter()
             Rayfield:Notify({
                 Title = "Auto Respawn",
-                Content = "Respawn otomatis dijalankan.",
+                Content = "Respawn otomatis dilakukan.",
                 Duration = 1.5
             })
             task.wait(delaySeconds)
@@ -61,7 +63,7 @@ local function startLoop()
     running = true
 
     if autoRespawn then
-        startAutoRespawn() -- langsung aktifkan loop respawn
+        startAutoRespawn()
     end
 
     loopCoroutine = coroutine.create(function()
@@ -91,37 +93,71 @@ local Window = Rayfield:CreateWindow({
 
 local Tab = Window:CreateTab("Teleport", 4483362458)
 
+-- 🎯 SAVE POSISI SEKARANG
 Tab:CreateButton({
-    Name = "Start",
+    Name = "💾 Save Posisi (Salin ke Clipboard)",
+    Callback = function()
+        local hrp = getHRP()
+        if hrp then
+            local pos = hrp.Position
+            local text = string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X, pos.Y, pos.Z)
+            if setclipboard then
+                setclipboard(text)
+                Rayfield:Notify({
+                    Title = "Disalin!",
+                    Content = "Koordinat disalin ke clipboard:\n" .. text,
+                    Duration = 3
+                })
+            else
+                Rayfield:Notify({
+                    Title = "Gagal salin",
+                    Content = "Executor kamu tidak support setclipboard.",
+                    Duration = 3
+                })
+            end
+        else
+            Rayfield:Notify({
+                Title = "Gagal",
+                Content = "Karakter belum muncul / tidak ada HRP.",
+                Duration = 3
+            })
+        end
+    end
+})
+
+-- ▶️ START AUTO TELEPORT
+Tab:CreateButton({
+    Name = "▶️ Start Auto Teleport",
     Callback = function()
         running = true
         autoRespawn = true
         startLoop()
         Rayfield:Notify({
-            Title="Started",
-            Content="Auto Teleport + Auto Respawn aktif terus.",
-            Duration=2
+            Title = "Started",
+            Content = "Auto Teleport + Auto Respawn aktif.",
+            Duration = 2
         })
     end
 })
 
+-- ⏹ STOP SEMUA
 Tab:CreateButton({
-    Name = "Stop",
+    Name = "⏹ Stop Semua",
     Callback = function()
         running = false
         stopAutoRespawn()
         Rayfield:Notify({
-            Title="Stopped",
-            Content="Auto Teleport & Respawn dihentikan.",
-            Duration=2
+            Title = "Stopped",
+            Content = "Auto Teleport & Respawn dihentikan.",
+            Duration = 2
         })
     end
 })
 
--- 🔘 Tombol teleport manual
+-- 🔘 TELEPORT MANUAL
 for i, wp in ipairs(waypoints) do
     Tab:CreateButton({
-        Name = "Teleport ke: " .. wp.name,
+        Name = "🌍 Teleport ke: " .. wp.name,
         Callback = function()
             teleportTo(wp.pos)
             Rayfield:Notify({

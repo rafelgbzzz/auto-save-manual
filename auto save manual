@@ -1,5 +1,4 @@
 -- RAFEEYL Auto Teleport (Waypoint Permanen + Save + Copy + Auto Respawn + Fly Universal)
--- Fly arah kamera (naik-turun otomatis) | Support PC + HP | Slider Speed
 
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Players = game:GetService("Players")
@@ -63,7 +62,7 @@ local function stopAutoRespawn()
     respawnLoop = nil
 end
 
--- 🚀 Fly Universal (Arah Kamera Naik–Turun Otomatis)
+-- 🚀 Fly functions (Universal, Fix Joystick Direction)
 local function startFly()
     local hrp = getHRP()
     if not hrp then return end
@@ -82,7 +81,7 @@ local function startFly()
 
     Rayfield:Notify({
         Title = "🕊️ Fly Aktif",
-        Content = "Gerak mengikuti arah kamera! (Joystick / WASD)",
+        Content = "PC: W A S D / Space / Shift | HP: Joystick arah kamera",
         Duration = 4
     })
 
@@ -90,10 +89,12 @@ local function startFly()
 
     RunService.RenderStepped:Connect(function()
         if flying and hrp and bodyGyro and bodyVel then
-            bodyGyro.CFrame = cam.CFrame
+            -- Rotasi tubuh ikut arah kamera
+            bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + cam.CFrame.LookVector)
+
             local moveDir = Vector3.zero
 
-            -- 💻 PC Controls (WASD mengikuti kamera)
+            -- 💻 PC Control
             if UserInputService:IsKeyDown(Enum.KeyCode.W) then
                 moveDir += cam.CFrame.LookVector
             end
@@ -106,17 +107,22 @@ local function startFly()
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then
                 moveDir += cam.CFrame.RightVector
             end
-
-            -- 📱 HP Controls (Joystick kiri mengikuti kamera)
-            local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid and humanoid.MoveDirection.Magnitude > 0 then
-                local camLook = cam.CFrame.LookVector
-                local camRight = cam.CFrame.RightVector
-                local move = humanoid.MoveDirection
-                moveDir = (camLook * move.Z) + (camRight * move.X)
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                moveDir += Vector3.new(0, 1, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                moveDir -= Vector3.new(0, 1, 0)
             end
 
-            -- 🔼 Update kecepatan
+            -- 📱 HP Control (Joystick arah kamera)
+            local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.MoveDirection.Magnitude > 0 then
+                local camCF = cam.CFrame
+                local joyDir = humanoid.MoveDirection
+                moveDir = (camCF.RightVector * joyDir.X) + (camCF.LookVector * joyDir.Z)
+            end
+
+            -- Terapkan kecepatan (jika bergerak)
             if moveDir.Magnitude > 0 then
                 bodyVel.Velocity = moveDir.Unit * flySpeed
             else

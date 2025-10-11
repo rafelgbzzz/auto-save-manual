@@ -1,4 +1,4 @@
--- RAFEEYL Auto Teleport (Local Version - Fixed - tes)
+-- RAFEEYL Auto Teleport (Local Version - Fixed)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -92,7 +92,6 @@ local function showKeyWindow()
                     Duration = 4
                 })
 
-                -- Hide window dulu, jangan destroy
                 KeyWindow.Visible = false
                 task.wait(0.2)
                 loadMainGUI()
@@ -122,7 +121,7 @@ local function showKeyWindow()
 end
 
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Fitur Save Posisi)
+-- ✈️ MAIN GUI (Fly + Teleport + Save Position Button)
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end
@@ -212,35 +211,10 @@ function loadMainGUI()
             string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })
 
-    -- Tab Teleport (tombol waypoint)
+    -- Tab Teleport (tombol save posisi + waypoint)
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
-    for _, wp in ipairs(waypoints) do
-        TabTeleport:CreateButton({
-            Name = "🌍 Teleport ke: " .. wp.name,
-            Callback = function() teleportTo(wp.pos) end
-        })
-    end
 
-    -- Tab Kecepatan (fly ON/OFF + slider)
-    local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
-    TabSpeed:CreateButton({
-        Name = "🕊️ Fly (ON/OFF)",
-        Callback = function()
-            if flying then stopFly() else startFly() end
-        end
-    })
-    TabSpeed:CreateSlider({
-        Name = "⚡ Kecepatan Fly",
-        Range = {10, 200},
-        Increment = 5,
-        Suffix = "Speed",
-        CurrentValue = flySpeed,
-        Callback = function(v) flySpeed = v end
-    })
-
-    -- Tab Fitur (Save Posisi Sekarang)
-    local TabFitur = Window:CreateTab("Fitur", 4483362458)
-    TabFitur:CreateButton({
+    TabTeleport:CreateButton({
         Name = "💾 Save Posisi Sekarang (Copy ke Clipboard)",
         Callback = function()
             local character = player.Character or player.CharacterAdded:Wait()
@@ -272,6 +246,30 @@ function loadMainGUI()
                 })
             end
         end
+    })
+
+    for _, wp in ipairs(waypoints) do
+        TabTeleport:CreateButton({
+            Name = "🌍 Teleport ke: " .. wp.name,
+            Callback = function() teleportTo(wp.pos) end
+        })
+    end
+
+    -- Tab Kecepatan tetap sama
+    local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
+    TabSpeed:CreateButton({
+        Name = "🕊️ Fly (ON/OFF)",
+        Callback = function()
+            if flying then stopFly() else startFly() end
+        end
+    })
+    TabSpeed:CreateSlider({
+        Name = "⚡ Kecepatan Fly",
+        Range = {10, 200},
+        Increment = 5,
+        Suffix = "Speed",
+        CurrentValue = flySpeed,
+        Callback = function(v) flySpeed = v end
     })
 end
 

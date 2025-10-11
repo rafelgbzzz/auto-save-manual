@@ -1,5 +1,6 @@
--- ZeroKageゼロ影
+-- ZeroKageゼロ影 Full Script
 
+-- Services
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -121,7 +122,7 @@ local function showKeyWindow()
 end
 
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Speed + Copy Pos + Jump)
+-- ✈️ MAIN GUI
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end
@@ -159,7 +160,6 @@ function loadMainGUI()
         end
     end
 
-    -- ✈️ Fly System
     local function startFly()
         local hrp = getHRP()
         if not hrp then
@@ -172,15 +172,9 @@ function loadMainGUI()
         end
 
         flying = true
-
         bodyGyro = Instance.new("BodyGyro")
         bodyGyro.P = 9e4
         bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-        
-        local cam = workspace.CurrentCamera
-        local lookVector = cam.CFrame.LookVector
-        lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
-        bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + lookVector)
         bodyGyro.Parent = hrp
 
         bodyVel = Instance.new("BodyVelocity")
@@ -190,23 +184,19 @@ function loadMainGUI()
 
         flyConnection = RunService.RenderStepped:Connect(function()
             if not flying or not hrp or not hrp.Parent then return end
-
             local cam = workspace.CurrentCamera
             local lookVector = cam.CFrame.LookVector
-            lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
+            lookVector = Vector3.new(lookVector.X,0,lookVector.Z).Unit
             bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + lookVector)
 
             local moveDir = Vector3.zero
-
-            -- Keyboard (PC)
             if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir += lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir -= cam.CFrame.RightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += cam.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0, 1, 0) end
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0, 1, 0) end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0,1,0) end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0,1,0) end
 
-            -- Mobile Joystick (HP)
             local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.MoveDirection.Magnitude > 0 then
                 moveDir = Vector3.new(humanoid.MoveDirection.X, 0, humanoid.MoveDirection.Z)
@@ -222,9 +212,9 @@ function loadMainGUI()
 
     local function stopFly()
         flying = false
-        if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
-        if bodyVel then bodyVel:Destroy() bodyVel = nil end
-        if flyConnection then flyConnection:Disconnect() flyConnection = nil end
+        if bodyGyro then bodyGyro:Destroy() bodyGyro=nil end
+        if bodyVel then bodyVel:Destroy() bodyVel=nil end
+        if flyConnection then flyConnection:Disconnect() flyConnection=nil end
     end
 
     -- GUI Utama
@@ -235,7 +225,7 @@ function loadMainGUI()
             string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })
 
-    -- 🌍 TAB TELEPORT
+    -- 🌍 TAB TELEPORT WAYPOINT
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
     for _, wp in ipairs(waypoints) do
         TabTeleport:CreateButton({
@@ -244,63 +234,84 @@ function loadMainGUI()
         })
     end
 
+    -- 🌟 TAB TELEPORT PLAYER
+    local TabTeleportPlayer = Window:CreateTab("Teleport Player", 4483362458)
+    local playerEntries = {}
+
+    local function teleportToPlayer(targetPlayer)
+        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0,3,0)
+        else
+            Rayfield:Notify({
+                Title = "⚠️ Gagal Teleport",
+                Content = "Character player "..targetPlayer.Name.." belum siap",
+                Duration = 2
+            })
+        end
+    end
+
+    local function refreshPlayerList()
+        for _, entry in pairs(playerEntries) do
+            if entry.Button then entry.Button:Remove() end
+        end
+        playerEntries = {}
+
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= player then
+                local button = TabTeleportPlayer:CreateButton({
+                    Name = "Teleport ke "..plr.Name,
+                    Callback = function() teleportToPlayer(plr) end
+                })
+                table.insert(playerEntries, {Player = plr, Button = button})
+            end
+        end
+    end
+
+    refreshPlayerList()
+    Players.PlayerAdded:Connect(refreshPlayerList)
+    Players.PlayerRemoving:Connect(refreshPlayerList)
+
+    TabTeleportPlayer:CreateButton({
+        Name = "Teleport ke Semua Player",
+        Callback = function()
+            for _, entry in pairs(playerEntries) do
+                teleportToPlayer(entry.Player)
+                wait(0.3)
+            end
+        end
+    })
+
     -------------------------------------------------
     -- ⚙️ TAB FITUR
     -------------------------------------------------
     local TabFitur = Window:CreateTab("Fitur", 4483362458)
-
-    -- 💾 Copy Koordinat
     TabFitur:CreateButton({
         Name = "💾 Copy Koordinat Sekarang",
         Callback = function()
             local hrp = getHRP()
-            if not hrp then
-                Rayfield:Notify({
-                    Title = "⚠️ Gagal",
-                    Content = "Character belum siap.",
-                    Duration = 2
-                })
-                return
-            end
+            if not hrp then return end
             local pos = hrp.Position
-            local koordinat = string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X, pos.Y, pos.Z)
-            setclipboard(koordinat)
-            Rayfield:Notify({
-                Title = "✅ Koordinat Disalin",
-                Content = koordinat,
-                Duration = 4
-            })
+            setclipboard(string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X,pos.Y,pos.Z))
+            Rayfield:Notify({Title="✅ Disalin!", Content="Koordinat disalin.", Duration=2})
         end
     })
 
-    -- 💤 Anti AFK Toggle
     TabFitur:CreateToggle({
         Name = "🛡️ Anti AFK (ON/OFF)",
-        CurrentValue = false,
-        Callback = function(value)
+        CurrentValue=false,
+        Callback=function(value)
             antiAFKEnabled = value
             if value then
                 if antiAFKConnection then antiAFKConnection:Disconnect() end
                 antiAFKConnection = player.Idled:Connect(function()
-                    VirtualUser = game:service('VirtualUser')
-                    VirtualUser:CaptureController()
-                    VirtualUser:ClickButton2(Vector2.new())
+                    local vu = game:GetService("VirtualUser")
+                    vu:CaptureController()
+                    vu:ClickButton2(Vector2.new())
                 end)
-                Rayfield:Notify({
-                    Title = "🛡️ Anti AFK Aktif",
-                    Content = "Kamu aman dari kick AFK!",
-                    Duration = 4
-                })
+                Rayfield:Notify({Title="🛡️ Anti AFK Aktif", Content="Kamu aman!", Duration=3})
             else
-                if antiAFKConnection then
-                    antiAFKConnection:Disconnect()
-                    antiAFKConnection = nil
-                end
-                Rayfield:Notify({
-                    Title = "💤 Anti AFK Nonaktif",
-                    Content = "AFK protection dimatikan.",
-                    Duration = 3
-                })
+                if antiAFKConnection then antiAFKConnection:Disconnect() antiAFKConnection=nil end
+                Rayfield:Notify({Title="💤 Anti AFK Dimatikan", Content="AFK protection off.", Duration=3})
             end
         end
     })
@@ -309,96 +320,51 @@ function loadMainGUI()
     -- ⚡ TAB KECEPATAN
     -------------------------------------------------
     local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
-
-    -- 🕊️ Fly Toggle
     TabSpeed:CreateToggle({
-        Name = "🕊️ Mode Fly",
-        CurrentValue = false,
-        Callback = function(state)
-            if state then
-                startFly()
-                Rayfield:Notify({
-                    Title = "✈️ Fly Aktif",
-                    Content = "Gunakan W A S D / Joystick untuk bergerak.",
-                    Duration = 3
-                })
-            else
-                stopFly()
-                Rayfield:Notify({
-                    Title = "🛑 Fly Dimatikan",
-                    Content = "Mode fly telah berhenti.",
-                    Duration = 2
-                })
-            end
-        end,
+        Name="🕊️ Mode Fly",
+        CurrentValue=false,
+        Callback=function(state)
+            if state then startFly() Rayfield:Notify({Title="✈️ Fly Aktif", Content="Gunakan W A S D / Joystick", Duration=2})
+            else stopFly() Rayfield:Notify({Title="🛑 Fly Dimatikan", Content="Mode fly berhenti", Duration=2}) end
+        end
     })
 
-    -- ⚡ Kecepatan Fly
     TabSpeed:CreateSlider({
-        Name = "⚡ Kecepatan Fly",
-        Range = {10, 200},
-        Increment = 5,
-        Suffix = "Speed",
-        CurrentValue = flySpeed,
-        Callback = function(v) flySpeed = v end
+        Name="⚡ Kecepatan Fly",
+        Range={10,200}, Increment=5, Suffix="Speed",
+        CurrentValue=flySpeed,
+        Callback=function(v) flySpeed=v end
     })
 
-    -- 🏃 Kecepatan Lari
     local SpeedSlider = TabSpeed:CreateSlider({
-        Name = "🏃 Kecepatan Lari",
-        Range = {16, 200},
-        Increment = 1,
-        Suffix = "Speed",
-        CurrentValue = walkSpeed,
-        Callback = function(value)
-            local char = player.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hum then
-                hum.WalkSpeed = value
-                walkSpeed = value
-            end
-        end,
+        Name="🏃 Kecepatan Lari", Range={16,200}, Increment=1, Suffix="Speed",
+        CurrentValue=walkSpeed,
+        Callback=function(v)
+            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if hum then hum.WalkSpeed=v walkSpeed=v end
+        end
     })
 
-    -- 🦘 Kekuatan Lompatan (Jump Power)
     local JumpSlider = TabSpeed:CreateSlider({
-        Name = "🦘 Kekuatan Lompatan",
-        Range = {50, 500},
-        Increment = 10,
-        Suffix = "Power",
-        CurrentValue = jumpPower,
-        Callback = function(value)
-            local char = player.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hum then
-                hum.UseJumpPower = true
-                hum.JumpPower = value
-                jumpPower = value
-            end
-        end,
+        Name="🦘 Kekuatan Lompatan", Range={50,500}, Increment=10, Suffix="Power",
+        CurrentValue=jumpPower,
+        Callback=function(v)
+            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if hum then hum.UseJumpPower=true hum.JumpPower=v jumpPower=v end
+        end
     })
 
-    -- 🔄 Reset Speed & Jump
     TabSpeed:CreateButton({
-        Name = "↩️ Reset Kecepatan & Lompatan (Normal)",
-        Callback = function()
-            local char = player.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hum then
-                hum.WalkSpeed = 16
-                hum.JumpPower = 50
-            end
+        Name="↩️ Reset Speed & Jump",
+        Callback=function()
+            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if hum then hum.WalkSpeed=16 hum.JumpPower=50 end
             SpeedSlider:Set(16)
             JumpSlider:Set(50)
-            Rayfield:Notify({
-                Title = "Reset Berhasil",
-                Content = "WalkSpeed & JumpPower dikembalikan ke normal.",
-                Duration = 3
-            })
-        end,
+            Rayfield:Notify({Title="Reset Berhasil", Content="WalkSpeed & JumpPower normal", Duration=3})
+        end
     })
 
-    -- Jaga nilai tetap sama pas respawn
     player.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid")
         hum.WalkSpeed = walkSpeed

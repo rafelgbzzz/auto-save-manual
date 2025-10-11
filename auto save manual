@@ -1,12 +1,12 @@
--- RAFEEYL Auto Teleport (Waypoint Permanen + Save + Copy + Auto Respawn + Fly)
--- versi gabungan fix save posisi real-time 💾
+-- RAFEEYL Auto Teleport (Waypoint Permanen + Save + Copy + Auto Respawn + Fly Universal)
+-- Fly Support PC + HP + Slider Speed
 
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
 local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
 
 -- 👇 Masukkan waypoint hasil salin clipboard ke sini
 local waypoints = {
@@ -63,7 +63,7 @@ local function stopAutoRespawn()
     respawnLoop = nil
 end
 
--- 🚀 Fly functions
+-- 🚀 Fly functions (Universal)
 local function startFly()
     local hrp = getHRP()
     if not hrp then return end
@@ -82,25 +82,29 @@ local function startFly()
 
     Rayfield:Notify({
         Title = "🕊️ Fly Aktif",
-        Content = "Gunakan W A S D untuk arah, SPACE untuk naik, SHIFT untuk turun.",
+        Content = "PC: W A S D / Space / Shift | HP: Gunakan joystick kiri",
         Duration = 4
     })
 
+    local cam = workspace.CurrentCamera
+
     RunService.RenderStepped:Connect(function()
         if flying and hrp and bodyGyro and bodyVel then
-            bodyGyro.CFrame = workspace.CurrentCamera.CFrame
+            bodyGyro.CFrame = cam.CFrame
+
             local moveDir = Vector3.zero
+            -- PC Control
             if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                moveDir += workspace.CurrentCamera.CFrame.LookVector
+                moveDir += cam.CFrame.LookVector
             end
             if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                moveDir -= workspace.CurrentCamera.CFrame.LookVector
+                moveDir -= cam.CFrame.LookVector
             end
             if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                moveDir -= workspace.CurrentCamera.CFrame.RightVector
+                moveDir -= cam.CFrame.RightVector
             end
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                moveDir += workspace.CurrentCamera.CFrame.RightVector
+                moveDir += cam.CFrame.RightVector
             end
             if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
                 moveDir += Vector3.new(0, 1, 0)
@@ -108,6 +112,13 @@ local function startFly()
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
                 moveDir -= Vector3.new(0, 1, 0)
             end
+
+            -- Mobile Joystick Movement
+            local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.MoveDirection.Magnitude > 0 then
+                moveDir = humanoid.MoveDirection
+            end
+
             bodyVel.Velocity = moveDir * flySpeed
         elseif not flying then
             if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
@@ -161,7 +172,7 @@ end
 local Window = Rayfield:CreateWindow({
     Name = "RAFEEYL - Auto Teleport",
     LoadingTitle = "RAFEEYL",
-    LoadingSubtitle = "Permanent Summit Version"
+    LoadingSubtitle = "Permanent Summit Universal"
 })
 
 local Tab = Window:CreateTab("Teleport", 4483362458)
@@ -239,6 +250,23 @@ Tab:CreateButton({
         else
             startFly()
         end
+    end
+})
+
+-- ⚙️ SLIDER KECEPATAN FLY
+Tab:CreateSlider({
+    Name = "⚡ Kecepatan Fly",
+    Range = {10, 200},
+    Increment = 5,
+    Suffix = "Speed",
+    CurrentValue = flySpeed,
+    Callback = function(v)
+        flySpeed = v
+        Rayfield:Notify({
+            Title = "Kecepatan Fly",
+            Content = "Kecepatan diubah menjadi: " .. tostring(v),
+            Duration = 2
+        })
     end
 })
 

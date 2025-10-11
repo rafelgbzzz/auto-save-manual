@@ -22,7 +22,7 @@ end
 -- Format expiry: "YYYY-MM-DD"
 -------------------------------------------------
 local localKeys = {
-    { key = "RAFEEYL-LOCAL-TEST", expiry = "2099-12-31" },
+    { key = "rafelll", expiry = "2025-11-15" },
     -- contoh menambah key:
     -- { key = "USER-ABC-123", expiry = "2025-11-30" },
 }

@@ -252,83 +252,91 @@ for _, wp in ipairs(waypoints) do
 end  
 
 -------------------------------------------------
-
--- 🏔️ Teleport 1x Puncak Langsung 100x Summit (FIX)
-
+-- 🏔️ Mount Cicok (100x Summit + Respawn Fix)
+-------------------------------------------------
 TabTeleport:CreateButton({
-Name = "🔥 Mount Cicok (100x Summit - Fix)",
-Callback = function()
-local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-if not hrp then
-Rayfield:Notify({ Title = "⚠️ Gagal Teleport", Content = "Character belum siap.", Duration = 2 })
-return
-end
+    Name = "🔥 Mount Cicok (100x Summit - Respawn Fix)",
+    Callback = function()
+        local jumlahSummit = 100
+        local jeda = 1.5
+        local summitPos = Vector3.new(-161.89, 1598.15, -2141.80)
 
-local summitPos = Vector3.new(-161.89, 1598.15, -2141.80)  
-    local jumlahSummit = 100  
-    local jeda = 0.15 -- sedikit lebih lama biar terdeteksi pasti  
+        Rayfield:Notify({
+            Title = "🚀 Summit Cicok",
+            Content = "Mulai proses 100x summit (dengan respawn)...",
+            Duration = 3
+        })
 
-    Rayfield:Notify({  
-        Title = "🚀 Summit Cicok",  
-        Content = "Mulai proses 100x summit...",  
-        Duration = 3  
-    })  
+        task.spawn(function()
+            for i = 1, jumlahSummit do
+                local char = player.Character or player.CharacterAdded:Wait()
+                local hrp = char:WaitForChild("HumanoidRootPart", 5)
+                if not hrp then break end
 
-    task.spawn(function()  
-        for i = 1, jumlahSummit do  
-            -- turun dulu biar dianggap keluar area summit  
-            hrp.CFrame = CFrame.new(summitPos - Vector3.new(0, 50, 0))  
-            task.wait(0.05)  
-            -- naik lagi ke puncak  
-            hrp.CFrame = CFrame.new(summitPos)  
-            task.wait(jeda)  
-        end  
+                hrp.CFrame = CFrame.new(summitPos)
+                task.wait(0.4)
 
-        Rayfield:Notify({  
-            Title = "✅ Selesai",  
-            Content = "Kamu berhasil trigger 100x summit di Mount Cicok!",  
-            Duration = 4  
-        })  
-    end)  
-end
+                player:LoadCharacter()
+                task.wait(jeda)
 
+                Rayfield:Notify({
+                    Title = "🏔️ Progress Summit",
+                    Content = string.format("Cicok summit ke-%d/%d", i, jumlahSummit),
+                    Duration = 0.8
+                })
+            end
+
+            Rayfield:Notify({
+                Title = "✅ Selesai!",
+                Content = "Kamu berhasil trigger 100x summit di Mount Cicok!",
+                Duration = 5
+            })
+        end)
+    end
 })
 
+-------------------------------------------------
+-- 🏔️ Mount Tatansutarma (100x Summit + Respawn Fix)
+-------------------------------------------------
 TabTeleport:CreateButton({
-Name = "🔥 Mount Tatansutarma (100x Summit - Fix)",
-Callback = function()
-local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-if not hrp then
-Rayfield:Notify({ Title = "⚠️ Gagal Teleport", Content = "Character belum siap.", Duration = 2 })
-return
-end
+    Name = "🔥 Mount Tatansutarma (100x Summit - Respawn Fix)",
+    Callback = function()
+        local jumlahSummit = 100
+        local jeda = 1.5
+        local summitPos = Vector3.new(-2234.73, 565.96, 1402.06)
 
-local summitPos = Vector3.new(-2234.73, 565.96, 1402.06)  
-    local jumlahSummit = 100  
-    local jeda = 0.15  
+        Rayfield:Notify({
+            Title = "🚀 Summit Tatansutarma",
+            Content = "Mulai proses 100x summit (dengan respawn)...",
+            Duration = 3
+        })
 
-    Rayfield:Notify({  
-        Title = "🚀 Summit Tatansutarma",  
-        Content = "Mulai proses 100x summit...",  
-        Duration = 3  
-    })  
+        task.spawn(function()
+            for i = 1, jumlahSummit do
+                local char = player.Character or player.CharacterAdded:Wait()
+                local hrp = char:WaitForChild("HumanoidRootPart", 5)
+                if not hrp then break end
 
-    task.spawn(function()  
-        for i = 1, jumlahSummit do  
-            hrp.CFrame = CFrame.new(summitPos - Vector3.new(0, 50, 0))  
-            task.wait(0.05)  
-            hrp.CFrame = CFrame.new(summitPos)  
-            task.wait(jeda)  
-        end  
+                hrp.CFrame = CFrame.new(summitPos)
+                task.wait(0.4)
 
-        Rayfield:Notify({  
-            Title = "✅ Selesai",  
-            Content = "Kamu berhasil trigger 100x summit di Mount Tatansutarma!",  
-            Duration = 4  
-        })  
-    end)  
-end
+                player:LoadCharacter()
+                task.wait(jeda)
 
+                Rayfield:Notify({
+                    Title = "🏔️ Progress Summit",
+                    Content = string.format("Tatansutarma summit ke-%d/%d", i, jumlahSummit),
+                    Duration = 0.8
+                })
+            end
+
+            Rayfield:Notify({
+                Title = "✅ Selesai!",
+                Content = "Kamu berhasil trigger 100x summit di Mount Tatansutarma!",
+                Duration = 5
+            })
+        end)
+    end
 })
 
 -------------------------------------------------  

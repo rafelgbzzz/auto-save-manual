@@ -92,6 +92,7 @@ local function showKeyWindow()
                     Duration = 4
                 })
 
+                -- Hide window dulu, jangan destroy
                 KeyWindow.Visible = false
                 task.wait(0.2)
                 loadMainGUI()
@@ -121,7 +122,7 @@ local function showKeyWindow()
 end
 
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Save Position Button)
+-- ✈️ MAIN GUI (Fly + Teleport)
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end
@@ -211,43 +212,8 @@ function loadMainGUI()
             string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })
 
-    -- Tab Teleport (tombol save posisi + waypoint)
+    -- Tab Teleport (tombol waypoint)
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
-
-    TabTeleport:CreateButton({
-        Name = "💾 Save Posisi Sekarang (Copy ke Clipboard)",
-        Callback = function()
-            local character = player.Character or player.CharacterAdded:Wait()
-            local hrp = character:FindFirstChild("HumanoidRootPart")
-            if not hrp then
-                Rayfield:Notify({
-                    Title = "Gagal",
-                    Content = "Tidak dapat menemukan posisi karakter!",
-                    Duration = 2
-                })
-                return
-            end
-
-            local pos = hrp.Position
-            local text = string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X, pos.Y, pos.Z)
-            if setclipboard then
-                setclipboard(text)
-                Rayfield:Notify({
-                    Title = "Posisi Disalin!",
-                    Content = "Koordinat berhasil disalin ke clipboard:
-" .. text,
-                    Duration = 4
-                })
-            else
-                Rayfield:Notify({
-                    Title = "Clipboard Tidak Didukung",
-                    Content = "Executor kamu tidak mendukung setclipboard!",
-                    Duration = 3
-                })
-            end
-        end
-    })
-
     for _, wp in ipairs(waypoints) do
         TabTeleport:CreateButton({
             Name = "🌍 Teleport ke: " .. wp.name,
@@ -255,7 +221,7 @@ function loadMainGUI()
         })
     end
 
-    -- Tab Kecepatan tetap sama
+    -- Tab Kecepatan (fly ON/OFF + slider)
     local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
     TabSpeed:CreateButton({
         Name = "🕊️ Fly (ON/OFF)",

@@ -1,30 +1,22 @@
--- RAFEEYL Auto Teleport (dengan Save Summit Permanen)
+-- RAFEEYL Auto Teleport (Waypoint Permanen Manual + Auto Respawn Loop)
 
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local HttpService = game:GetService("HttpService")
 
-local saveFile = "Rafeeyl_Waypoints.json" -- nama file penyimpanan
-local waypoints = {}
+-- 👇 Masukkan waypoint hasil salin clipboard ke sini (nama + posisi)
+local waypoints = {
+    {name = "Gunung Cicok", pos = Vector3.new(123.45, 67.89, 101.23)},
+    {name = "Puncak Lava", pos = Vector3.new(150.12, 80.77, 90.55)},
+    {name = "Summit Salju", pos = Vector3.new(180.77, 92.15, 75.32)}
+}
+
+-- 🧩 Setting awal
 local running = false
-local autoRespawn = false
+local autoRespawn = true  -- aktifkan auto respawn loop
 local delaySeconds = 5
 local loopCoroutine
-
--- 🧩 Load data waypoint yang tersimpan (kalau ada)
-if isfile and readfile and isfile(saveFile) then
-    local ok, data = pcall(function()
-        return HttpService:JSONDecode(readfile(saveFile))
-    end)
-    if ok and type(data) == "table" then
-        waypoints = data
-        warn("[RAFEEYL] Waypoint permanen berhasil dimuat! Total:", #waypoints)
-    else
-        warn("[RAFEEYL] Gagal membaca data waypoint.")
-    end
-end
+local respawnLoop
 
 -- Helper
 local function getHRP()
@@ -40,138 +32,103 @@ local function teleportTo(pos)
     end
 end
 
-local function saveWaypoints()
-    if writefile and HttpService then
-        writefile(saveFile, HttpService:JSONEncode(waypoints))
-    end
+local function startAutoRespawn()
+    if respawnLoop then return end
+    respawnLoop = coroutine.create(function()
+        while autoRespawn do
+            player:LoadCharacter()
+            Rayfield:Notify({
+                Title = "Auto Respawn",
+                Content = "Respawn otomatis dijalankan.",
+                Duration = 1.5
+            })
+            task.wait(delaySeconds)
+        end
+    end)
+    coroutine.resume(respawnLoop)
 end
 
-local function waitForAlive()
-    while true do
-        local c = player.Character
-        local humanoid = c and c:FindFirstChildOfClass("Humanoid")
-        if humanoid and humanoid.Health > 0 then return end
-        if not autoRespawn then
-            running = false
-            return
-        end
-        repeat task.wait(0.5) until player.Character and player.Character:FindFirstChildOfClass("Humanoid") and player.Character:FindFirstChildOfClass("Humanoid").Health > 0
-        return
-    end
+local function stopAutoRespawn()
+    autoRespawn = false
+    respawnLoop = nil
 end
 
 local function startLoop()
     if running or #waypoints == 0 then
-        Rayfield:Notify({
-            Title = "Gagal Start",
-            Content = "Tidak ada waypoint tersimpan!",
-            Duration = 2
-        })
+        warn("[RAFEEYL] Tidak ada waypoint permanen!")
         return
     end
     running = true
+
+    if autoRespawn then
+        startAutoRespawn() -- langsung aktifkan loop respawn
+    end
+
     loopCoroutine = coroutine.create(function()
         local idx = 1
         while running do
-            if not getHRP() then
-                if autoRespawn then
-                    waitForAlive()
-                else
-                    running = false
-                    break
-                end
-            end
-            teleportTo(waypoints[idx])
-            idx = idx + 1
+            local wp = waypoints[idx]
+            teleportTo(wp.pos)
+            Rayfield:Notify({
+                Title = "Teleporting...",
+                Content = "Menuju lokasi: " .. wp.name,
+                Duration = 2
+            })
+            idx += 1
             if idx > #waypoints then idx = 1 end
-            local t = 0
-            while t < delaySeconds and running do
-                task.wait(0.2)
-                t += 0.2
-            end
+            task.wait(delaySeconds)
         end
     end)
     coroutine.resume(loopCoroutine)
 end
 
-local function stopLoop()
-    running = false
-end
-
--- GUI Rayfield
+-- GUI
 local Window = Rayfield:CreateWindow({
-   Name = "RAFEEYL - Auto Teleport",
-   LoadingTitle = "RAFEEYL",
-   LoadingSubtitle = "by Rafeeyl",
-   ConfigurationSaving = {Enabled = false}
+    Name = "RAFEEYL - Auto Teleport",
+    LoadingTitle = "RAFEEYL",
+    LoadingSubtitle = "Permanent Summit Version"
 })
 
 local Tab = Window:CreateTab("Teleport", 4483362458)
 
 Tab:CreateButton({
-   Name = "SAVE",
-   Callback = function()
-      local hrp = getHRP()
-      if hrp then
-          table.insert(waypoints, hrp.Position)
-          saveWaypoints() -- simpan ke file permanen
-          Rayfield:Notify({
-              Title = "Saved!",
-              Content = "Waypoint ditambahkan dan disimpan permanen. Total: "..#waypoints,
-              Duration = 2
-          })
-      end
-   end
+    Name = "Start",
+    Callback = function()
+        running = true
+        autoRespawn = true
+        startLoop()
+        Rayfield:Notify({
+            Title="Started",
+            Content="Auto Teleport + Auto Respawn aktif terus.",
+            Duration=2
+        })
+    end
 })
 
 Tab:CreateButton({
-   Name = "Start",
-   Callback = function()
-      startLoop()
-      Rayfield:Notify({Title="Started", Content="Auto Teleport ON", Duration=2})
-   end
+    Name = "Stop",
+    Callback = function()
+        running = false
+        stopAutoRespawn()
+        Rayfield:Notify({
+            Title="Stopped",
+            Content="Auto Teleport & Respawn dihentikan.",
+            Duration=2
+        })
+    end
 })
 
-Tab:CreateButton({
-   Name = "⏹ Stop",
-   Callback = function()
-      stopLoop()
-      Rayfield:Notify({Title="Stopped", Content="Auto Teleport OFF", Duration=2})
-   end
-})
-
-Tab:CreateButton({
-   Name = "🗑 Reset Saved Waypoints",
-   Callback = function()
-      waypoints = {}
-      if isfile and delfile and isfile(saveFile) then
-          delfile(saveFile)
-      end
-      Rayfield:Notify({
-         Title="Reset Done",
-         Content="Semua waypoint permanen dihapus.",
-         Duration=2
-      })
-   end
-})
-
-Tab:CreateToggle({
-   Name = "Auto Respawn",
-   CurrentValue = false,
-   Flag = "AutoRespawn",
-   Callback = function(Value)
-      autoRespawn = Value
-   end
-})
-
-Tab:CreateSlider({
-   Name = "Delay (seconds)",
-   Range = {2, 60},
-   Increment = 1,
-   Suffix = "s",
-   CurrentValue = 5,
-   Flag = "DelaySlider",
-   Callback = function(Value)
-      delaySeconds = Value
-   end
-})
+-- 🔘 Tombol teleport manual
+for i, wp in ipairs(waypoints) do
+    Tab:CreateButton({
+        Name = "Teleport ke: " .. wp.name,
+        Callback = function()
+            teleportTo(wp.pos)
+            Rayfield:Notify({
+                Title = "Teleport Manual",
+                Content = "Berhasil teleport ke: " .. wp.name,
+                Duration = 2
+            })
+        end
+    })
+end

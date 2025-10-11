@@ -304,16 +304,35 @@ function loadMainGUI()
         end
     })
 
+    -------------------------------------------------
     -- ⚡ TAB KECEPATAN
+    -------------------------------------------------
     local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
 
-    -- Fly Control
-    TabSpeed:CreateButton({
-        Name = "🕊️ Fly (ON/OFF)",
-        Callback = function()
-            if flying then stopFly() else startFly() end
-        end
+    -- 🕊️ Fly Toggle
+    TabSpeed:CreateToggle({
+        Name = "🕊️ Mode Fly",
+        CurrentValue = false,
+        Callback = function(state)
+            if state then
+                startFly()
+                Rayfield:Notify({
+                    Title = "✈️ Fly Aktif",
+                    Content = "Gunakan W A S D / Joystick untuk bergerak.",
+                    Duration = 3
+                })
+            else
+                stopFly()
+                Rayfield:Notify({
+                    Title = "🛑 Fly Dimatikan",
+                    Content = "Mode fly telah berhenti.",
+                    Duration = 2
+                })
+            end
+        end,
     })
+
+    -- ⚡ Kecepatan Fly
     TabSpeed:CreateSlider({
         Name = "⚡ Kecepatan Fly",
         Range = {10, 200},
@@ -323,7 +342,7 @@ function loadMainGUI()
         Callback = function(v) flySpeed = v end
     })
 
-    -- Lari (WalkSpeed)
+    -- 🏃 Kecepatan Lari
     local SpeedSlider = TabSpeed:CreateSlider({
         Name = "🏃 Kecepatan Lari",
         Range = {16, 200},

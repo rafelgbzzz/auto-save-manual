@@ -122,7 +122,7 @@ local function showKeyWindow()
 end
 
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport)
+-- ✈️ MAIN GUI (Fly + Teleport + Fitur)
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end
@@ -236,6 +236,42 @@ function loadMainGUI()
         Suffix = "Speed",
         CurrentValue = flySpeed,
         Callback = function(v) flySpeed = v end
+    })
+
+    -- Tab Fitur (Save Posisi Sekarang)
+    local TabFitur = Window:CreateTab("Fitur", 4483362458)
+    TabFitur:CreateButton({
+        Name = "💾 Save Posisi Sekarang (Copy ke Clipboard)",
+        Callback = function()
+            local character = player.Character or player.CharacterAdded:Wait()
+            local hrp = character:FindFirstChild("HumanoidRootPart")
+            if not hrp then
+                Rayfield:Notify({
+                    Title = "Gagal",
+                    Content = "Tidak dapat menemukan posisi karakter!",
+                    Duration = 2
+                })
+                return
+            end
+
+            local pos = hrp.Position
+            local text = string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X, pos.Y, pos.Z)
+            if setclipboard then
+                setclipboard(text)
+                Rayfield:Notify({
+                    Title = "Posisi Disalin!",
+                    Content = "Koordinat berhasil disalin ke clipboard:
+" .. text,
+                    Duration = 4
+                })
+            else
+                Rayfield:Notify({
+                    Title = "Clipboard Tidak Didukung",
+                    Content = "Executor kamu tidak mendukung setclipboard!",
+                    Duration = 3
+                })
+            end
+        end
     })
 end
 

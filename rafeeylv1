@@ -225,8 +225,8 @@ function loadMainGUI()
 
     -- GUI Utama
     local Window = Rayfield:CreateWindow({
-        Name = "RAFEEYL - Auto Teleport",
-        LoadingTitle = "RAFEEYL Menu",
+        Name = "ZeroKageゼロ影",
+        LoadingTitle = "ZeroKage Menu",
         LoadingSubtitle = "Key Aktif hingga " ..
             string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })

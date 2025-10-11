@@ -1,4 +1,5 @@
 -- RAFEEYL Auto Teleport (Remote Key GitHub + Server Time + Fly + Teleport)
+-- Aman dari ubah tanggal lokal, langsung ambil waktu UTC dari GitHub
 
 local HttpService = game:GetService("HttpService")
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
@@ -10,21 +11,21 @@ local RunService = game:GetService("RunService")
 -------------------------------------------------
 -- 🌐 GANTI BAGIAN INI SESUAI GITHUB KAMU
 -------------------------------------------------
-local githubKeyUrl = "https://raw.githubusercontent.com/rafelgbzzz/auto-save-manual/refs/heads/main/keys.json"
-local timeApiUrl = "https://worldtimeapi.org/api/timezone/Etc/UTC"
+local githubKeyUrl = "https://raw.githubusercontent.com/rafelgbzzz/auto-save-manual/main/keys.json"
+local githubTimeUrl = "https://raw.githubusercontent.com/rafelgbzzz/auto-save-manual/refs/heads/main/utcdate.json"
 -------------------------------------------------
 
--- 🕒 Ambil waktu UTC dari server
+-- 🕒 Ambil waktu UTC dari GitHub
 local function getServerDate()
 	local ok, result = pcall(function()
-		return game:HttpGet(timeApiUrl, true)
+		return game:HttpGet(githubTimeUrl, true)
 	end)
 	if not ok then return nil end
 
 	local data = HttpService:JSONDecode(result)
-	if not data or not data.datetime then return nil end
+	if not data or not data.utc_date then return nil end
 
-	local y, m, d = string.match(data.datetime, "^(%d+)%-(%d+)%-(%d+)T")
+	local y, m, d = data.utc_date:match("^(%d+)%-(%d+)%-(%d+)$")
 	return {year = tonumber(y), month = tonumber(m), day = tonumber(d)}
 end
 
@@ -44,7 +45,7 @@ local function isExpired(expiry, now)
 	local y, m, d = expiry.year, expiry.month, expiry.day
 	if now.year > y then return true end
 	if now.year == y and now.month > m then return true end
-	if now.year == y and now.month == m and now.day > d then return true end
+	if now.year == y and now.month == m and now.day > d then return false end
 	return false
 end
 
@@ -93,7 +94,7 @@ Tab:CreateInput({
 		if not serverNow then
 			Rayfield:Notify({
 				Title = "⚠️ Gagal Ambil Waktu",
-				Content = "Tidak dapat mengakses server waktu. Periksa koneksi kamu.",
+				Content = "Tidak dapat mengakses server waktu GitHub. Periksa koneksi kamu.",
 				Duration = 4
 			})
 			return
@@ -120,11 +121,9 @@ Tab:CreateInput({
 				Duration = 5
 			})
 
-			-- Tambahkan sedikit delay sebelum loadMainGUI
 			task.wait(0.1)
 			KeyWindow:Destroy()
 
-			-- Debug notification
 			print("Key verified:", keyVerified)
 			print("Expiry date:", expiryDate.day, expiryDate.month, expiryDate.year)
 			Rayfield:Notify({
@@ -133,7 +132,7 @@ Tab:CreateInput({
 				Duration = 2
 			})
 
-			loadMainGUI() -- pastikan GUI utama dipanggil
+			loadMainGUI()
 		else
 			if info == "expired" then
 				Rayfield:Notify({
@@ -180,7 +179,6 @@ function loadMainGUI()
 		end
 	end
 
-	-- ✈️ Fly Universal
 	local function startFly()
 		local hrp = getHRP()
 		if not hrp then return end
@@ -270,6 +268,6 @@ function loadMainGUI()
 			Callback = function()
 				teleportTo(wp.pos)
 			end
-		})
+		end)
 	end
 end

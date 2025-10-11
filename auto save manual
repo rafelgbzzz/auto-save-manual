@@ -8,9 +8,8 @@ local RunService = game:GetService("RunService")
 
 -- 🧭 Daftar Waypoint (isi posisi kamu di sini)
 local waypoints = {
-    {name = "Gunung Cicok", pos = Vector3.new(-161.89, 1598.15, -2141.80)},
-    {name = "Puncak Lava", pos = Vector3.new(150.12, 80.77, 90.55)},
-    {name = "Summit Salju", pos = Vector3.new(180.77, 92.15, 75.32)}
+    {name = "Mount Cicok", pos = Vector3.new(-161.89, 1598.15, -2141.80)},
+    {name = "Mount Tatansutarman", pos = Vector3.new(-2230.03, 574.15, 1456.92)}
 }
 
 -- 🔧 Variabel utama

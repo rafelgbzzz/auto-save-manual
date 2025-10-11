@@ -121,7 +121,7 @@ local function showKeyWindow()
 end
 
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Speed + Copy Pos)
+-- ✈️ MAIN GUI (Fly + Teleport + Speed + Copy Pos + Jump)
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end
@@ -134,6 +134,7 @@ function loadMainGUI()
     local flying = false
     local flySpeed = 60
     local walkSpeed = 16
+    local jumpPower = 50
     local antiAFKEnabled = false
     local bodyGyro, bodyVel
     local flyConnection
@@ -359,27 +360,49 @@ function loadMainGUI()
         end,
     })
 
+    -- 🦘 Kekuatan Lompatan (Jump Power)
+    local JumpSlider = TabSpeed:CreateSlider({
+        Name = "🦘 Kekuatan Lompatan",
+        Range = {50, 500},
+        Increment = 10,
+        Suffix = "Power",
+        CurrentValue = jumpPower,
+        Callback = function(value)
+            local char = player.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum.UseJumpPower = true
+                hum.JumpPower = value
+                jumpPower = value
+            end
+        end,
+    })
+
+    -- 🔄 Reset Speed & Jump
     TabSpeed:CreateButton({
-        Name = "↩️ Normal Speed (16)",
+        Name = "↩️ Reset Kecepatan & Lompatan (Normal)",
         Callback = function()
             local char = player.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
             if hum then
                 hum.WalkSpeed = 16
+                hum.JumpPower = 50
             end
             SpeedSlider:Set(16)
+            JumpSlider:Set(50)
             Rayfield:Notify({
-                Title = "Speed Reset",
-                Content = "Kecepatan dikembalikan ke normal (16).",
-                Duration = 2
+                Title = "Reset Berhasil",
+                Content = "WalkSpeed & JumpPower dikembalikan ke normal.",
+                Duration = 3
             })
         end,
     })
 
-    -- Jaga speed tetap sama pas respawn
+    -- Jaga nilai tetap sama pas respawn
     player.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid")
         hum.WalkSpeed = walkSpeed
+        hum.JumpPower = jumpPower
     end)
 end
 

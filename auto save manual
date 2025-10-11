@@ -19,7 +19,7 @@ end
 -- 🔑 Key Lokal & Expiry
 -------------------------------------------------
 local localKeys = {
-    { key = "rafelll", expiry = "2015-11-25" },
+    { key = "rafelll", expiry = "2025-11-25" },
 }
 
 local function parseExpiry(str)

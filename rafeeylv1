@@ -1,4 +1,4 @@
--- RAFEEYL Auto Teleport (Local Version - Fixed + Speed Control)
+-- ZeroKageゼロ影
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -62,8 +62,8 @@ local KeyWindow = nil -- Simpan agar bisa cek validitas sebelum destroy
 
 local function showKeyWindow()
     KeyWindow = Rayfield:CreateWindow({
-        Name = "🔑 Rafeeyl Key System",
-        LoadingTitle = "Rafeeyl Security",
+        Name = "🕸️ ZeroKageゼロ影",
+        LoadingTitle = "ZeroKage Security",
         LoadingSubtitle = "Verifikasi Key Access"
     })
 

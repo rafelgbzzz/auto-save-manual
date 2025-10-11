@@ -1,4 +1,4 @@
--- RAFEEYL Auto Teleport (Local Version - Fixed)
+-- RAFEEYL Auto Teleport (Local Version - Fixed - tes)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -122,7 +122,7 @@ local function showKeyWindow()
 end
 
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Fitur)
+-- ✈️ MAIN GUI (Fly + Teleport + Fitur Save Posisi)
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end

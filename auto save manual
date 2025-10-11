@@ -1,4 +1,5 @@
 -- RAFEEYL Auto Teleport (Waypoint Permanen + Save + Copy + Auto Respawn)
+-- versi gabungan fix save posisi real-time 💾
 
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Players = game:GetService("Players")
@@ -93,32 +94,35 @@ local Window = Rayfield:CreateWindow({
 
 local Tab = Window:CreateTab("Teleport", 4483362458)
 
--- 🎯 SAVE POSISI SEKARANG
+-- 🎯 SAVE POSISI SEKARANG (versi fix kamu)
 Tab:CreateButton({
-    Name = "💾 Save Posisi (Salin ke Clipboard)",
+    Name = "💾 Save Posisi (Copy ke Clipboard)",
     Callback = function()
-        local hrp = getHRP()
-        if hrp then
-            local pos = hrp.Position
-            local text = string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X, pos.Y, pos.Z)
-            if setclipboard then
-                setclipboard(text)
-                Rayfield:Notify({
-                    Title = "Disalin!",
-                    Content = "Koordinat disalin ke clipboard:\n" .. text,
-                    Duration = 3
-                })
-            else
-                Rayfield:Notify({
-                    Title = "Gagal salin",
-                    Content = "Executor kamu tidak support setclipboard.",
-                    Duration = 3
-                })
-            end
-        else
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart", 2)
+        if not hrp then
             Rayfield:Notify({
                 Title = "Gagal",
-                Content = "Karakter belum muncul / tidak ada HRP.",
+                Content = "Tidak dapat menemukan posisi karakter!",
+                Duration = 2
+            })
+            return
+        end
+
+        -- ambil posisi real-time
+        local pos = hrp.Position
+        local text = string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X, pos.Y, pos.Z)
+        if setclipboard then
+            setclipboard(text)
+            Rayfield:Notify({
+                Title = "Posisi Disalin!",
+                Content = "Koordinat berhasil disalin ke clipboard:\n" .. text,
+                Duration = 4
+            })
+        else
+            Rayfield:Notify({
+                Title = "Clipboard Tidak Didukung",
+                Content = "Executor kamu tidak mendukung setclipboard!",
                 Duration = 3
             })
         end

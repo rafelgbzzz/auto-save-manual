@@ -1,4 +1,5 @@
--- RAFEEYL Auto Teleport (Remote Key GitHub + Server Time + Fly + Teleport)
+-- RAFEEYL Auto Teleport (Local Key + Local Time + Fly + Teleport)
+-- Versi ringan: key & waktu disimpan/ambil lokal (tanpa HTTP)
 
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
@@ -6,62 +7,66 @@ local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
--- 🌐 Load Rayfield
+-- Load Rayfield aman
 local ok, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 end)
+print("Rayfield loaded:", ok, Rayfield)
 if not ok or not Rayfield then
-    warn("Gagal load Rayfield GUI")
+    warn("Gagal load Rayfield GUI. Periksa koneksi atau URL Rayfield.")
     return
 end
 
 -------------------------------------------------
--- 🌐 GANTI BAGIAN INI SESUAI GITHUB KAMU
+-- 🗃️ DAFTAR KEY LOKAL (Edit di sini)
+-- Format expiry: "YYYY-MM-DD"
 -------------------------------------------------
-local githubKeyUrl = "https://raw.githubusercontent.com/rafelgbzzz/auto-save-manual/main/keys.json"
-local githubTimeUrl = "https://raw.githubusercontent.com/rafelgbzzz/auto-save-manual/refs/heads/main/utcdate.json"
+local localKeys = {
+    { key = "RAFEEYL-LOCAL-TEST", expiry = "2099-12-31" },
+    -- contoh menambah key:
+    -- { key = "USER-ABC-123", expiry = "2025-11-30" },
+}
+
 -------------------------------------------------
-
--- Ambil waktu UTC dari GitHub
-local function getServerDate()
-    local ok, result = pcall(function()
-        return game:HttpGet(githubTimeUrl, true)
-    end)
-    if not ok then return nil end
-
-    local data = HttpService:JSONDecode(result)
-    if not data or not data.utc_date then return nil end
-
-    local y, m, d = data.utc_date:match("^(%d+)%-(%d+)%-(%d+)$")
-    return {year = tonumber(y), month = tonumber(m), day = tonumber(d)}
+-- 📅 Ambil waktu lokal (device)
+-------------------------------------------------
+local function getLocalDate()
+    local t = os.date("*t") -- waktu lokal
+    return { year = t.year, month = t.month, day = t.day }
 end
 
--- Ambil daftar key dari GitHub
-local function getKeysFromGitHub()
-    local ok, result = pcall(function()
-        return game:HttpGet(githubKeyUrl, true)
-    end)
-    if not ok then return nil end
-
-    local data = HttpService:JSONDecode(result)
-    return data
+-------------------------------------------------
+-- 🔍 Utility tanggal
+-------------------------------------------------
+local function parseExpiry(str)
+    if not str then return nil end
+    local y, m, d = str:match("^(%d+)%-(%d+)%-(%d+)$")
+    if not y then return nil end
+    return { year = tonumber(y), month = tonumber(m), day = tonumber(d) }
 end
 
--- Cek expired
 local function isExpired(expiry, now)
-    local y, m, d = expiry.year, expiry.month, expiry.day
-    if now.year > y then return true end
-    if now.year == y and now.month > m then return true end
-    if now.year == y and now.month == m and now.day > d then return true end
-    return false
+    -- return true jika sekarang > expiry (expired)
+    if now.year > expiry.year then return true end
+    if now.year < expiry.year then return false end
+    -- same year
+    if now.month > expiry.month then return true end
+    if now.month < expiry.month then return false end
+    -- same month
+    if now.day > expiry.day then return true end
+    return false -- sekarang <= expiry => valid
 end
 
--- Validasi key
+-------------------------------------------------
+-- 🔑 Validasi key dari localKeys
+-------------------------------------------------
 local function validateKey(inputKey, keyList, now)
     for _, entry in ipairs(keyList) do
         if entry.key == inputKey then
-            local y, m, d = entry.expiry:match("^(%d+)%-(%d+)%-(%d+)$")
-            local expiry = {year = tonumber(y), month = tonumber(m), day = tonumber(d)}
+            local expiry = parseExpiry(entry.expiry)
+            if not expiry then
+                return false, "invalid_expiry"
+            end
             if isExpired(expiry, now) then
                 return false, "expired"
             else
@@ -73,51 +78,34 @@ local function validateKey(inputKey, keyList, now)
 end
 
 -------------------------------------------------
--- 🔑 SYSTEM LOGIN
+-- 🔑 SYSTEM LOGIN (Key Input) LOKAL
 -------------------------------------------------
 local keyVerified = false
 local expiryDate = nil
 
 local KeyWindow = Rayfield:CreateWindow({
-    Name = "🔑 RAFEEYL Key System",
+    Name = "🔑 RAFEEYL Key System (Local)",
     LoadingTitle = "RAFEEYL Security",
-    LoadingSubtitle = "Verifikasi key dari server"
+    LoadingSubtitle = "Verifikasi key lokal"
 })
 
 local Tab = KeyWindow:CreateTab("Verifikasi", 4483362458)
 
 Tab:CreateInput({
     Name = "Masukkan Key",
-    PlaceholderText = "Contoh: RAFEEYL-ACCESS-123",
+    PlaceholderText = "Contoh: RAFEEYL-LOCAL-TEST",
     RemoveTextAfterFocusLost = false,
     Callback = function(input)
         Rayfield:Notify({
             Title = "🔍 Memeriksa Key...",
-            Content = "Harap tunggu, sedang memverifikasi...",
-            Duration = 2
+            Content = "Harap tunggu...",
+            Duration = 1.5
         })
 
-        local serverNow = getServerDate()
-        if not serverNow then
-            Rayfield:Notify({
-                Title = "⚠️ Gagal Ambil Waktu",
-                Content = "Tidak dapat mengakses server waktu GitHub. Periksa koneksi kamu.",
-                Duration = 4
-            })
-            return
-        end
+        local serverNow = getLocalDate()
+        print("Local date:", serverNow.year, serverNow.month, serverNow.day)
 
-        local keyList = getKeysFromGitHub()
-        if not keyList then
-            Rayfield:Notify({
-                Title = "⚠️ Gagal Ambil Key",
-                Content = "Tidak dapat mengambil data key dari GitHub.",
-                Duration = 4
-            })
-            return
-        end
-
-        local valid, info = validateKey(input, keyList, serverNow)
+        local valid, info = validateKey(input, localKeys, serverNow)
         if valid then
             keyVerified = true
             expiryDate = info
@@ -125,19 +113,25 @@ Tab:CreateInput({
             Rayfield:Notify({
                 Title = "✅ Key Diterima",
                 Content = "Akses disetujui hingga " .. string.format("%02d/%02d/%04d", info.day, info.month, info.year),
-                Duration = 5
+                Duration = 4
             })
 
-            task.delay(0.2, function() -- delay agar KeyWindow sudah destroyed
+            task.delay(0.12, function()
+                -- destroy lalu buka GUI utama
                 KeyWindow:Destroy()
                 loadMainGUI()
             end)
-
         else
             if info == "expired" then
                 Rayfield:Notify({
                     Title = "⏰ Key Kadaluarsa",
                     Content = "Key ini sudah tidak berlaku lagi.",
+                    Duration = 4
+                })
+            elseif info == "invalid_expiry" then
+                Rayfield:Notify({
+                    Title = "❌ Format Expiry Salah",
+                    Content = "Periksa format expiry pada daftar key (YYYY-MM-DD).",
                     Duration = 4
                 })
             else
@@ -155,7 +149,10 @@ Tab:CreateInput({
 -- ✈️ MAIN SCRIPT (Fly + Teleport)
 -------------------------------------------------
 function loadMainGUI()
-    if not keyVerified then return end
+    if not keyVerified then
+        warn("Key belum diverifikasi. GUI utama tidak akan ditampilkan.")
+        return
+    end
 
     local waypoints = {
         {name = "Mount Cicok", pos = Vector3.new(-161.89, 1598.15, -2141.80)},
@@ -177,12 +174,17 @@ function loadMainGUI()
         local hrp = getHRP()
         if hrp then
             hrp.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+        else
+            Rayfield:Notify({ Title = "⚠️ Gagal Teleport", Content = "Character belum siap.", Duration = 2 })
         end
     end
 
     local function startFly()
         local hrp = getHRP()
-        if not hrp then return end
+        if not hrp then
+            Rayfield:Notify({ Title = "⚠️ Gagal Fly", Content = "Character belum siap.", Duration = 2 })
+            return
+        end
         flying = true
 
         bodyGyro = Instance.new("BodyGyro")
@@ -264,6 +266,12 @@ function loadMainGUI()
             Callback = function()
                 teleportTo(wp.pos)
             end
-        end)
+        })
     end
 end
+
+-- OPTIONAL: debug bypass (langsung buka GUI tanpa input key)
+-- Uncomment jika ingin skip verifikasi sementara:
+-- keyVerified = true
+-- expiryDate = { day = 31, month = 12, year = 2099 }
+-- loadMainGUI()

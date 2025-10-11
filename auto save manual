@@ -1,5 +1,4 @@
--- RAFEEYL Auto Teleport (Local Version - Rapih)
--- Key & Waktu Lokal, GUI utama langsung muncul setelah key valid
+-- RAFEEYL Auto Teleport (Local Version - Fixed)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -59,68 +58,68 @@ end
 -------------------------------------------------
 local keyVerified = false
 local expiryDate = nil
+local KeyWindow = nil -- Simpan agar bisa cek validitas sebelum destroy
 
-local KeyWindow = Rayfield:CreateWindow({
-    Name = "🔑 RAFEEYL Key System",
-    LoadingTitle = "RAFEEYL Security",
-    LoadingSubtitle = "Verifikasi key lokal"
-})
+local function showKeyWindow()
+    KeyWindow = Rayfield:CreateWindow({
+        Name = "🔑 RAFEEYL Key System",
+        LoadingTitle = "RAFEEYL Security",
+        LoadingSubtitle = "Verifikasi key lokal"
+    })
 
-local Tab = KeyWindow:CreateTab("Verifikasi", 4483362458)
+    local Tab = KeyWindow:CreateTab("Verifikasi", 4483362458)
 
-Tab:CreateInput({
-    Name = "Masukkan Key",
-    PlaceholderText = "Contoh: rafelll",
-    RemoveTextAfterFocusLost = false,
-    Callback = function(input)
-        Rayfield:Notify({
-            Title = "🔍 Memeriksa Key...",
-            Content = "Harap tunggu...",
-            Duration = 1.5
-        })
-
-        local now = getLocalDate()
-        local valid, info = validateKey(input, localKeys, now)
-
-        if valid then
-            keyVerified = true
-            expiryDate = info
-
+    Tab:CreateInput({
+        Name = "Masukkan Key",
+        PlaceholderText = "Contoh: rafelll",
+        RemoveTextAfterFocusLost = false,
+        Callback = function(input)
             Rayfield:Notify({
-                Title = "✅ Key Diterima",
-                Content = "Akses disetujui hingga " ..
-                    string.format("%02d/%02d/%04d", info.day, info.month, info.year),
-                Duration = 4
+                Title = "🔍 Memeriksa Key...",
+                Content = "Harap tunggu...",
+                Duration = 1.5
             })
 
-            -- Hancurkan window lama & buka GUI utama
-            KeyWindow:Destroy()
-            task.wait(0.25)
-            loadMainGUI()
+            local now = getLocalDate()
+            local valid, info = validateKey(input, localKeys, now)
+            if valid then
+                keyVerified = true
+                expiryDate = info
+                Rayfield:Notify({
+                    Title = "✅ Key Diterima",
+                    Content = "Akses disetujui hingga " ..
+                        string.format("%02d/%02d/%04d", info.day, info.month, info.year),
+                    Duration = 4
+                })
 
-        else
-            if info == "expired" then
-                Rayfield:Notify({
-                    Title = "⏰ Key Kadaluarsa",
-                    Content = "Key sudah kadaluarsa.",
-                    Duration = 4
-                })
-            elseif info == "invalid_expiry" then
-                Rayfield:Notify({
-                    Title = "❌ Format Expiry Salah",
-                    Content = "Periksa format expiry pada key.",
-                    Duration = 4
-                })
+                -- Hide window dulu, jangan destroy
+                KeyWindow.Visible = false
+                task.wait(0.2)
+                loadMainGUI()
             else
-                Rayfield:Notify({
-                    Title = "❌ Key Tidak Valid",
-                    Content = "Periksa kembali key kamu.",
-                    Duration = 3
-                })
+                if info == "expired" then
+                    Rayfield:Notify({
+                        Title = "⏰ Key Kadaluarsa",
+                        Content = "Key sudah kadaluarsa.",
+                        Duration = 4
+                    })
+                elseif info == "invalid_expiry" then
+                    Rayfield:Notify({
+                        Title = "❌ Format Expiry Salah",
+                        Content = "Periksa format expiry pada key.",
+                        Duration = 4
+                    })
+                else
+                    Rayfield:Notify({
+                        Title = "❌ Key Tidak Valid",
+                        Content = "Periksa kembali key kamu.",
+                        Duration = 3
+                    })
+                end
             end
         end
-    end
-})
+    })
+end
 
 -------------------------------------------------
 -- ✈️ MAIN GUI (Fly + Teleport)
@@ -238,3 +237,6 @@ function loadMainGUI()
         })
     end
 end
+
+-- Mulai tampilan key GUI
+showKeyWindow()

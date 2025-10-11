@@ -212,16 +212,24 @@ function loadMainGUI()
             string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })
 
-    local Tab = Window:CreateTab("Teleport", 4483362458)
+    -- Tab Teleport (tombol waypoint)
+    local TabTeleport = Window:CreateTab("Teleport", 4483362458)
+    for _, wp in ipairs(waypoints) do
+        TabTeleport:CreateButton({
+            Name = "🌍 Teleport ke: " .. wp.name,
+            Callback = function() teleportTo(wp.pos) end
+        })
+    end
 
-    Tab:CreateButton({
+    -- Tab Kecepatan (fly ON/OFF + slider)
+    local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
+    TabSpeed:CreateButton({
         Name = "🕊️ Fly (ON/OFF)",
         Callback = function()
             if flying then stopFly() else startFly() end
         end
     })
-
-    Tab:CreateSlider({
+    TabSpeed:CreateSlider({
         Name = "⚡ Kecepatan Fly",
         Range = {10, 200},
         Increment = 5,
@@ -229,13 +237,6 @@ function loadMainGUI()
         CurrentValue = flySpeed,
         Callback = function(v) flySpeed = v end
     })
-
-    for _, wp in ipairs(waypoints) do
-        Tab:CreateButton({
-            Name = "🌍 Teleport ke: " .. wp.name,
-            Callback = function() teleportTo(wp.pos) end
-        })
-    end
 end
 
 -- Mulai tampilan key GUI

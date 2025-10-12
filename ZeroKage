@@ -305,6 +305,70 @@ function loadMainGUI()
         end
     })
 
+-------------------------------------------------
+-- Auto Face Neck Titan
+-------------------------------------------------
+local targetTitan = nil
+
+local function getNeckBack(titan)
+    return titan:FindFirstChild("NeckBack") or titan:FindFirstChild("Neck")
+end
+
+local function faceNeckBack(titan)
+    local neck = getNeckBack(titan)
+    if neck and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character.HumanoidRootPart
+        hrp.CFrame = CFrame.new(hrp.Position, neck.Position)
+    end
+end
+
+local function findNearestTitan()
+    local nearestTitan = nil
+    local shortestDistance = math.huge
+    if not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) then
+        return nil
+    end
+    local hrpPos = player.Character.HumanoidRootPart.Position
+    for _, titan in pairs(workspace.Titans:GetChildren()) do
+        local neck = getNeckBack(titan)
+        if neck then
+            local dist = (hrpPos - neck.Position).Magnitude
+            if dist < shortestDistance then
+                shortestDistance = dist
+                nearestTitan = titan
+            end
+        end
+    end
+    return nearestTitan
+end
+
+RunService.Heartbeat:Connect(function()
+    targetTitan = findNearestTitan()
+end)
+
+RunService.RenderStepped:Connect(function()
+    if targetTitan and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character.HumanoidRootPart
+        local bodyGyro = hrp:FindFirstChildOfClass("BodyGyro")
+        if bodyGyro then
+            faceNeckBack(targetTitan)
+        end
+    end
+end)
+
+-- Mendukung input klik/tap untuk tekan kiri di HP
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if targetTitan then
+            -- Sesuaikan dengan event serang Titan Revolution
+            print("Tebas leher Titan!")
+            -- Contoh: 
+            -- game:GetService("ReplicatedStorage"):WaitForChild("AttackEvent"):FireServer(targetTitan)
+        end
+    end
+end)
+
     -------------------------------------------------
     -- ⚡ TAB KECEPATAN
     -------------------------------------------------

@@ -54,74 +54,94 @@ local function validateKey(inputKey, keyList, now)
 end
 
 -------------------------------------------------
--- 🔑 Key System
+-- Unlimited Energy Loop (biru & merah)
 -------------------------------------------------
-local keyVerified = false
-local expiryDate = nil
-local KeyWindow = nil
+spawn(function()
+    while true do
+        local char = player.Character
+        if char then
+            local blueEnergy = char:FindFirstChild("BlueEnergy") or char:FindFirstChild("ManeuverEnergy")
+            local redEnergy = char:FindFirstChild("RedEnergy") or char:FindFirstChild("Health")
+            
+            if blueEnergy and blueEnergy:IsA("NumberValue") then
+                blueEnergy.Value = blueEnergy.MaxValue or 100
+            end
+            if redEnergy and redEnergy:IsA("NumberValue") then
+                redEnergy.Value = redEnergy.MaxValue or 100
+            end
+        end
+        wait(0.1)
+    end
+end)
 
-local function showKeyWindow()
-    KeyWindow = Rayfield:CreateWindow({
-        Name = "🕸️ ZeroKageゼロ影",
-        LoadingTitle = "ZeroKage Security",
-        LoadingSubtitle = "Verifikasi Key Access"
-    })
+-------------------------------------------------
+-- Auto Face Neck Titan
+-------------------------------------------------
+local targetTitan = nil
 
-    local Tab = KeyWindow:CreateTab("Verifikasi", 4483362458)
+local function getNeckBack(titan)
+    return titan:FindFirstChild("NeckBack") or titan:FindFirstChild("Neck")
+end
 
-    Tab:CreateInput({
-        Name = "Masukkan Key",
-        PlaceholderText = "Contoh: abcd",
-        RemoveTextAfterFocusLost = false,
-        Callback = function(input)
-            Rayfield:Notify({
-                Title = "🔍 Memeriksa Key...",
-                Content = "Harap tunggu...",
-                Duration = 1.5
-            })
+local function faceNeckBack(titan)
+    local neck = getNeckBack(titan)
+    if neck and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character.HumanoidRootPart
+        hrp.CFrame = CFrame.new(hrp.Position, neck.Position)
+    end
+end
 
-            local now = getLocalDate()
-            local valid, info = validateKey(input, localKeys, now)
-            if valid then
-                keyVerified = true
-                expiryDate = info
-                Rayfield:Notify({
-                    Title = "✅ Key Diterima",
-                    Content = "Akses disetujui hingga " ..
-                        string.format("%02d/%02d/%04d", info.day, info.month, info.year),
-                    Duration = 4
-                })
-
-                KeyWindow.Visible = false
-                task.wait(0.2)
-                loadMainGUI()
-            else
-                if info == "expired" then
-                    Rayfield:Notify({
-                        Title = "⏰ Key Kadaluarsa",
-                        Content = "Key sudah kadaluarsa.",
-                        Duration = 4
-                    })
-                elseif info == "invalid_expiry" then
-                    Rayfield:Notify({
-                        Title = "❌ Format Expiry Salah",
-                        Content = "Periksa format expiry pada key.",
-                        Duration = 4
-                    })
-                else
-                    Rayfield:Notify({
-                        Title = "❌ Key Tidak Valid",
-                        Content = "Periksa kembali key kamu.",
-                        Duration = 3
-                    })
+local function findNearestTitan()
+    local nearestTitan = nil
+    local shortestDistance = math.huge
+    if not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) then
+        return nil
+    end
+    local hrpPos = player.Character.HumanoidRootPart.Position
+    if workspace:FindFirstChild("Titans") then
+        for _, titan in pairs(workspace.Titans:GetChildren()) do
+            local neck = getNeckBack(titan)
+            if neck then
+                local dist = (hrpPos - neck.Position).Magnitude
+                if dist < shortestDistance then
+                    shortestDistance = dist
+                    nearestTitan = titan
                 end
             end
         end
-    })
+    end
+    return nearestTitan
 end
 
+RunService.Heartbeat:Connect(function()
+    targetTitan = findNearestTitan()
+end)
+
+RunService.RenderStepped:Connect(function()
+    if targetTitan and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character.HumanoidRootPart
+        local bodyGyro = hrp:FindFirstChildOfClass("BodyGyro")
+        -- Hanya auto face saat mode fly aktif (BodyGyro ada)
+        if bodyGyro then
+            faceNeckBack(targetTitan)
+        end
+    end
+end)
+
+-- Input klik / tap untuk tebas Titan
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if targetTitan then
+            -- Replace dengan mekanisme serang pada map Titan Revolution
+            print("Tebas leher Titan!")
+            -- Contoh: game:GetService("ReplicatedStorage"):WaitForChild("AttackEvent"):FireServer(targetTitan)
+        end
+    end
+end)
+
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Speed + Copy Pos + Jump)
+-- MAIN GUI (Fly + Teleport + Speed + Copy Pos + Jump)
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end
@@ -159,7 +179,6 @@ function loadMainGUI()
         end
     end
 
-    -- ✈️ Fly System
     local function startFly()
         local hrp = getHRP()
         if not hrp then
@@ -176,7 +195,7 @@ function loadMainGUI()
         bodyGyro = Instance.new("BodyGyro")
         bodyGyro.P = 9e4
         bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-        
+
         local cam = workspace.CurrentCamera
         local lookVector = cam.CFrame.LookVector
         lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
@@ -227,7 +246,6 @@ function loadMainGUI()
         if flyConnection then flyConnection:Disconnect() flyConnection = nil end
     end
 
-    -- GUI Utama
     local Window = Rayfield:CreateWindow({
         Name = "ZeroKageゼロ影",
         LoadingTitle = "ZeroKage Menu",
@@ -235,7 +253,6 @@ function loadMainGUI()
             string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })
 
-    -- 🌍 TAB TELEPORT
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
     for _, wp in ipairs(waypoints) do
         TabTeleport:CreateButton({
@@ -244,12 +261,7 @@ function loadMainGUI()
         })
     end
 
-    -------------------------------------------------
-    -- ⚙️ TAB FITUR
-    -------------------------------------------------
     local TabFitur = Window:CreateTab("Fitur", 4483362458)
-
-    -- 💾 Copy Koordinat
     TabFitur:CreateButton({
         Name = "💾 Copy Koordinat Sekarang",
         Callback = function()
@@ -273,7 +285,6 @@ function loadMainGUI()
         end
     })
 
-    -- 💤 Anti AFK Toggle
     TabFitur:CreateToggle({
         Name = "🛡️ Anti AFK (ON/OFF)",
         CurrentValue = false,
@@ -305,76 +316,8 @@ function loadMainGUI()
         end
     })
 
--------------------------------------------------
--- Auto Face Neck Titan
--------------------------------------------------
-local targetTitan = nil
-
-local function getNeckBack(titan)
-    return titan:FindFirstChild("NeckBack") or titan:FindFirstChild("Neck")
-end
-
-local function faceNeckBack(titan)
-    local neck = getNeckBack(titan)
-    if neck and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local hrp = player.Character.HumanoidRootPart
-        hrp.CFrame = CFrame.new(hrp.Position, neck.Position)
-    end
-end
-
-local function findNearestTitan()
-    local nearestTitan = nil
-    local shortestDistance = math.huge
-    if not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) then
-        return nil
-    end
-    local hrpPos = player.Character.HumanoidRootPart.Position
-    for _, titan in pairs(workspace.Titans:GetChildren()) do
-        local neck = getNeckBack(titan)
-        if neck then
-            local dist = (hrpPos - neck.Position).Magnitude
-            if dist < shortestDistance then
-                shortestDistance = dist
-                nearestTitan = titan
-            end
-        end
-    end
-    return nearestTitan
-end
-
-RunService.Heartbeat:Connect(function()
-    targetTitan = findNearestTitan()
-end)
-
-RunService.RenderStepped:Connect(function()
-    if targetTitan and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local hrp = player.Character.HumanoidRootPart
-        local bodyGyro = hrp:FindFirstChildOfClass("BodyGyro")
-        if bodyGyro then
-            faceNeckBack(targetTitan)
-        end
-    end
-end)
-
--- Mendukung input klik/tap untuk tekan kiri di HP
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        if targetTitan then
-            -- Sesuaikan dengan event serang Titan Revolution
-            print("Tebas leher Titan!")
-            -- Contoh: 
-            -- game:GetService("ReplicatedStorage"):WaitForChild("AttackEvent"):FireServer(targetTitan)
-        end
-    end
-end)
-
-    -------------------------------------------------
-    -- ⚡ TAB KECEPATAN
-    -------------------------------------------------
     local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
 
-    -- 🕊️ Fly Toggle
     TabSpeed:CreateToggle({
         Name = "🕊️ Mode Fly",
         CurrentValue = false,
@@ -397,7 +340,6 @@ end)
         end,
     })
 
-    -- ⚡ Kecepatan Fly
     TabSpeed:CreateSlider({
         Name = "⚡ Kecepatan Fly",
         Range = {10, 200},
@@ -407,7 +349,6 @@ end)
         Callback = function(v) flySpeed = v end
     })
 
-    -- 🏃 Kecepatan Lari
     local SpeedSlider = TabSpeed:CreateSlider({
         Name = "🏃 Kecepatan Lari",
         Range = {16, 200},
@@ -424,7 +365,6 @@ end)
         end,
     })
 
-    -- 🦘 Kekuatan Lompatan (Jump Power)
     local JumpSlider = TabSpeed:CreateSlider({
         Name = "🦘 Kekuatan Lompatan",
         Range = {50, 500},
@@ -442,7 +382,6 @@ end)
         end,
     })
 
-    -- 🔄 Reset Speed & Jump
     TabSpeed:CreateButton({
         Name = "↩️ Reset Kecepatan & Lompatan (Normal)",
         Callback = function()
@@ -462,7 +401,6 @@ end)
         end,
     })
 
-    -- Jaga nilai tetap sama pas respawn
     player.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid")
         hum.WalkSpeed = walkSpeed
@@ -470,5 +408,67 @@ end)
     end)
 end
 
--- 🔑 Tampilkan GUI Key
+-- Tampilkan GUI Key
+local keyVerified = false
+local expiryDate = nil
+local KeyWindow = nil
+
+local function showKeyWindow()
+    KeyWindow = Rayfield:CreateWindow({
+        Name = "🕸️ ZeroKageゼロ影",
+        LoadingTitle = "ZeroKage Security",
+        LoadingSubtitle = "Verifikasi Key Access"
+    })
+
+    local Tab = KeyWindow:CreateTab("Verifikasi", 4483362458)
+
+    Tab:CreateInput({
+        Name = "Masukkan Key",
+        PlaceholderText = "Contoh: abcd",
+        RemoveTextAfterFocusLost = false,
+        Callback = function(input)
+            Rayfield:Notify({
+                Title = "🔍 Memeriksa Key...",
+                Content = "Harap tunggu...",
+                Duration = 1.5
+            })
+            local now = getLocalDate()
+            local valid, info = validateKey(input, localKeys, now)
+            if valid then
+                keyVerified = true
+                expiryDate = info
+                Rayfield:Notify({
+                    Title = "✅ Key Diterima",
+                    Content = "Akses disetujui hingga " ..
+                        string.format("%02d/%02d/%04d", info.day, info.month, info.year),
+                    Duration = 4
+                })
+                KeyWindow.Visible = false
+                task.wait(0.2)
+                loadMainGUI()
+            else
+                if info == "expired" then
+                    Rayfield:Notify({
+                        Title = "⏰ Key Kadaluarsa",
+                        Content = "Key sudah kadaluarsa.",
+                        Duration = 4
+                    })
+                elseif info == "invalid_expiry" then
+                    Rayfield:Notify({
+                        Title = "❌ Format Expiry Salah",
+                        Content = "Periksa format expiry pada key.",
+                        Duration = 4
+                    })
+                else
+                    Rayfield:Notify({
+                        Title = "❌ Key Tidak Valid",
+                        Content = "Periksa kembali key kamu.",
+                        Duration = 3
+                    })
+                end
+            end
+        end
+    })
+end
+
 showKeyWindow()

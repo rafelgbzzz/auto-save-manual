@@ -4,26 +4,38 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- One Hit Kill Toggle Variable
 local oneHitEnabled = false
 
--- Fungsi One Hit Kill untuk bagian tubuh titan
+-- RemoteEvent untuk kill titan
+local KillTitanEvent = ReplicatedStorage:WaitForChild("KillTitanEvent")
+
+-- Fungsi onHit untuk teleport serangan ke tengkuk titan
 local function onHit(part)
     if not oneHitEnabled then return end
+    
     local titan = part.Parent
     if titan and titan:FindFirstChild("Humanoid") then
-        titan.Humanoid.Health = 0 -- langsung bunuh titan
+        -- Cari tengkuk titan (sesuaikan nama part tengkuk di game)
+        local nape = titan:FindFirstChild("Nape") or titan:FindFirstChild("HeadBack") or titan:FindFirstChild("Neck")
+        
+        if nape then
+            -- Kirim event ke server agar serangan diproses seolah tengkuk yang kena
+            KillTitanEvent:FireServer(titan, nape.Position)
+        else
+            KillTitanEvent:FireServer(titan, part.Position)
+        end
     end
 end
 
--- Sambungkan onHit ke objek senjata pemain (pastikan script berada di pedang atau skill weapon)
--- Jika lokasi script berbeda, sesuaikan target ini
+-- Sambungkan fungsi onHit ke senjata pemain (taruh di sini)
 if script.Parent then
     script.Parent.Touched:Connect(onHit)
 end
 
--- Toggle enable one hit kill dengan tombol "F"
+-- Toggle aktif/nonaktif one hit kill dengan tombol F (PC)
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.F then
@@ -37,7 +49,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- Load Rayfield aman
+-- Load Rayfield GUI
 local ok, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 end)

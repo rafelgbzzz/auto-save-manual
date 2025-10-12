@@ -4,52 +4,8 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- One Hit Kill Toggle Variable
-local oneHitEnabled = false
-
--- RemoteEvent untuk kill titan
-local KillTitanEvent = ReplicatedStorage:WaitForChild("KillTitanEvent")
-
--- Fungsi onHit untuk teleport serangan ke tengkuk titan
-local function onHit(part)
-    if not oneHitEnabled then return end
-    
-    local titan = part.Parent
-    if titan and titan:FindFirstChild("Humanoid") then
-        -- Cari tengkuk titan (sesuaikan nama part tengkuk di game)
-        local nape = titan:FindFirstChild("Nape") or titan:FindFirstChild("HeadBack") or titan:FindFirstChild("Neck")
-        
-        if nape then
-            -- Kirim event ke server agar serangan diproses seolah tengkuk yang kena
-            KillTitanEvent:FireServer(titan, nape.Position)
-        else
-            KillTitanEvent:FireServer(titan, part.Position)
-        end
-    end
-end
-
--- Sambungkan fungsi onHit ke senjata pemain (taruh di sini)
-if script.Parent then
-    script.Parent.Touched:Connect(onHit)
-end
-
--- Toggle aktif/nonaktif one hit kill dengan tombol F (PC)
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.F then
-        oneHitEnabled = not oneHitEnabled
-        print("One hit kill toggled via keyboard: ", oneHitEnabled)
-        Rayfield:Notify({
-            Title = "One Hit Kill",
-            Content = (oneHitEnabled and "Diaktifkan via keyboard" or "Dinonaktifkan via keyboard"),
-            Duration = 2
-        })
-    end
-end)
-
--- Load Rayfield GUI
+-- Load Rayfield aman
 local ok, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 end)
@@ -292,21 +248,6 @@ function loadMainGUI()
     -- ⚙️ TAB FITUR
     -------------------------------------------------
     local TabFitur = Window:CreateTab("Fitur", 4483362458)
-
-    -- One Hit Kill Toggle di Tab Fitur (untuk HP dan GUI)
-    TabFitur:CreateToggle({
-        Name = "One Hit Kill Titans (Toggle ON/OFF)",
-        CurrentValue = false,
-        Callback = function(value)
-            oneHitEnabled = value
-            Rayfield:Notify({
-                Title = "One Hit Kill",
-                Content = (value and "Diaktifkan" or "Dinonaktifkan"),
-                Duration = 2
-            })
-            print("One hit kill toggled via GUI: ", oneHitEnabled)
-        end
-    })
 
     -- 💾 Copy Koordinat
     TabFitur:CreateButton({

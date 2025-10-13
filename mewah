@@ -1,127 +1,101 @@
--- ZeroKageゼロ影
--- Speed Run Feature With Elegant UI
-
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Create ScreenGui
+-- Membuat ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ZeroKageゼロ影"
+screenGui.Name = "ZeroKageSidebar"
 screenGui.Parent = playerGui
 
--- Create Main Frame
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 400, 0, 220)
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -110)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-mainFrame.BorderSizePixel = 0
-mainFrame.BackgroundTransparency = 0.25
-mainFrame.Parent = screenGui
+-- Membuat frame sidebar di kiri
+local sidebar = Instance.new("Frame")
+sidebar.Name = "Sidebar"
+sidebar.Size = UDim2.new(0, 200, 1, 0) -- Lebar 200px, tinggi penuh layar
+sidebar.Position = UDim2.new(0, 0, 0, 0) -- di kiri atas
+sidebar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+sidebar.Parent = screenGui
 
--- Rounded corners
-local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 20)
-uiCorner.Parent = mainFrame
+-- Membuat header label
+local header = Instance.new("TextLabel")
+header.Size = UDim2.new(1, 0, 0, 50)
+header.Position = UDim2.new(0, 0, 0, 0)
+header.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+header.TextColor3 = Color3.new(1,1,1)
+header.Text = "ZeroKageゼロ影"
+header.Font = Enum.Font.SourceSansBold
+header.TextSize = 24
+header.Parent = sidebar
 
--- Create Title
-local title = Instance.new("TextLabel")
-title.Text = "ZeroKageゼロ影"
-title.Font = Enum.Font.GothamBold
-title.TextColor3 = Color3.fromRGB(205, 180, 255)
-title.TextSize = 26
-title.BackgroundTransparency = 1
-title.Size = UDim2.new(1, 0, 0, 48)
-title.Parent = mainFrame
-
--- Separator line
-local sep = Instance.new("Frame")
-sep.Size = UDim2.new(1, -40, 0, 2)
-sep.Position = UDim2.new(0, 20, 0, 54)
-sep.BackgroundColor3 = Color3.fromRGB(65, 50, 110)
-sep.BorderSizePixel = 0
-sep.Parent = mainFrame
-
--- Speed Run Label
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Text = "Speed Run"
-speedLabel.Font = Enum.Font.Gotham
-speedLabel.TextColor3 = Color3.fromRGB(255, 235, 170)
-speedLabel.TextSize = 20
-speedLabel.BackgroundTransparency = 1
-speedLabel.Position = UDim2.new(0, 28, 0, 70)
-speedLabel.Size = UDim2.new(0, 120, 0, 32)
-speedLabel.TextXAlignment = Enum.TextXAlignment.Left
-speedLabel.Parent = mainFrame
-
--- Slider
-local slider = Instance.new("Frame")
-slider.Size = UDim2.new(0, 260, 0, 12)
-slider.Position = UDim2.new(0, 28, 0, 110)
-slider.BackgroundColor3 = Color3.fromRGB(90, 70, 140)
-slider.BorderSizePixel = 0
-slider.Parent = mainFrame
-
-local sliderCorner = Instance.new("UICorner")
-sliderCorner.CornerRadius = UDim.new(1, 0)
-sliderCorner.Parent = slider
-
-local handle = Instance.new("Frame")
-handle.Size = UDim2.new(0, 16, 0, 24)
-handle.Position = UDim2.new(0, 0, 0.5, -6)
-handle.BackgroundColor3 = Color3.fromRGB(205, 180, 255)
-handle.Parent = slider
-
-local handleCorner = Instance.new("UICorner")
-handleCorner.CornerRadius = UDim.new(1, 0)
-handleCorner.Parent = handle
-
-local valueLabel = Instance.new("TextLabel")
-valueLabel.Text = "16"
-valueLabel.Font = Enum.Font.Gotham
-valueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-valueLabel.TextSize = 16
-valueLabel.BackgroundTransparency = 1
-valueLabel.Position = UDim2.new(0, 300, 0, 100)
-valueLabel.Size = UDim2.new(0, 60, 0, 24)
-valueLabel.Parent = mainFrame
-
--- Slider Functionality
-local UIS = game:GetService("UserInputService")
-local dragging = false
-local minSpeed = 16
-local maxSpeed = 100
-
-local function setSpeed(val)
-    local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-    if hum then
-        hum.WalkSpeed = val
-    end
-    valueLabel.Text = tostring(val)
+-- Fungsi membuat tombol
+local function buatTombol(text, posisiY)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, -20, 0, 40)
+    button.Position = UDim2.new(0, 10, 0, posisiY)
+    button.Text = text
+    button.Font = Enum.Font.SourceSans
+    button.TextSize = 20
+    button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    button.TextColor3 = Color3.new(1,1,1)
+    button.Parent = sidebar
+    return button
 end
 
-handle.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-    end
+-- Tombol-tombol seperti di gambar
+local tombolVerifikasi = buatTombol("Verifikasi", 60)
+local tombolTeleport = buatTombol("Teleport", 110)
+local tombolFitur = buatTombol("Fitur", 160)
+local tombolKecepatan = buatTombol("Kecepatan", 210)
+
+-- Membuat sub-menu Kecepatan saat tombol kecepatan diklik
+local subMenu = Instance.new("Frame")
+subMenu.Size = UDim2.new(1, -20, 0, 150)
+subMenu.Position = UDim2.new(0, 10, 0, 260)
+subMenu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+subMenu.Visible = false
+subMenu.Parent = sidebar
+
+local labelFly = Instance.new("TextLabel")
+labelFly.Text = "Kecepatan Fly"
+labelFly.Size = UDim2.new(1, 0, 0, 30)
+labelFly.TextColor3 = Color3.new(1,1,1)
+labelFly.BackgroundTransparency = 1
+labelFly.Parent = subMenu
+
+local sliderFly = Instance.new("TextButton") -- simplifikasi sebagai tombol ubah
+sliderFly.Text = "60 Speed"
+sliderFly.Size = UDim2.new(1, -20, 0, 30)
+sliderFly.Position = UDim2.new(0, 10, 0, 40)
+sliderFly.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+sliderFly.TextColor3 = Color3.new(1,1,1)
+sliderFly.Parent = subMenu
+
+local labelRun = Instance.new("TextLabel")
+labelRun.Text = "Kecepatan Lari"
+labelRun.Size = UDim2.new(1, 0, 0, 30)
+labelRun.Position = UDim2.new(0, 0, 0, 80)
+labelRun.TextColor3 = Color3.new(1,1,1)
+labelRun.BackgroundTransparency = 1
+labelRun.Parent = subMenu
+
+local sliderRun = Instance.new("TextButton") -- simplifikasi sebagai tombol ubah
+sliderRun.Text = "16 Speed"
+sliderRun.Size = UDim2.new(1, -20, 0, 30)
+sliderRun.Position = UDim2.new(0, 10, 0, 120)
+sliderRun.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+sliderRun.TextColor3 = Color3.new(1,1,1)
+sliderRun.Parent = subMenu
+
+-- Toggle submenu kecepatan
+tombolKecepatan.MouseButton1Click:Connect(function()
+    subMenu.Visible = not subMenu.Visible
 end)
 
-handle.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
+-- Contoh fungsi klik tombol lainnya (dummy)
+tombolVerifikasi.MouseButton1Click:Connect(function()
+    print("Tombol Verifikasi diklik")
 end)
-
-UIS.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local mouseX = UIS:GetMouseLocation().X
-        local absPos = slider.AbsolutePosition.X
-        local relX = math.clamp(mouseX - absPos, 0, slider.AbsoluteSize.X - handle.AbsoluteSize.X)
-        handle.Position = UDim2.new(0, relX, 0.5, -6)
-        local val = math.floor(minSpeed + ((relX / (slider.AbsoluteSize.X - handle.AbsoluteSize.X)) * (maxSpeed-minSpeed)))
-        setSpeed(val)
-    end
+tombolTeleport.MouseButton1Click:Connect(function()
+    print("Tombol Teleport diklik")
 end)
-
--- Default Value
-setSpeed(16)
+tombolFitur.MouseButton1Click:Connect(function()
+    print("Tombol Fitur diklik")
+end)

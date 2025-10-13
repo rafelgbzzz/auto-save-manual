@@ -1,85 +1,127 @@
--- Buat GUI mewah dan elegan
-local player = game.Players.LocalPlayer
+-- ZeroKageゼロ影
+-- Speed Run Feature With Elegant UI
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Membuat ScreenGui
+-- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "LuxSpeedGui"
+screenGui.Name = "ZeroKageゼロ影"
 screenGui.Parent = playerGui
 
--- Membuat background Frame dengan desain elegan
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 150)
-frame.Position = UDim2.new(0.5, -150, 0.8, 0)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-frame.BackgroundTransparency = 0.2
-frame.BorderSizePixel = 0
-frame.Parent = screenGui
+-- Create Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 400, 0, 220)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -110)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+mainFrame.BorderSizePixel = 0
+mainFrame.BackgroundTransparency = 0.25
+mainFrame.Parent = screenGui
 
--- Membuat efek blur pada frame dengan UIStroke dan UICorner untuk kesan mewah
-local uiStroke = Instance.new("UIStroke")
-uiStroke.Color = Color3.fromRGB(255, 255, 255)
-uiStroke.Thickness = 1
-uiStroke.Transparency = 0.7
-uiStroke.Parent = frame
-
+-- Rounded corners
 local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 12)
-uiCorner.Parent = frame
+uiCorner.CornerRadius = UDim.new(0, 20)
+uiCorner.Parent = mainFrame
 
--- Membuat TextLabel judul dengan font mewah
+-- Create Title
 local title = Instance.new("TextLabel")
-title.Text = "Speed Run"
+title.Text = "ZeroKageゼロ影"
 title.Font = Enum.Font.GothamBold
-title.TextSize = 28
-title.TextColor3 = Color3.fromRGB(255, 215, 0) -- Gold
+title.TextColor3 = Color3.fromRGB(205, 180, 255)
+title.TextSize = 26
 title.BackgroundTransparency = 1
-title.Size = UDim2.new(1, 0, 0, 50)
-title.Position = UDim2.new(0, 0, 0, 10)
-title.Parent = frame
+title.Size = UDim2.new(1, 0, 0, 48)
+title.Parent = mainFrame
 
--- Membuat Toggle Button untuk fitur Speed Run
-local speedButton = Instance.new("TextButton")
-speedButton.Text = "Toggle Speed Run"
-speedButton.Font = Enum.Font.GothamSemibold
-speedButton.TextSize = 20
-speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-speedButton.Size = UDim2.new(0.8, 0, 0, 40)
-speedButton.Position = UDim2.new(0.1, 0, 0.6, 0)
-speedButton.AutoButtonColor = true
-speedButton.Parent = frame
+-- Separator line
+local sep = Instance.new("Frame")
+sep.Size = UDim2.new(1, -40, 0, 2)
+sep.Position = UDim2.new(0, 20, 0, 54)
+sep.BackgroundColor3 = Color3.fromRGB(65, 50, 110)
+sep.BorderSizePixel = 0
+sep.Parent = mainFrame
 
-local speedActive = false
-local normalSpeed = 16 -- Default walk speed
-local runSpeed = 50 -- Speed run value, cepat
+-- Speed Run Label
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Text = "Speed Run"
+speedLabel.Font = Enum.Font.Gotham
+speedLabel.TextColor3 = Color3.fromRGB(255, 235, 170)
+speedLabel.TextSize = 20
+speedLabel.BackgroundTransparency = 1
+speedLabel.Position = UDim2.new(0, 28, 0, 70)
+speedLabel.Size = UDim2.new(0, 120, 0, 32)
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = mainFrame
 
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
+-- Slider
+local slider = Instance.new("Frame")
+slider.Size = UDim2.new(0, 260, 0, 12)
+slider.Position = UDim2.new(0, 28, 0, 110)
+slider.BackgroundColor3 = Color3.fromRGB(90, 70, 140)
+slider.BorderSizePixel = 0
+slider.Parent = mainFrame
 
-local function toggleSpeedRun()
-    if speedActive == false then
-        speedActive = true
-        -- Efek flu visual bisa ditambahkan dengan blur atau efek transparansi di character layer jika mau, tapi disini simple speed
-        humanoid.WalkSpeed = runSpeed
-        speedButton.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-        speedButton.Text = "Speed Run ON"
-    else
-        speedActive = false
-        humanoid.WalkSpeed = normalSpeed
-        speedButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        speedButton.Text = "Speed Run OFF"
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(1, 0)
+sliderCorner.Parent = slider
+
+local handle = Instance.new("Frame")
+handle.Size = UDim2.new(0, 16, 0, 24)
+handle.Position = UDim2.new(0, 0, 0.5, -6)
+handle.BackgroundColor3 = Color3.fromRGB(205, 180, 255)
+handle.Parent = slider
+
+local handleCorner = Instance.new("UICorner")
+handleCorner.CornerRadius = UDim.new(1, 0)
+handleCorner.Parent = handle
+
+local valueLabel = Instance.new("TextLabel")
+valueLabel.Text = "16"
+valueLabel.Font = Enum.Font.Gotham
+valueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+valueLabel.TextSize = 16
+valueLabel.BackgroundTransparency = 1
+valueLabel.Position = UDim2.new(0, 300, 0, 100)
+valueLabel.Size = UDim2.new(0, 60, 0, 24)
+valueLabel.Parent = mainFrame
+
+-- Slider Functionality
+local UIS = game:GetService("UserInputService")
+local dragging = false
+local minSpeed = 16
+local maxSpeed = 100
+
+local function setSpeed(val)
+    local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.WalkSpeed = val
     end
+    valueLabel.Text = tostring(val)
 end
 
-speedButton.MouseButton1Click:Connect(toggleSpeedRun)
-
--- Reset kecepatan saat karakter respawn
-player.CharacterAdded:Connect(function(char)
-    character = char
-    humanoid = character:WaitForChild("Humanoid")
-    humanoid.WalkSpeed = normalSpeed
-    speedActive = false
-    speedButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    speedButton.Text = "Toggle Speed Run"
+handle.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+    end
 end)
+
+handle.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local mouseX = UIS:GetMouseLocation().X
+        local absPos = slider.AbsolutePosition.X
+        local relX = math.clamp(mouseX - absPos, 0, slider.AbsoluteSize.X - handle.AbsoluteSize.X)
+        handle.Position = UDim2.new(0, relX, 0.5, -6)
+        local val = math.floor(minSpeed + ((relX / (slider.AbsoluteSize.X - handle.AbsoluteSize.X)) * (maxSpeed-minSpeed)))
+        setSpeed(val)
+    end
+end)
+
+-- Default Value
+setSpeed(16)

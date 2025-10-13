@@ -1,0 +1,85 @@
+-- Buat GUI mewah dan elegan
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Membuat ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "LuxSpeedGui"
+screenGui.Parent = playerGui
+
+-- Membuat background Frame dengan desain elegan
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 150)
+frame.Position = UDim2.new(0.5, -150, 0.8, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BackgroundTransparency = 0.2
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+-- Membuat efek blur pada frame dengan UIStroke dan UICorner untuk kesan mewah
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Color3.fromRGB(255, 255, 255)
+uiStroke.Thickness = 1
+uiStroke.Transparency = 0.7
+uiStroke.Parent = frame
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 12)
+uiCorner.Parent = frame
+
+-- Membuat TextLabel judul dengan font mewah
+local title = Instance.new("TextLabel")
+title.Text = "Speed Run"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 28
+title.TextColor3 = Color3.fromRGB(255, 215, 0) -- Gold
+title.BackgroundTransparency = 1
+title.Size = UDim2.new(1, 0, 0, 50)
+title.Position = UDim2.new(0, 0, 0, 10)
+title.Parent = frame
+
+-- Membuat Toggle Button untuk fitur Speed Run
+local speedButton = Instance.new("TextButton")
+speedButton.Text = "Toggle Speed Run"
+speedButton.Font = Enum.Font.GothamSemibold
+speedButton.TextSize = 20
+speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+speedButton.Size = UDim2.new(0.8, 0, 0, 40)
+speedButton.Position = UDim2.new(0.1, 0, 0.6, 0)
+speedButton.AutoButtonColor = true
+speedButton.Parent = frame
+
+local speedActive = false
+local normalSpeed = 16 -- Default walk speed
+local runSpeed = 50 -- Speed run value, cepat
+
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local function toggleSpeedRun()
+    if speedActive == false then
+        speedActive = true
+        -- Efek flu visual bisa ditambahkan dengan blur atau efek transparansi di character layer jika mau, tapi disini simple speed
+        humanoid.WalkSpeed = runSpeed
+        speedButton.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+        speedButton.Text = "Speed Run ON"
+    else
+        speedActive = false
+        humanoid.WalkSpeed = normalSpeed
+        speedButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        speedButton.Text = "Speed Run OFF"
+    end
+end
+
+speedButton.MouseButton1Click:Connect(toggleSpeedRun)
+
+-- Reset kecepatan saat karakter respawn
+player.CharacterAdded:Connect(function(char)
+    character = char
+    humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = normalSpeed
+    speedActive = false
+    speedButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    speedButton.Text = "Toggle Speed Run"
+end)

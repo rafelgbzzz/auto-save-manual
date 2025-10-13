@@ -9,7 +9,7 @@ local RunService = game:GetService("RunService")
 local NexusUI
 do
     local success, result = pcall(function()
-        return loadstring(game:HttpGet("https://raw.githubusercontent.com/NexusDevelopment/Nexus-UI-Library/main/Source.lua"))()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/rafelgbzzz/auto-save-manual/refs/heads/main/source.lua"))()
     end)
     if not success or not result then
         warn("Gagal memuat Nexus UI.")

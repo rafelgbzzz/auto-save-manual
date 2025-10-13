@@ -5,19 +5,18 @@ local RunService = game:GetService("RunService")
 
 -- Load Vape UI
 local ok, Vape = pcall(function()
-    return loadstring(game:HttpGet("https://path/to/vapeui/main.lua"))()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/master/Main.lua"))()
 end)
 if not ok or not Vape then
     warn("Gagal load Vape UI.")
     return
 end
 
--- Key Verification System
+-- Key Verification Data
 local localKeys = {
     { key = "rafelll", expiry = "2025-11-25" },
 }
 
--- Functions for key expiry check (sama seperti sebelumnya)
 local function parseExpiry(str)
     local y, m, d = str:match("^(%d+)%-(%d+)%-(%d+)$")
     if not y then return nil end
@@ -53,11 +52,10 @@ end
 local keyVerified = false
 local expiryDate = nil
 
--- Show Key Verification Window with Vape UI
+-- Show Verify Key Window
 local KeyWindow = Vape:CreateWindow("🕸️ ZeroKageゼロ影 - Verifikasi Key")
 local KeyTab = KeyWindow:CreateTab("Key Entry")
 
--- Assuming Vape UI supports textbox input, replace Button by Textbox input
 KeyTab:Textbox("Masukkan Key:", false, function(input)
     Vape:Notification("🔍 Memeriksa Key...", "Harap tunggu...")
     local now = getLocalDate()
@@ -80,7 +78,6 @@ KeyTab:Textbox("Masukkan Key:", false, function(input)
     end
 end)
 
--- Main GUI load function with Vape UI
 function loadMainGUI()
     if not keyVerified then return end
 
@@ -173,7 +170,6 @@ function loadMainGUI()
         if flyConnection then flyConnection:Disconnect() flyConnection = nil end
     end
 
-    -- Create Main Window Vape UI
     local MainWindow = Vape:CreateWindow("ZeroKageゼロ影")
     local TabTeleport = MainWindow:CreateTab("Teleport")
     local TabFitur = MainWindow:CreateTab("Fitur")
@@ -216,9 +212,7 @@ function loadMainGUI()
         end
     end)
 
-    -- Speed Toggles and Sliders in Kecepatan Tab
-
-    local flyToggle = TabSpeed:Toggle("🕊️ Mode Fly", false, function(state)
+    TabSpeed:Toggle("🕊️ Mode Fly", false, function(state)
         if state then
             startFly()
             Vape:Notification("✈️ Fly Aktif", "Gunakan W A S D / Joystick untuk bergerak.")
@@ -228,11 +222,11 @@ function loadMainGUI()
         end
     end)
 
-    local flySpeedSlider = TabSpeed:Slider("⚡ Kecepatan Fly", 10, 200, flySpeed, function(value)
+    TabSpeed:Slider("⚡ Kecepatan Fly", 10, 200, flySpeed, function(value)
         flySpeed = value
     end)
 
-    local runSpeedSlider = TabSpeed:Slider("🏃 Kecepatan Lari", 16, 200, walkSpeed, function(value)
+    TabSpeed:Slider("🏃 Kecepatan Lari", 16, 200, walkSpeed, function(value)
         local char = player.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         if hum then
@@ -241,7 +235,7 @@ function loadMainGUI()
         end
     end)
 
-    local jumpPowerSlider = TabSpeed:Slider("🦘 Kekuatan Lompatan", 50, 500, jumpPower, function(value)
+    TabSpeed:Slider("🦘 Kekuatan Lompatan", 50, 500, jumpPower, function(value)
         local char = player.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         if hum then
@@ -258,8 +252,6 @@ function loadMainGUI()
             hum.WalkSpeed = 16
             hum.JumpPower = 50
         end
-        runSpeedSlider:Set(16)
-        jumpPowerSlider:Set(50)
         Vape:Notification("Reset Berhasil", "WalkSpeed & JumpPower dikembalikan ke normal.")
     end)
 
@@ -270,4 +262,4 @@ function loadMainGUI()
     end)
 end
 
-showKeyWindow() -- Jalankan dapetin key UI yang sudah dibuat
+-- Jalankan tampilan verifikasi key UI

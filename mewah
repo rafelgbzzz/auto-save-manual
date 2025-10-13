@@ -56,6 +56,7 @@ local expiryDate = nil
 local KeyWindow = Vape:CreateWindow("🕸️ ZeroKageゼロ影 - Verifikasi Key")
 local KeyTab = KeyWindow:CreateTab("Key Entry")
 
+-- Vape UI Textbox harus diisi dulu, biasanya callback dipanggil saat enter / lose focus
 KeyTab:Textbox("Masukkan Key:", false, function(input)
     Vape:Notification("🔍 Memeriksa Key...", "Harap tunggu...")
     local now = getLocalDate()
@@ -171,6 +172,22 @@ function loadMainGUI()
     end
 
     local MainWindow = Vape:CreateWindow("ZeroKageゼロ影")
+    
+    -- Modifikasi posisi dan ukuran agar mirip Rayfield
+    MainWindow.Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    MainWindow.Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    MainWindow.Frame.Size = UDim2.new(0, 600, 0, 400)
+
+    -- Perbesar font dan elemen UI di dalam window
+    for _, child in pairs(MainWindow.Frame:GetDescendants()) do
+        if child:IsA("TextLabel") or child:IsA("TextButton") then
+            child.TextScaled = false
+            child.TextSize = 18
+        elseif child:IsA("TextBox") then
+            child.TextSize = 18
+        end
+    end
+
     local TabTeleport = MainWindow:CreateTab("Teleport")
     local TabFitur = MainWindow:CreateTab("Fitur")
     local TabSpeed = MainWindow:CreateTab("Kecepatan")

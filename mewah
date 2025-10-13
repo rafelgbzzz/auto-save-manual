@@ -2,78 +2,88 @@ local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "BloxFruitsStyleGui"
+screenGui.Name = "ExactBloxFruitsGUI"
 screenGui.Parent = playerGui
 
--- Background Frame
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 350, 0, 400)
-mainFrame.Position = UDim2.new(0, 20, 0, 20)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Hitam gelap
+mainFrame.Size = UDim2.new(0, 360, 0, 420)
+mainFrame.Position = UDim2.new(0, 10, 0, 10)
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18) -- Hitam gelap
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 
--- UICorner for rounded edges
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 10)
-corner.Parent = mainFrame
+local uicornerMain = Instance.new("UICorner")
+uicornerMain.CornerRadius = UDim.new(0, 15)
+uicornerMain.Parent = mainFrame
 
--- Red title bar
+-- Title bar merah
 local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 40)
-titleBar.BackgroundColor3 = Color3.fromRGB(180, 0, 0) -- Merah terang
+titleBar.Size = UDim2.new(1, 0, 0, 45)
+titleBar.Position = UDim2.new(0, 0, 0, 0)
+titleBar.BackgroundColor3 = Color3.fromRGB(190, 0, 0) -- merah cerah
 titleBar.Parent = mainFrame
 
-local titleText = Instance.new("TextLabel")
-titleText.Size = UDim2.new(1, 0, 1, 0)
-titleText.BackgroundTransparency = 1
-titleText.Text = "Blox Fruits Script"
-titleText.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleText.Font = Enum.Font.SourceSansBold
-titleText.TextSize = 24
-titleText.Parent = titleBar
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 1, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 28
+titleLabel.Text = "Blox Fruits Script"
+titleLabel.Parent = titleBar
 
--- Example Toggle Button
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0.8, 0, 0, 50)
-toggleButton.Position = UDim2.new(0.1, 0, 0, 80)
-toggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-toggleButton.TextColor3 = Color3.fromRGB(255, 0, 0)
-toggleButton.Font = Enum.Font.SourceSansSemibold
-toggleButton.TextSize = 24
-toggleButton.Text = "Auto Farm: OFF"
-toggleButton.Parent = mainFrame
+-- Container tombol utama
+local buttonContainer = Instance.new("Frame")
+buttonContainer.Size = UDim2.new(1, -40, 0, 320)
+buttonContainer.Position = UDim2.new(0, 20, 0, 60)
+buttonContainer.BackgroundTransparency = 1
+buttonContainer.Parent = mainFrame
 
-local toggleOn = false
+local layout = Instance.new("UIListLayout")
+layout.FillDirection = Enum.FillDirection.Vertical
+layout.Padding = UDim.new(0, 15)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.VerticalAlignment = Enum.VerticalAlignment.Top
+layout.Parent = buttonContainer
 
-toggleButton.MouseButton1Click:Connect(function()
-    toggleOn = not toggleOn
-    if toggleOn then
-        toggleButton.Text = "Auto Farm: ON"
-        toggleButton.TextColor3 = Color3.fromRGB(0, 255, 0) -- Hijau untuk ON
-        -- Contoh panggil fungsi auto farm di sini
-    else
-        toggleButton.Text = "Auto Farm: OFF"
-        toggleButton.TextColor3 = Color3.fromRGB(255, 0, 0) -- Merah untuk OFF
-        -- Contoh hentikan auto farm di sini
-    end
-end)
+-- Fungsi buat tombol dengan style persis
+local function createButton(text)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 0, 48)
+    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35) -- abu gelap
+    btn.TextColor3 = Color3.fromRGB(190, 0, 0) -- merah
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextSize = 22
+    btn.Text = text
+    btn.AutoButtonColor = false
 
--- Another button example (Teleport)
-local teleportButton = Instance.new("TextButton")
-teleportButton.Size = UDim2.new(0.8, 0, 0, 50)
-teleportButton.Position = UDim2.new(0.1, 0, 0, 150)
-teleportButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-teleportButton.TextColor3 = Color3.fromRGB(255, 0, 0)
-teleportButton.Font = Enum.Font.SourceSansSemibold
-teleportButton.TextSize = 24
-teleportButton.Text = "Teleport to Boss"
-teleportButton.Parent = mainFrame
+    local uicornerBtn = Instance.new("UICorner")
+    uicornerBtn.CornerRadius = UDim.new(0, 12)
+    uicornerBtn.Parent = btn
 
-teleportButton.MouseButton1Click:Connect(function()
-    -- Contoh fungsi teleport
-    local character = player.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        character.HumanoidRootPart.CFrame = CFrame.new(100, 50, 100) -- Ganti dengan koordinat boss sebenarnya
-    end
-end)
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(190, 0, 0)
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        btn.TextColor3 = Color3.fromRGB(190, 0, 0)
+    end)
+    return btn
+end
+
+-- Tambah beberapa tombol contoh persis seperti di video
+local btnAutoFarm = createButton("Toggle Auto Farm")
+btnAutoFarm.Parent = buttonContainer
+
+local btnTeleport = createButton("Teleport to Boss")
+btnTeleport.Parent = buttonContainer
+
+local btnAutoBoss = createButton("Toggle Auto Boss")
+btnAutoBoss.Parent = buttonContainer
+
+local btnEvent = createButton("Join Sea Event")
+btnEvent.Parent = buttonContainer
+
+local btnFruitFarm = createButton("Toggle Auto Fruit Farm")
+btnFruitFarm.Parent = buttonContainer

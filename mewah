@@ -1,61 +1,93 @@
-local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
+local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 
-local keyInput = script.Parent:WaitForChild("KeyInputTextBox") -- Pastikan ada TextBox dengan nama ini di UI
-local verifyButton = script.Parent:WaitForChild("VerifyButton") -- Tombol verifikasi
-local statusLabel = script.Parent:WaitForChild("StatusLabel") -- Label status validasi
-local mainGui = script.Parent -- UI utama
+-- Fungsi bantu buat instance UI
+local function createInstance(className, props)
+    local inst = Instance.new(className)
+    for k, v in pairs(props or {}) do
+        inst[k] = v
+    end
+    return inst
+end
+
+-- Buat ScreenGui di PlayerGui jika ada, atau buat new
+local playerGui = player:FindFirstChildOfClass("PlayerGui") or Instance.new("PlayerGui", player)
+
+local screenGui = createInstance("ScreenGui", {
+    Name = "ZeroKageゼロ影",
+    Parent = playerGui,
+    ResetOnSpawn = false,
+})
+
+local frame = createInstance("Frame", {
+    Size = UDim2.new(0, 400, 0, 150),
+    Position = UDim2.new(0.5, 0, 0.5, 0),
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+    BorderSizePixel = 0,
+    Parent = screenGui,
+})
+
+local keyInput = createInstance("TextBox", {
+    PlaceholderText = "Masukkan Key Disini",
+    Size = UDim2.new(0.9, 0, 0, 35),
+    Position = UDim2.new(0.05, 0, 0.2, 0),
+    BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+    TextColor3 = Color3.new(1,1,1),
+    Font = Enum.Font.Gotham,
+    TextSize = 18,
+    ClearTextOnFocus = false,
+    Parent = frame,
+})
+
+local statusLabel = createInstance("TextLabel", {
+    Text = "Status: Belum diverifikasi",
+    Size = UDim2.new(0.9, 0, 0, 25),
+    Position = UDim2.new(0.05, 0, 0.55, 0),
+    BackgroundTransparency = 1,
+    TextColor3 = Color3.new(1,1,1),
+    Font = Enum.Font.Gotham,
+    TextSize = 16,
+    Parent = frame,
+})
+
+local verifyButton = createInstance("TextButton", {
+    Text = "Verifikasi Key",
+    Size = UDim2.new(0.9, 0, 0, 40),
+    Position = UDim2.new(0.05, 0, 0.77, 0),
+    BackgroundColor3 = Color3.fromRGB(45, 120, 230),
+    TextColor3 = Color3.new(1,1,1),
+    Font = Enum.Font.GothamBold,
+    TextSize = 18,
+    Parent = frame,
+})
 
 local validKeys = {
     ["ZEROKAGE123"] = true,
-    ["ZEROKAGE456"] = true
+    ["ZEROKAGE456"] = true,
 }
 
 local isKeyValid = false
 
-local usersList = {}
-
--- Fungsi untuk verifikasi key
 local function verifyKey(inputKey)
     if validKeys[inputKey] then
         isKeyValid = true
-        statusLabel.Text = "Key valid! Akses diberikan."
-        usersList[player.Name] = true
+        statusLabel.Text = "Status: Key valid! Akses diberikan."
         print(player.Name .. " menggunakan UI/script dengan key valid.")
-        -- Bisa ditambah pengiriman data user ke server via HttpService di sini
     else
         isKeyValid = false
-        statusLabel.Text = "Key tidak valid. Coba lagi."
+        statusLabel.Text = "Status: Key tidak valid. Coba lagi."
     end
 end
 
--- Event klik tombol verifikasi
 verifyButton.MouseButton1Click:Connect(function()
-    local inputKey = keyInput.Text
-    verifyKey(inputKey)
+    verifyKey(keyInput.Text)
 end)
 
--- Shortcut tombol keyboard 'E' untuk toggle visibilitas UI
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-    if input.UserInputType == Enum.UserInputType.Keyboard then
-        if input.KeyCode == Enum.KeyCode.E then
-            mainGui.Visible = not mainGui.Visible
-        end
+    if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.E then
+        frame.Visible = not frame.Visible
     end
 end)
-
--- Fungsi menampilkan pengguna aktif
-local function showActiveUsers()
-    print("Pengguna aktif yang memakai UI/script:")
-    for userName, _ in pairs(usersList) do
-        print(userName)
-    end
-end
-
-return {
-    ShowActiveUsers = showActiveUsers,
-    IsKeyValid = function() return isKeyValid end
-}

@@ -1,3 +1,5 @@
+-- zerokage
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -56,7 +58,6 @@ local expiryDate = nil
 local KeyWindow = Vape:CreateWindow("🕸️ ZeroKageゼロ影 - Verifikasi Key")
 local KeyTab = KeyWindow:CreateTab("Key Entry")
 
--- Vape UI Textbox harus diisi dulu, biasanya callback dipanggil saat enter / lose focus
 KeyTab:Textbox("Masukkan Key:", false, function(input)
     Vape:Notification("🔍 Memeriksa Key...", "Harap tunggu...")
     local now = getLocalDate()
@@ -172,7 +173,7 @@ function loadMainGUI()
     end
 
     local MainWindow = Vape:CreateWindow("ZeroKageゼロ影")
-    
+
     -- Modifikasi posisi dan ukuran agar mirip Rayfield
     MainWindow.Frame.AnchorPoint = Vector2.new(0.5, 0.5)
     MainWindow.Frame.Position = UDim2.new(0.5, 0, 0.5, 0)

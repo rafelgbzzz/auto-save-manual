@@ -1,61 +1,79 @@
--- Buat GUI
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "SpeedControlGui"
+screenGui.Name = "BloxFruitsStyleGui"
 screenGui.Parent = playerGui
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 100)
-frame.Position = UDim2.new(0, 20, 0, 20)
-frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-frame.BorderSizePixel = 0
-frame.Parent = screenGui
+-- Background Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 350, 0, 400)
+mainFrame.Position = UDim2.new(0, 20, 0, 20)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Hitam gelap
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
 
-local txtLabel = Instance.new("TextLabel")
-txtLabel.Size = UDim2.new(1, 0, 0, 30)
-txtLabel.Position = UDim2.new(0, 0, 0, 10)
-txtLabel.BackgroundTransparency = 1
-txtLabel.Text = "Atur Kecepatan Lari:"
-txtLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-txtLabel.Font = Enum.Font.SourceSansBold
-txtLabel.TextSize = 22
-txtLabel.Parent = frame
+-- UICorner for rounded edges
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
 
-local slider = Instance.new("TextBox")
-slider.Size = UDim2.new(0.8, 0, 0, 40)
-slider.Position = UDim2.new(0.1, 0, 0, 50)
-slider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-slider.TextColor3 = Color3.fromRGB(255, 255, 255)
-slider.Text = "16" -- default speed
-slider.Font = Enum.Font.SourceSans
-slider.TextSize = 24
-slider.ClearTextOnFocus = false
-slider.Parent = frame
+-- Red title bar
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.BackgroundColor3 = Color3.fromRGB(180, 0, 0) -- Merah terang
+titleBar.Parent = mainFrame
 
--- Function untuk update kecepatan
-local function updateSpeed()
-    local speed = tonumber(slider.Text)
-    if speed and speed >= 0 and speed <= 100 then
-        local character = player.Character
-        if character and character:FindFirstChild("Humanoid") then
-            character.Humanoid.WalkSpeed = speed
-        end
-    end
-end
+local titleText = Instance.new("TextLabel")
+titleText.Size = UDim2.new(1, 0, 1, 0)
+titleText.BackgroundTransparency = 1
+titleText.Text = "Blox Fruits Script"
+titleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleText.Font = Enum.Font.SourceSansBold
+titleText.TextSize = 24
+titleText.Parent = titleBar
 
--- Event ketika teks di slider berubah
-slider.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        updateSpeed()
+-- Example Toggle Button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0.8, 0, 0, 50)
+toggleButton.Position = UDim2.new(0.1, 0, 0, 80)
+toggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+toggleButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+toggleButton.Font = Enum.Font.SourceSansSemibold
+toggleButton.TextSize = 24
+toggleButton.Text = "Auto Farm: OFF"
+toggleButton.Parent = mainFrame
+
+local toggleOn = false
+
+toggleButton.MouseButton1Click:Connect(function()
+    toggleOn = not toggleOn
+    if toggleOn then
+        toggleButton.Text = "Auto Farm: ON"
+        toggleButton.TextColor3 = Color3.fromRGB(0, 255, 0) -- Hijau untuk ON
+        -- Contoh panggil fungsi auto farm di sini
+    else
+        toggleButton.Text = "Auto Farm: OFF"
+        toggleButton.TextColor3 = Color3.fromRGB(255, 0, 0) -- Merah untuk OFF
+        -- Contoh hentikan auto farm di sini
     end
 end)
 
--- Saat karakter spawn, set speed default
-player.CharacterAdded:Connect(function(char)
-    char:WaitForChild("Humanoid").WalkSpeed = tonumber(slider.Text) or 16
-end)
+-- Another button example (Teleport)
+local teleportButton = Instance.new("TextButton")
+teleportButton.Size = UDim2.new(0.8, 0, 0, 50)
+teleportButton.Position = UDim2.new(0.1, 0, 0, 150)
+teleportButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+teleportButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+teleportButton.Font = Enum.Font.SourceSansSemibold
+teleportButton.TextSize = 24
+teleportButton.Text = "Teleport to Boss"
+teleportButton.Parent = mainFrame
 
--- Set kecepatan waktu mulai script
-updateSpeed()
+teleportButton.MouseButton1Click:Connect(function()
+    -- Contoh fungsi teleport
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame = CFrame.new(100, 50, 100) -- Ganti dengan koordinat boss sebenarnya
+    end
+end)

@@ -1,17 +1,21 @@
--- zerokage
+-- ZeroKage with Nexus UI
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
--- Load Vape UI
-local ok, Vape = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/NewMainScript.lua"))()
-end)
-if not ok or not Vape then
-    warn("Gagal load Vape UI.")
-    return
+-- Load Nexus UI Library
+local NexusUI
+do
+    local success, result = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/NexusDevelopment/Nexus-UI-Library/main/Source.lua"))()
+    end)
+    if not success or not result then
+        warn("Gagal memuat Nexus UI.")
+        return
+    end
+    NexusUI = result
 end
 
 -- Key Verification Data
@@ -54,32 +58,47 @@ end
 local keyVerified = false
 local expiryDate = nil
 
--- Show Verify Key Window
-local KeyWindow = Vape:CreateWindow("🕸️ ZeroKageゼロ影 - Verifikasi Key")
-local KeyTab = KeyWindow:CreateTab("Key Entry")
+-- Create Nexus Window for Key verification
+local keyWindow = NexusUI:CreateWindow({
+    Name = "🕸️ ZeroKage - Verifikasi Key",
+    Size = Vector2.new(500, 300),
+    Position = UDim2.new(0.5, 0, 0.5, 0),
+    AnchorPoint = Vector2.new(0.5, 0.5),
+})
 
-KeyTab:Textbox("Masukkan Key:", false, function(input)
-    Vape:Notification("🔍 Memeriksa Key...", "Harap tunggu...")
+local keyInputLabel = keyWindow:AddLabel("Masukkan Key:")
+local keyInputBox = keyWindow:AddTextbox({
+    ClearTextOnFocus = false,
+    PlaceholderText = "Contoh: abcd",
+})
+
+local notificationLabel = keyWindow:AddLabel("")
+
+keyInputBox.FocusLost:Connect(function(enterPressed)
+    if not enterPressed then return end
+    local input = keyInputBox.Text
+    notificationLabel.Text = "🔍 Memeriksa Key..."
     local now = getLocalDate()
     local valid, info = validateKey(input, localKeys, now)
     if valid then
         keyVerified = true
         expiryDate = info
-        Vape:Notification("✅ Key Diterima", "Akses hingga " .. string.format("%02d/%02d/%04d", info.day, info.month, info.year))
-        KeyWindow:Destroy()
-        task.wait(0.2)
+        notificationLabel.Text = "✅ Key diterima! Akses sampai " .. string.format("%02d/%02d/%04d", info.day, info.month, info.year)
+        task.wait(1)
+        keyWindow:Destroy()
         loadMainGUI()
     else
         if info == "expired" then
-            Vape:Notification("⏰ Key Kadaluarsa", "Key sudah kadaluarsa.")
+            notificationLabel.Text = "⏰ Key sudah kadaluarsa."
         elseif info == "invalid_expiry" then
-            Vape:Notification("❌ Format Expiry Salah", "Periksa format expiry pada key.")
+            notificationLabel.Text = "❌ Format expiry salah."
         else
-            Vape:Notification("❌ Key Tidak Valid", "Periksa kembali key kamu.")
+            notificationLabel.Text = "❌ Key tidak valid. Coba lagi."
         end
     end
 end)
 
+-- Fungsi utama GUI setelah key verified
 function loadMainGUI()
     if not keyVerified then return end
 
@@ -108,14 +127,14 @@ function loadMainGUI()
         if hrp then
             hrp.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
         else
-            Vape:Notification("⚠️ Gagal Teleport", "Character belum siap.")
+            keyWindow:AddLabel("⚠️ Gagal teleport. Character belum siap.")
         end
     end
 
     local function startFly()
         local hrp = getHRP()
         if not hrp then
-            Vape:Notification("⚠️ Gagal Fly", "Character belum siap.")
+            keyWindow:AddLabel("⚠️ Gagal fly. Character belum siap.")
             return
         end
 
@@ -124,6 +143,7 @@ function loadMainGUI()
         bodyGyro = Instance.new("BodyGyro")
         bodyGyro.P = 9e4
         bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+        
         local cam = workspace.CurrentCamera
         local lookVector = cam.CFrame.LookVector
         lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
@@ -172,46 +192,35 @@ function loadMainGUI()
         if flyConnection then flyConnection:Disconnect() flyConnection = nil end
     end
 
-    local MainWindow = Vape:CreateWindow("ZeroKageゼロ影")
+    -- Buat Window utama Nexus UI
+    local MainWindow = NexusUI:CreateWindow({
+        Name = "ZeroKage",
+        Size = Vector2.new(600, 400),
+        Position = UDim2.new(0.5,0,0.5,0),
+        AnchorPoint = Vector2.new(0.5,0.5)
+    })
 
-    -- Modifikasi posisi dan ukuran agar mirip Rayfield
-    MainWindow.Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-    MainWindow.Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    MainWindow.Frame.Size = UDim2.new(0, 600, 0, 400)
-
-    -- Perbesar font dan elemen UI di dalam window
-    for _, child in pairs(MainWindow.Frame:GetDescendants()) do
-        if child:IsA("TextLabel") or child:IsA("TextButton") then
-            child.TextScaled = false
-            child.TextSize = 18
-        elseif child:IsA("TextBox") then
-            child.TextSize = 18
-        end
-    end
-
-    local TabTeleport = MainWindow:CreateTab("Teleport")
-    local TabFitur = MainWindow:CreateTab("Fitur")
-    local TabSpeed = MainWindow:CreateTab("Kecepatan")
-
+    -- Tab Teleport
+    local TabTeleport = MainWindow:AddTab("Teleport")
     for _, wp in ipairs(waypoints) do
-        TabTeleport:Button("🌍 Teleport ke: " .. wp.name, function()
+        TabTeleport:AddButton(wp.name, function()
             teleportTo(wp.pos)
         end)
     end
 
-    TabFitur:Button("💾 Copy Koordinat Sekarang", function()
+    -- Tab Fitur
+    local TabFitur = MainWindow:AddTab("Fitur")
+    TabFitur:AddButton("Copy Koordinat Sekarang", function()
         local hrp = getHRP()
         if not hrp then
-            Vape:Notification("⚠️ Gagal", "Character belum siap.")
             return
         end
         local pos = hrp.Position
         local koordinat = string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X, pos.Y, pos.Z)
         setclipboard(koordinat)
-        Vape:Notification("✅ Koordinat Disalin", koordinat)
+        -- Tampilkan notif sederhana (bisa ditambahkan)
     end)
-
-    TabFitur:Toggle("🛡️ Anti AFK (ON/OFF)", false, function(value)
+    TabFitur:AddToggle("Anti AFK", false, function(value)
         antiAFKEnabled = value
         if value then
             if antiAFKConnection then antiAFKConnection:Disconnect() end
@@ -220,59 +229,56 @@ function loadMainGUI()
                 VirtualUser:CaptureController()
                 VirtualUser:ClickButton2(Vector2.new())
             end)
-            Vape:Notification("🛡️ Anti AFK Aktif", "Kamu aman dari kick AFK!")
         else
             if antiAFKConnection then
                 antiAFKConnection:Disconnect()
                 antiAFKConnection = nil
             end
-            Vape:Notification("💤 Anti AFK Nonaktif", "AFK protection dimatikan.")
         end
     end)
 
-    TabSpeed:Toggle("🕊️ Mode Fly", false, function(state)
+    -- Tab Kecepatan
+    local TabSpeed = MainWindow:AddTab("Kecepatan")
+    TabSpeed:AddToggle("Mode Fly", false, function(state)
         if state then
             startFly()
-            Vape:Notification("✈️ Fly Aktif", "Gunakan W A S D / Joystick untuk bergerak.")
         else
             stopFly()
-            Vape:Notification("🛑 Fly Dimatikan", "Mode fly telah berhenti.")
         end
     end)
-
-    TabSpeed:Slider("⚡ Kecepatan Fly", 10, 200, flySpeed, function(value)
+    TabSpeed:AddSlider("Kecepatan Fly", flySpeed, 10, 200, 1, function(value)
         flySpeed = value
     end)
-
-    TabSpeed:Slider("🏃 Kecepatan Lari", 16, 200, walkSpeed, function(value)
+    TabSpeed:AddSlider("Kecepatan Lari", walkSpeed, 16, 200, 1, function(value)
+        walkSpeed = value
         local char = player.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         if hum then
             hum.WalkSpeed = value
-            walkSpeed = value
         end
     end)
-
-    TabSpeed:Slider("🦘 Kekuatan Lompatan", 50, 500, jumpPower, function(value)
+    TabSpeed:AddSlider("Kekuatan Lompatan", jumpPower, 50, 500, 1, function(value)
+        jumpPower = value
         local char = player.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         if hum then
             hum.UseJumpPower = true
             hum.JumpPower = value
-            jumpPower = value
         end
     end)
-
-    TabSpeed:Button("↩️ Reset Kecepatan & Lompatan (Normal)", function()
+    TabSpeed:AddButton("Reset Kecepatan", function()
         local char = player.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         if hum then
             hum.WalkSpeed = 16
             hum.JumpPower = 50
         end
-        Vape:Notification("Reset Berhasil", "WalkSpeed & JumpPower dikembalikan ke normal.")
+        flySpeed = 60
+        walkSpeed = 16
+        jumpPower = 50
     end)
 
+    -- Jaga speed & jump saat respawn
     player.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid")
         hum.WalkSpeed = walkSpeed
@@ -280,4 +286,4 @@ function loadMainGUI()
     end)
 end
 
--- Jalankan tampilan verifikasi key UI
+-- Jalankan Key Window pertama kali

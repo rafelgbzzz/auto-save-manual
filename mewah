@@ -1,5 +1,3 @@
--- zerokage
-
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
@@ -14,125 +12,94 @@ end
 
 local playerGui = player:FindFirstChildOfClass("PlayerGui") or Instance.new("PlayerGui", player)
 
-local screenGui = createInstance("ScreenGui", {
-    Name = "ZeroKageゼロ影",
-    Parent = playerGui,
-    ResetOnSpawn = false,
-})
+local gui = createInstance("ScreenGui", {Name="ZeroKageHomeMenu", Parent=playerGui, ResetOnSpawn=false})
 
 local mainFrame = createInstance("Frame", {
-    Size = UDim2.new(0, 450, 0, 180),
+    Size = UDim2.new(0, 600, 0, 350),
     Position = UDim2.new(0.5, 0, 0.5, 0),
     AnchorPoint = Vector2.new(0.5, 0.5),
-    BackgroundColor3 = Color3.fromRGB(28, 28, 30),
+    BackgroundColor3 = Color3.fromRGB(18,18,18),
     BorderSizePixel = 0,
-    ClipsDescendants = true,
-    Parent = screenGui,
+    Parent = gui,
 })
-createInstance("UICorner", {CornerRadius = UDim.new(0, 14), Parent = mainFrame})
-
--- Shadow container
+local corner = createInstance("UICorner", {CornerRadius = UDim.new(0, 12), Parent = mainFrame})
 local shadow = createInstance("Frame", {
-    Size = mainFrame.Size + UDim2.new(0, 10, 0, 10),
-    Position = mainFrame.Position - UDim2.new(0,5,0,5),
-    AnchorPoint = mainFrame.AnchorPoint,
-    BackgroundColor3 = Color3.fromRGB(0,0,0),
-    BorderSizePixel = 0,
-    Parent = screenGui,
-    ZIndex = 0,
+    Size = UDim2.new(1, 20, 1, 20),
+    Position = UDim2.new(0, -10, 0, -10),
+    AnchorPoint = Vector2.new(0,0),
+    BackgroundColor3 = Color3.new(0,0,0),
+    Transparency = 0.4,
+    ZIndex = -1,
+    Parent = mainFrame,
 })
-createInstance("UICorner", {CornerRadius = UDim.new(0, 14), Parent = shadow})
-createInstance("UIGradient", {
-    Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.new(0,0,0)), ColorSequenceKeypoint.new(1, Color3.new(0,0,0))},
-    Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0,0.6), NumberSequenceKeypoint.new(1,1)},
-    Parent = shadow,
-})
+local cornerShadow = createInstance("UICorner", {CornerRadius=UDim.new(0,12), Parent=shadow})
 
 local title = createInstance("TextLabel", {
-    Text = "ZeroKage ゼロ影",
+    Text = "ZeroKage Menu",
     Font = Enum.Font.GothamBold,
-    TextSize = 24,
-    TextColor3 = Color3.fromRGB(200, 200, 255),
+    TextSize = 28,
+    TextColor3 = Color3.fromRGB(255,255,255),
     BackgroundTransparency = 1,
-    Size = UDim2.new(1, 0, 0, 40),
-    Position = UDim2.new(0, 0, 0, 10),
+    Size = UDim2.new(1,0,0,50),
     Parent = mainFrame,
+    TextXAlignment = Enum.TextXAlignment.Center,
 })
 
-local keyInput = createInstance("TextBox", {
-    PlaceholderText = "Masukkan key di sini...",
-    Font = Enum.Font.Gotham,
-    TextSize = 20,
-    TextColor3 = Color3.new(1,1,1),
-    BackgroundColor3 = Color3.fromRGB(45, 45, 48),
-    Size = UDim2.new(0.9, 0, 0, 45),
-    Position = UDim2.new(0.05, 0, 0, 60),
-    ClearTextOnFocus = false,
-    TextWrapped = false,
-    Parent = mainFrame,
-})
-createInstance("UICorner", {CornerRadius = UDim.new(0, 10), Parent = keyInput})
-
-local statusLabel = createInstance("TextLabel", {
-    Text = "Status: Belum diverifikasi",
-    Font = Enum.Font.Gotham,
-    TextSize = 16,
-    TextColor3 = Color3.fromRGB(170, 170, 180),
+local tabContainer = createInstance("Frame", {
+    Size = UDim2.new(1, -40, 1, -60),
+    Position = UDim2.new(0, 20, 0, 50),
     BackgroundTransparency = 1,
-    Size = UDim2.new(1, -20, 0, 25),
-    Position = UDim2.new(0, 10, 0, 115),
     Parent = mainFrame,
 })
 
-local verifyButton = createInstance("TextButton", {
-    Text = "Verifikasi",
-    Font = Enum.Font.GothamBold,
-    TextSize = 20,
-    TextColor3 = Color3.new(1,1,1),
-    BackgroundColor3 = Color3.fromRGB(85, 105, 255),
-    Size = UDim2.new(0.9, 0, 0, 45),
-    Position = UDim2.new(0.05, 0, 0, 140),
-    AutoButtonColor = false,
-    Parent = mainFrame,
-})
-createInstance("UICorner", {CornerRadius = UDim.new(0, 10), Parent = verifyButton})
-
--- Hover effect for button
-verifyButton.MouseEnter:Connect(function()
-    verifyButton.BackgroundColor3 = Color3.fromRGB(105, 125, 255)
-end)
-verifyButton.MouseLeave:Connect(function()
-    verifyButton.BackgroundColor3 = Color3.fromRGB(85, 105, 255)
-end)
-
-local validKeys = {
-    ["ZEROKAGE123"] = true,
-    ["ZEROKAGE456"] = true,
-}
-
-local isKeyValid = false
-
-local function verifyKey(inputKey)
-    if validKeys[inputKey] then
-        isKeyValid = true
-        statusLabel.Text = "Status: Key valid! Akses diberikan."
-        statusLabel.TextColor3 = Color3.fromRGB(110, 255, 110)
-        print(player.Name .. " menggunakan UI/script dengan key valid.")
-    else
-        isKeyValid = false
-        statusLabel.Text = "Status: Key tidak valid. Coba lagi."
-        statusLabel.TextColor3 = Color3.fromRGB(255, 110, 110)
-    end
+local function addButton(name, callback)
+    local btn = createInstance("TextButton", {
+        Text = name,
+        Font = Enum.Font.GothamBold,
+        TextSize = 20,
+        TextColor3 = Color3.new(1,1,1),
+        BackgroundColor3 = Color3.fromRGB(70,70,70),
+        Size = UDim2.new(1, 0, 0, 40),
+        Parent = tabContainer,
+    })
+    createInstance("UICorner", {CornerRadius=UDim.new(0,8), Parent=btn})
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(90,90,90)
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+    end)
+    btn.MouseButton1Click:Connect(function()
+        callback()
+    end)
+    return btn
 end
 
-verifyButton.MouseButton1Click:Connect(function()
-    verifyKey(keyInput.Text)
+-- Contoh fitur numerik atau menu
+addButton("Teleport", function()
+    print("Teleport clicked - implementasi di sini")
 end)
 
+addButton("Fly Mode", function()
+    print("Fly mode toggled - implementasi di sini")
+end)
+
+addButton("Speed Up", function()
+    print("Speed Up clicked - implementasi di sini")
+end)
+
+addButton("Copy Pos", function()
+    print("Copy Pos clicked - implementasi di sini")
+end)
+
+addButton("Jump", function()
+    print("Jump toggle - implementasi di sini")
+end)
+
+-- Tombol toggle UI
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.E then
         mainFrame.Visible = not mainFrame.Visible
-        shadow.Visible = mainFrame.Visible
     end
 end)

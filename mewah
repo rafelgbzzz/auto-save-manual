@@ -5,7 +5,7 @@ local RunService = game:GetService("RunService")
 
 -- Load Vape UI
 local ok, Vape = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/master/Main.lua"))()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/NewMainScript.lua"))()
 end)
 if not ok or not Vape then
     warn("Gagal load Vape UI.")

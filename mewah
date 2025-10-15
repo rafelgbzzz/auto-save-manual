@@ -121,7 +121,7 @@ local function showKeyWindow()
 end
 
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Speed + Copy Pos + Jump + Auto Teleport)
+-- ✈️ MAIN GUI (Fly + Teleport + Speed + Copy Pos + Jump)
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end
@@ -139,6 +139,8 @@ function loadMainGUI()
     local bodyGyro, bodyVel
     local flyConnection
     local antiAFKConnection
+    
+    local infiniteJumpEnabled = false
 
     local function getHRP()
         local c = player.Character
@@ -306,102 +308,6 @@ function loadMainGUI()
     })
 
     -------------------------------------------------
-    -- 📍 Auto Teleport dengan Save Posisi
-    -------------------------------------------------
-    local teleportPositions = {}
-
-    local teleportFrame = Instance.new("ScrollingFrame")
-    teleportFrame.Size = UDim2.new(1, 0, 0, 240)
-    teleportFrame.CanvasSize = UDim2.new(0, 0, 0, 240)
-    teleportFrame.BackgroundTransparency = 1
-    teleportFrame.ScrollBarThickness = 5
-    teleportFrame.Parent = TabFitur:GetContent()
-
-    local function refreshTeleportUI()
-        teleportFrame:ClearAllChildren()
-        for i = 1, 6 do
-            local pos = teleportPositions[i]
-
-            local posLabel = Instance.new("TextLabel")
-            posLabel.Size = UDim2.new(0.5, 0, 0, 30)
-            posLabel.Position = UDim2.new(0, 5, 0, (i-1)*35)
-            posLabel.BackgroundTransparency = 1
-            posLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-            posLabel.Font = Enum.Font.SourceSansSemibold
-            posLabel.TextSize = 18
-            posLabel.Text = pos and ("POSISI " .. i) or ("POSISI " .. i .. " (kosong)")
-            posLabel.Parent = teleportFrame
-
-            local tpButton = Instance.new("TextButton")
-            tpButton.Size = UDim2.new(0.15, 0, 0, 26)
-            tpButton.Position = UDim2.new(0.55, 0, 0, 5 + (i-1)*35)
-            tpButton.BackgroundColor3 = pos and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(70,70,70)
-            tpButton.TextColor3 = Color3.new(1,1,1)
-            tpButton.Font = Enum.Font.SourceSansBold
-            tpButton.TextSize = 18
-            tpButton.Text = "TP"
-            tpButton.Parent = teleportFrame
-            tpButton.AutoButtonColor = pos ~= nil
-            tpButton.MouseButton1Click:Connect(function()
-                if pos then
-                    local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        hrp.CFrame = CFrame.new(pos)
-                        Rayfield:Notify({
-                            Title = "📍 Teleport Success",
-                            Content = "Berhasil teleport ke posisi "..i,
-                            Duration = 2
-                        })
-                    else
-                        Rayfield:Notify({
-                            Title = "⚠️ Gagal Teleport",
-                            Content = "Character belum siap.",
-                            Duration = 2
-                        })
-                    end
-                else
-                    Rayfield:Notify({
-                        Title = "❌ Posisi kosong",
-                        Content = "Silakan simpan posisi terlebih dahulu.",
-                        Duration = 2
-                    })
-                end
-            end)
-
-            local savePosButton = Instance.new("TextButton")
-            savePosButton.Size = UDim2.new(0.15, 0, 0, 26)
-            savePosButton.Position = UDim2.new(0.75, 0, 0, 5 + (i-1)*35)
-            savePosButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-            savePosButton.TextColor3 = Color3.new(1,1,1)
-            savePosButton.Font = Enum.Font.SourceSansBold
-            savePosButton.TextSize = 16
-            savePosButton.Text = "Save"
-            savePosButton.Parent = teleportFrame
-
-            savePosButton.MouseButton1Click:Connect(function()
-                local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    teleportPositions[i] = hrp.Position
-                    Rayfield:Notify({
-                        Title = "💾 Posisi Tersimpan",
-                        Content = "Posisi " .. i .. " tersimpan.",
-                        Duration = 2
-                    })
-                    refreshTeleportUI()
-                else
-                    Rayfield:Notify({
-                        Title = "⚠️ Gagal Save",
-                        Content = "Character belum siap.",
-                        Duration = 2
-                    })
-                end
-            end)
-        end
-    end
-
-    refreshTeleportUI()
-
-    -------------------------------------------------
     -- ⚡ TAB KECEPATAN
     -------------------------------------------------
     local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
@@ -474,6 +380,28 @@ function loadMainGUI()
         end,
     })
 
+    -- 🦘 Infinite Jump Toggle
+    TabSpeed:CreateToggle({
+        Name = "🦘 Infinite Jump (Lompat Tak Terbatas)",
+        CurrentValue = false,
+        Callback = function(value)
+            infiniteJumpEnabled = value
+            if value then
+                Rayfield:Notify({
+                    Title = "🦘 Infinite Jump Aktif",
+                    Content = "Kamu sekarang bisa lompat tanpa batas!",
+                    Duration = 3
+                })
+            else
+                Rayfield:Notify({
+                    Title = "🛑 Infinite Jump Nonaktif",
+                    Content = "Lompatan tak terbatas dimatikan.",
+                    Duration = 3
+                })
+            end
+        end
+    })
+
     -- 🔄 Reset Speed & Jump
     TabSpeed:CreateButton({
         Name = "↩️ Reset Kecepatan & Lompatan (Normal)",
@@ -499,6 +427,19 @@ function loadMainGUI()
         local hum = char:WaitForChild("Humanoid")
         hum.WalkSpeed = walkSpeed
         hum.JumpPower = jumpPower
+    end)
+
+    -- Infinite Jump Listener
+    UserInputService.JumpRequest:Connect(function()
+        if infiniteJumpEnabled then
+            local char = player.Character
+            if char then
+                local humanoid = char:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end
+        end
     end)
 end
 

@@ -1,5 +1,3 @@
--- ZeroKageゼロ影
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -115,15 +113,26 @@ local function showKeyWindow()
     })
 end
 
--- Waypoints dengan checkpoint
+-- Waypoints with 15 checkpoints for Mount Atin
 local waypoints = {
     {
         name = "Mount Atin",
         checkpoints = {
-            {name = "cp1", pos = Vector3.new(100, 50, 100)},
-            {name = "cp2", pos = Vector3.new(110, 55, 105)},
-            {name = "cp3", pos = Vector3.new(120, 60, 110)},
-            {name = "cp4", pos = Vector3.new(130, 65, 115)},
+            {name = "cp1", pos = Vector3.new(-662.63, 59.67, -442.64)},
+            {name = "cp2", pos = Vector3.new(-46.89, 43.66, -554.80)},
+            {name = "cp3", pos = Vector3.new(833.17, 67.66, -426.83)},
+            {name = "cp4", pos = Vector3.new(1013.87, 72.28, -109.33)},
+            {name = "cp5", pos = Vector3.new(2089.01, 71.66, -147.50)},
+            {name = "cp6", pos = Vector3.new(2330.89, 63.88, -139.16)},
+            {name = "cp7", pos = Vector3.new(2549.45, 43.53, -414.42)},
+            {name = "cp8", pos = Vector3.new(2682.72, 87.74, -334.34)},
+            {name = "cp9", pos = Vector3.new(2713.45, 159.87, -363.35)},
+            {name = "cp10", pos = Vector3.new(3037.36, 155.66, -365.00)},
+            {name = "cp11", pos = Vector3.new(3237.09, 119.67, -410.26)},
+            {name = "cp12", pos = Vector3.new(3668.34, 23.80, -220.37)},
+            {name = "cp13", pos = Vector3.new(3724.38, 91.66, -246.42)},
+            {name = "cp14", pos = Vector3.new(3966.40, 67.89, -306.83)},
+            {name = "summit", pos = Vector3.new(4443.94, 84.59, -310.74)},
         }
     },
     {
@@ -246,6 +255,38 @@ local function stopFly()
     if flyConnection then flyConnection:Disconnect() flyConnection = nil end
 end
 
+-- Sequential teleport function for Mount Atin cp1 to summit
+local function startSequentialTeleport()
+    local mountName = "Mount Atin"
+    local mount
+    for _, m in pairs(waypoints) do
+        if m.name == mountName then
+            mount = m
+            break
+        end
+    end
+    if not mount then
+        Rayfield:Notify({
+            Title = "❌ Error",
+            Content = "Mount Atin tidak ditemukan.",
+            Duration = 3
+        })
+        return
+    end
+
+    coroutine.wrap(function()
+        for _, cp in ipairs(mount.checkpoints) do
+            teleportToCheckpoint(mountName, cp.name)
+            task.wait(2) -- delay between teleports, can be adjusted
+        end
+        Rayfield:Notify({
+            Title = "🎉 Selesai",
+            Content = "Sudah menyelesaikan teleport sequential.",
+            Duration = 4
+        })
+    end)()
+end
+
 function loadMainGUI()
     if not keyVerified then return end
 
@@ -258,29 +299,44 @@ function loadMainGUI()
 
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
 
-    for _, mount in ipairs(waypoints) do
+    -- Dropdown for Mount Atin checkpoints (15 cp)
+    local cpNames = {}
+    for _, cp in ipairs(waypoints[1].checkpoints) do
+        table.insert(cpNames, cp.name)
+    end
+    TabTeleport:CreateDropdown({
+        Name = "🌍 Teleport ke Mount Atin",
+        Options = cpNames,
+        CurrentOption = cpNames[1],
+        Callback = function(selectedCheckpoint)
+            teleportToCheckpoint("Mount Atin", selectedCheckpoint)
+        end
+    })
+
+    -- Start button for sequential teleport from cp1 to summit
+    TabTeleport:CreateButton({
+        Name = "▶️ Start Sequential Teleport (cp1 to cp15)",
+        Callback = function()
+            startSequentialTeleport()
+        end
+    })
+
+    -- Teleport buttons for other mounts
+    for i = 2, #waypoints do
+        local mount = waypoints[i]
         if #mount.checkpoints > 1 then
-            if mount.name == "Mount Atin" then
-                local cpNames = {}
-                for _, cp in ipairs(mount.checkpoints) do
-                    table.insert(cpNames, cp.name)
-                end
-                TabTeleport:CreateDropdown({
-                    Name = "🌍 Teleport ke " .. mount.name,
-                    Options = cpNames,
-                    CurrentOption = cpNames[1],
-                    Callback = function(selectedCheckpoint)
-                        teleportToCheckpoint(mount.name, selectedCheckpoint)
-                    end
-                })
-            else
-                TabTeleport:CreateButton({
-                    Name = "🌍 Teleport ke: " .. mount.name,
-                    Callback = function()
-                        teleportToCheckpoint(mount.name, mount.checkpoints[1].name)
-                    end
-                })
+            local cpNamesOther = {}
+            for _, cp in ipairs(mount.checkpoints) do
+                table.insert(cpNamesOther, cp.name)
             end
+            TabTeleport:CreateDropdown({
+                Name = "🌍 Teleport ke " .. mount.name,
+                Options = cpNamesOther,
+                CurrentOption = cpNamesOther[1],
+                Callback = function(selectedCheckpoint)
+                    teleportToCheckpoint(mount.name, selectedCheckpoint)
+                end
+            })
         else
             TabTeleport:CreateButton({
                 Name = "🌍 Teleport ke: " .. mount.name,

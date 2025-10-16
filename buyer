@@ -1,5 +1,3 @@
--- ZeroKageゼロ影
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -14,19 +12,22 @@ if not ok or not Rayfield then
     return
 end
 
--- Key Verification System (tidak diubah dari script asli)
+-- Key system setup
 local localKeys = {
     { key = "rafelll", expiry = "2025-11-25" },
 }
+
 local function parseExpiry(str)
     local y, m, d = str:match("^(%d+)%-(%d+)%-(%d+)$")
     if not y then return nil end
     return { year = tonumber(y), month = tonumber(m), day = tonumber(d) }
 end
+
 local function getLocalDate()
     local t = os.date("*t")
     return { year = t.year, month = t.month, day = t.day }
 end
+
 local function isExpired(expiry, now)
     if now.year > expiry.year then return true end
     if now.year < expiry.year then return false end
@@ -35,6 +36,7 @@ local function isExpired(expiry, now)
     if now.day > expiry.day then return true end
     return false
 end
+
 local function validateKey(inputKey, keyList, now)
     for _, entry in ipairs(keyList) do
         if entry.key == inputKey then
@@ -111,10 +113,10 @@ local function showKeyWindow()
     })
 end
 
--- Waypoints dan checkpoints data dengan tempat yang punya banyak checkpoint
+-- Waypoints dan checkpoint data
 local waypoints = {
     {
-        name = "Yahayuk",
+        name = "Mount Atin",
         checkpoints = {
             {name = "cp1", pos = Vector3.new(100, 50, 100)},
             {name = "cp2", pos = Vector3.new(110, 55, 105)},
@@ -125,25 +127,38 @@ local waypoints = {
     {
         name = "Mount Cicok",
         checkpoints = {
-            {name = "Auto Summit", pos = Vector3.new(-161.89, 1598.15, -2141.80)}
+            {name = "default", pos = Vector3.new(-161.89, 1598.15, -2141.80)}
         }
     },
     {
         name = "Mount Tatansutarma",
         checkpoints = {
-            {name = "Auto Summit", pos = Vector3.new(-2234.73, 565.96, 1402.06)}
+            {name = "default", pos = Vector3.new(-2234.73, 565.96, 1402.06)}
         }
     }
 }
 
-function teleportToCheckpoint(mountName, checkpointName)
+local flying = false
+local flySpeed = 60
+local walkSpeed = 16
+local jumpPower = 50
+local antiAFKEnabled = false
+local bodyGyro, bodyVel, flyConnection, antiAFKConnection
+
+local function getHRP()
+    local c = player.Character
+    if not c then return nil end
+    return c:FindFirstChild("HumanoidRootPart")
+end
+
+local function teleportToCheckpoint(mountName, checkpointName)
     for _, mount in pairs(waypoints) do
         if mount.name == mountName then
             for _, cp in pairs(mount.checkpoints) do
                 if cp.name == checkpointName then
-                    local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                    local hrp = getHRP()
                     if hrp then
-                        hrp.CFrame = CFrame.new(cp.pos + Vector3.new(0,3,0))
+                        hrp.CFrame = CFrame.new(cp.pos + Vector3.new(0, 3, 0))
                         Rayfield:Notify({
                             Title = "✈️ Teleport Berhasil",
                             Content = "Ke " .. mountName .. " - " .. checkpointName,
@@ -167,19 +182,6 @@ function teleportToCheckpoint(mountName, checkpointName)
         Content = "Mount atau checkpoint tidak ditemukan.",
         Duration = 3
     })
-end
-
-local flySpeed = 60
-local walkingSpeed = 16
-local jumpPower = 50
-local flying = false
-local bodyGyro, bodyVel, flyConnection, antiAFKConnection
-local antiAFKEnabled = false
-
-local function getHRP()
-    local c = player.Character
-    if not c then return nil end
-    return c:FindFirstChild("HumanoidRootPart")
 end
 
 local function startFly()
@@ -252,25 +254,20 @@ function loadMainGUI()
             string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })
 
-    -- Tab Teleport dengan submenu pilihan checkpoint
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
-
     for _, mount in ipairs(waypoints) do
         if #mount.checkpoints > 1 then
-            -- Buat submenu untuk setiap checkpoint
-            local SubMenu = TabTeleport:CreateSection(mount.name)
             for _, cp in ipairs(mount.checkpoints) do
                 TabTeleport:CreateButton({
-                    Name = "Teleport ke " .. cp.name .. " (" .. mount.name .. ")",
+                    Name = "🌍 Teleport ke " .. mount.name .. " - " .. cp.name,
                     Callback = function()
                         teleportToCheckpoint(mount.name, cp.name)
                     end
                 })
             end
         else
-            -- Jika cuma 1 checkpoint pakai tombol biasa
             TabTeleport:CreateButton({
-                Name = "Teleport ke " .. mount.name,
+                Name = "🌍 Teleport ke: " .. mount.name,
                 Callback = function()
                     teleportToCheckpoint(mount.name, mount.checkpoints[1].name)
                 end
@@ -278,7 +275,6 @@ function loadMainGUI()
         end
     end
 
-    -- Tab Fitur tambahan (Copy Pos, Anti AFK)
     local TabFitur = Window:CreateTab("Fitur", 4483362458)
 
     TabFitur:CreateButton({
@@ -335,7 +331,6 @@ function loadMainGUI()
         end
     })
 
-    -- Tab Kecepatan (Fly, Speed, Jump)
     local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
 
     TabSpeed:CreateToggle({
@@ -374,13 +369,13 @@ function loadMainGUI()
         Range = {16, 200},
         Increment = 1,
         Suffix = "Speed",
-        CurrentValue = walkingSpeed,
+        CurrentValue = walkSpeed,
         Callback = function(value)
             local char = player.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
             if hum then
                 hum.WalkSpeed = value
-                walkingSpeed = value
+                walkSpeed = value
             end
         end,
     })
@@ -423,7 +418,7 @@ function loadMainGUI()
 
     player.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid")
-        hum.WalkSpeed = walkingSpeed
+        hum.WalkSpeed = walkSpeed
         hum.JumpPower = jumpPower
     end)
 end

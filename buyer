@@ -1,9 +1,11 @@
+-- ZeroKageゼロ影
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
--- Load Rayfield GUI
+-- Load Rayfield GUI aman
 local ok, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 end)
@@ -113,7 +115,7 @@ local function showKeyWindow()
     })
 end
 
--- Waypoints dan checkpoint data
+-- Waypoints dengan checkpoint
 local waypoints = {
     {
         name = "Mount Atin",
@@ -255,13 +257,27 @@ function loadMainGUI()
     })
 
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
+
     for _, mount in ipairs(waypoints) do
         if #mount.checkpoints > 1 then
-            for _, cp in ipairs(mount.checkpoints) do
+            if mount.name == "Mount Atin" then
+                local cpNames = {}
+                for _, cp in ipairs(mount.checkpoints) do
+                    table.insert(cpNames, cp.name)
+                end
+                TabTeleport:CreateDropdown({
+                    Name = "🌍 Teleport ke " .. mount.name,
+                    Options = cpNames,
+                    CurrentOption = cpNames[1],
+                    Callback = function(selectedCheckpoint)
+                        teleportToCheckpoint(mount.name, selectedCheckpoint)
+                    end
+                })
+            else
                 TabTeleport:CreateButton({
-                    Name = "🌍 Teleport ke " .. mount.name .. " - " .. cp.name,
+                    Name = "🌍 Teleport ke: " .. mount.name,
                     Callback = function()
-                        teleportToCheckpoint(mount.name, cp.name)
+                        teleportToCheckpoint(mount.name, mount.checkpoints[1].name)
                     end
                 })
             end

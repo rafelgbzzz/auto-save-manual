@@ -1,3 +1,5 @@
+-- zero
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -194,7 +196,7 @@ local function stopFly()
     if flyConnection then flyConnection:Disconnect() flyConnection = nil end
 end
 
--- Sequential teleport function with 5 seconds delay
+-- Sequential teleport function with 5 seconds delay for Mount Atin
 local function startSequentialTeleport()
     local mountName = "Mount Atin"
     local mount
@@ -238,11 +240,27 @@ function loadMainGUI()
 
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
 
-    -- Hapus teleport manual, ganti dengan tombol teleport otomatis saja
+    -- Tombol teleport otomatis Mount Atin sequential
     TabTeleport:CreateButton({
-        Name = "▶️ Start Sequential Teleport (cp1 to summit)",
+        Name = "▶️ Start Sequential Teleport (Mount Atin cp1 to summit)",
         Callback = function()
             startSequentialTeleport()
+        end
+    })
+
+    -- Tombol teleport manual Mount Cicok
+    TabTeleport:CreateButton({
+        Name = "🌍 Teleport ke Mount Cicok",
+        Callback = function()
+            teleportToCheckpoint("Mount Cicok", "default")
+        end
+    })
+
+    -- Tombol teleport manual Mount Tatansutarma
+    TabTeleport:CreateButton({
+        Name = "🌍 Teleport ke Mount Tatansutarma",
+        Callback = function()
+            teleportToCheckpoint("Mount Tatansutarma", "default")
         end
     })
 

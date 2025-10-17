@@ -1,4 +1,4 @@
--- ZeroKage
+-- ZeroKage2
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -86,6 +86,17 @@ local waypoints = {
         name = "Mount Tatansutarma",
         checkpoints = {
             {name = "default", pos = Vector3.new(-2234.73, 565.96, 1402.06)}
+        }
+    },
+    {
+        name = "Mount Yahayuk", -- Baru ditambahkan
+        checkpoints = {
+            {name = "cp1", pos = Vector3.new(-417.38, 249.15, 788.28)},
+            {name = "cp2", pos = Vector3.new(-326.98, 388.15, 526.27)},
+            {name = "cp3", pos = Vector3.new(295.09, 429.80, 494.48)},
+            {name = "cp4", pos = Vector3.new(324.67, 490.15, 365.49)},
+            {name = "cp5", pos = Vector3.new(232.07, 314.15, -143.64)},
+            {name = "summit", pos = Vector3.new(-614.56, 906.00, -552.13)},
         }
     }
 }
@@ -196,7 +207,7 @@ local function stopFly()
     if flyConnection then flyConnection:Disconnect() flyConnection = nil end
 end
 
--- Sequential teleport function with 5 seconds delay for Mount YNTKTS
+-- Sequential teleport function Mount YNTKTS
 local function startSequentialTeleport()
     local mountName = "Mount YNTKTS"
     local mount
@@ -228,6 +239,38 @@ local function startSequentialTeleport()
     end)()
 end
 
+-- Sequential teleport function Mount Yahayuk 6 checkpoint
+local function startSequentialTeleportYahayuk()
+    local mountName = "Mount Yahayuk"
+    local mount
+    for _, m in pairs(waypoints) do
+        if m.name == mountName then
+            mount = m
+            break
+        end
+    end
+    if not mount then
+        Rayfield:Notify({
+            Title = "❌ Error",
+            Content = "Mount Yahayuk tidak ditemukan.",
+            Duration = 3
+        })
+        return
+    end
+
+    coroutine.wrap(function()
+        for _, cp in ipairs(mount.checkpoints) do
+            teleportToCheckpoint(mountName, cp.name)
+            task.wait(5)
+        end
+        Rayfield:Notify({
+            Title = "🎉 Selesai",
+            Content = "Sudah menyelesaikan teleport sequential Mount Yahayuk.",
+            Duration = 4
+        })
+    end)()
+end
+
 function loadMainGUI()
     if not keyVerified then return end
 
@@ -240,7 +283,6 @@ function loadMainGUI()
 
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
 
-    -- Tombol teleport otomatis Mount YNTKTS sequential
     TabTeleport:CreateButton({
         Name = "▶️ Start Mount YNTKTS",
         Callback = function()
@@ -248,7 +290,13 @@ function loadMainGUI()
         end
     })
 
-    -- Tombol teleport manual Mount Cicok
+    TabTeleport:CreateButton({
+        Name = "▶️ Start Mount Yahayuk",
+        Callback = function()
+            startSequentialTeleportYahayuk()
+        end
+    })
+
     TabTeleport:CreateButton({
         Name = "🌍 Mount Cicok ~ Summit",
         Callback = function()
@@ -256,7 +304,6 @@ function loadMainGUI()
         end
     })
 
-    -- Tombol teleport manual Mount Tatansutarma
     TabTeleport:CreateButton({
         Name = "🌍 Mount Tatansutarma ~ Summit",
         Callback = function()

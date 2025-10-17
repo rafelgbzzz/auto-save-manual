@@ -261,7 +261,7 @@ local function startSequentialTeleportYahayuk()
     coroutine.wrap(function()
         for _, cp in ipairs(mount.checkpoints) do
             teleportToCheckpoint(mountName, cp.name)
-            task.wait(5)
+            task.wait(15)
         end
         Rayfield:Notify({
             Title = "🎉 Selesai",

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaynehart | Top Up Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #f6f6f6;
+      color: #111;
+    }
+
+    header {
+      background: linear-gradient(90deg, #007bff, #ff004c);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.6em;
+      letter-spacing: 1px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+    }
+
+    .hero h2 {
+      font-size: 2em;
+      color: #333;
+    }
+
+    .hero p {
+      margin-top: 10px;
+      font-size: 1.1em;
+      color: #555;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      background: linear-gradient(90deg, #007bff, #ff004c);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .section h3 {
+      font-size: 1.8em;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .product {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      transition: 0.3s;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+    }
+
+    .product img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .product h4 {
+      margin-top: 15px;
+      color: #222;
+    }
+
+    .product p {
+      color: #666;
+      margin: 8px 0;
+    }
+
+    footer {
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 25px;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+      }
+      nav {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Vaynehart</h1>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#produk">Produk</a>
+      <a href="#tentang">Tentang</a>
+      <a href="#kontak">Kontak</a>
+    </nav>
+  </header>
+
+  <section class="hero" id="home">
+    <h2>Top Up Diamond, UC, dan Robux Termurah!</h2>
+    <p>Vaynehart menyediakan top up cepat, aman, dan terpercaya untuk semua game favoritmu.</p>
+    <a href="https://wa.me/6283175513695?text=Halo%20Vaynehart%2C%20saya%20ingin%20order%20top%20up!" class="btn">Beli Sekarang</a>
+  </section>
+
+  <section class="section" id="produk">
+    <h3>Produk Kami</h3>
+    <div class="products">
+      <div class="product">
+        <img src="https://upload.wikimedia.org/wikipedia/en/3/35/Mobile_Legends_Bang_Bang_logo.png" alt="Mobile Legends">
+        <h4>Diamond Mobile Legends</h4>
+        <p>Top up cepat dan aman.</p>
+        <a href="https://wa.me/6283175513695?text=Halo%20Vaynehart%2C%20saya%20ingin%20beli%20Diamond%20ML!" class="btn">Order</a>
+      </div>
+
+      <div class="product">
+        <img src="https://seeklogo.com/images/P/pubg-mobile-logo-5E48CCFE7E-seeklogo.com.png" alt="PUBG">
+        <h4>UC PUBG Mobile</h4>
+        <p>Harga termurah se-Indonesia.</p>
+        <a href="https://wa.me/6283175513695?text=Halo%20Vaynehart%2C%20saya%20ingin%20beli%20UC%20PUBG!" class="btn">Order</a>
+      </div>
+
+      <div class="product">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Roblox_Logo_2022.svg" alt="Roblox">
+        <h4>Robux Roblox</h4>
+        <p>Proses instan, aman, terpercaya.</p>
+        <a href="https://wa.me/6283175513695?text=Halo%20Vaynehart%2C%20saya%20ingin%20beli%20Robux!" class="btn">Order</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="tentang">
+    <h3>Tentang Kami</h3>
+    <p>Vaynehart adalah penyedia top up game online terpercaya sejak 2025. Kami berkomitmen memberikan harga terbaik, layanan cepat, dan dukungan pelanggan yang ramah.  
+    Kami melayani berbagai game populer seperti Mobile Legends, PUBG Mobile, Free Fire, Roblox, dan lainnya.</p>
+  </section>
+
+  <section class="section" id="kontak">
+    <h3>Kontak Kami</h3>
+    <p>Hubungi kami melalui WhatsApp untuk pertanyaan atau pembelian:</p>
+    <a href="https://wa.me/6283175513695?text=Halo%20Vaynehart!" class="btn">Chat WhatsApp</a>
+  </section>
+
+  <footer>
+    <p>© 2025 Vaynehart | All Rights Reserved</p>
+  </footer>
+</body>
+  </html>

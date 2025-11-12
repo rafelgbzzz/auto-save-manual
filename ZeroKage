@@ -1,115 +1,110 @@
---[[
-    Paste script ini di Command Bar/Script Executor untuk membuat UI mirip foto.
-    Semua elemen (warna, teks, posisi) bisa diubah lagi supaya lebih identik!
---]]
+-- Auto Walk dan Simple Recording Script for Mobile Executor Roblox
 
 local player = game.Players.LocalPlayer
-local gui = Instance.new("ScreenGui", player.PlayerGui)
-gui.Name = "CustomUI"
-gui.ResetOnSpawn = false
+local char = player.Character or player.CharacterAdded:Wait()
+local hum = char:WaitForChild("Humanoid")
+local runService = game:GetService("RunService")
+local userInput = game:GetService("UserInputService")
 
--- Sidebar
-local sidebar = Instance.new("Frame", gui)
-sidebar.BackgroundColor3 = Color3.fromRGB(23, 32, 46)
-sidebar.Size = UDim2.new(0,200,1,0)
-sidebar.Position = UDim2.new(0,0,0,0)
+local autoWalkActive = false
+local recording = false
+local recordedPositions = {}
 
--- Title
-local title = Instance.new("TextLabel", sidebar)
-title.BackgroundTransparency = 1
-title.Size = UDim2.new(1,0,0,40)
-title.Position = UDim2.new(0, 0, 0, 10)
-title.Text = "zyn || Eploit"
-title.TextColor3 = Color3.fromRGB(220, 232, 255)
-title.TextSize = 22
-title.Font = Enum.Font.GothamSemibold
-
--- Badge (Versi)
-local badge = Instance.new("TextLabel", sidebar)
-badge.Size = UDim2.new(0,64,0,24)
-badge.Position = UDim2.new(0,130,0,15)
-badge.BackgroundColor3 = Color3.fromRGB(44, 248, 130)
-badge.TextColor3 = Color3.fromRGB(23,32,46)
-badge.TextSize = 15
-badge.Font = Enum.Font.GothamBold
-badge.Text = "V1.0.1"
-badge.BackgroundTransparency = 0
-badge.BorderSizePixel = 0
-badge.ClipsDescendants = true
-badge.ZIndex = 3
-badge.TextXAlignment = Enum.TextXAlignment.Center
-badge.TextYAlignment = Enum.TextYAlignment.Center
-badge.UICorner = Instance.new("UICorner", badge)
-badge.UICorner.CornerRadius = UDim.new(0, 8)
-
--- Sidebar Menu
-local sideBtns = {"Main", "Tools", "Tampilan", "Info"}
-local btnList = {}
-for i, v in ipairs(sideBtns) do
-    local btn = Instance.new("TextButton", sidebar)
-    btn.Name = v
-    btn.Size = UDim2.new(1, -26, 0, 32)
-    btn.Position = UDim2.new(0, 12, 0, 60 + (i-1) * 48)
-    btn.BackgroundColor3 = i == 1 and Color3.fromRGB(39, 52, 77) or Color3.fromRGB(23,32,46)
-    btn.TextColor3 = Color3.fromRGB(240,244,255)
-    btn.Text = v
-    btn.TextSize = 17
-    btn.Font = Enum.Font.Gotham
-    btn.AutoButtonColor = false
-    btn.ZIndex = 3
-
-    local round = Instance.new("UICorner", btn)
-    round.CornerRadius = UDim.new(0,8)
-
-    btnList[i] = btn
+-- Fungsi toggle Auto Walk (jalan otomatis maju)
+local function toggleAutoWalk()
+    autoWalkActive = not autoWalkActive
+    if autoWalkActive then
+        print("Auto Walk Activated")
+    else
+        print("Auto Walk Deactivated")
+    end
 end
 
--- Main Panel
-local mainPanel = Instance.new("Frame", gui)
-mainPanel.BackgroundColor3 = Color3.fromRGB(17,25,39)
-mainPanel.Position = UDim2.new(0,215,0,0)
-mainPanel.Size = UDim2.new(1,-215,1,0)
-
--- Template Card (Bisa diduplikasi & modif untuk fitur-fitur lain)
-local function createCard(label1, content, position)
-    local card = Instance.new("Frame", mainPanel)
-    card.BackgroundColor3 = Color3.fromRGB(28,37,56)
-    card.Size = UDim2.new(0,380,0,60)
-    card.Position = UDim2.new(0,24,0,24 + (position-1)*76)
-    card.BorderSizePixel = 0
-
-    local corner = Instance.new("UICorner", card)
-    corner.CornerRadius = UDim.new(0,12)
-
-    local title = Instance.new("TextLabel", card)
-    title.BackgroundTransparency = 1
-    title.Position = UDim2.new(0,16,0,6)
-    title.Size = UDim2.new(1,-32,0,22)
-    title.Font = Enum.Font.GothamSemibold
-    title.TextColor3 = Color3.fromRGB(220,232,255)
-    title.TextSize = 18
-    title.Text = label1
-    title.TextXAlignment = Enum.TextXAlignment.Left
-
-    local desc = Instance.new("TextLabel", card)
-    desc.BackgroundTransparency = 1
-    desc.Position = UDim2.new(0,16,0,28)
-    desc.Size = UDim2.new(1,-32,0,20)
-    desc.Font = Enum.Font.Gotham
-    desc.TextColor3 = Color3.fromRGB(180,200,220)
-    desc.TextSize = 15
-    desc.TextXAlignment = Enum.TextXAlignment.Left
-    desc.Text = content or ""
+-- Fungsi mulai rekam posisi karakter
+local function startRecording()
+    recordedPositions = {}
+    recording = true
+    print("Recording started")
 end
 
--- Contoh card
-createCard("Speed", "1.00x", 1)
-createCard("Interval Flip", "ON → Hadap belakang tiap frame", 2)
-createCard("Anti Beton Ultra-Smooth", "Mencegah jatuh secara kaku saat melayang", 3)
-createCard("START", "Mulai dari checkpoint terdekat", 4)
-createCard("AWAL KE AKHIR", "Jalankan semua checkpoint", 5)
+-- Fungsi berhenti rekam posisi
+local function stopRecording()
+    if recording then
+        recording = false
+        print("Recording stopped, "..#recordedPositions.." frames recorded")
+    else
+        print("Recording is not active")
+    end
+end
 
--- Tambah tombol, Toggle, Dropdown, dst secara manual sesuai kebutuhan
--- Tinggal tambah komponen baru di dalam masing-masing card
+-- Fungsi hapus rekaman
+local function deleteRecording()
+    recordedPositions = {}
+    print("Recording deleted")
+end
 
--- Aktifkan tab/menu dan navigasi selanjutnya: logika interaktif bisa diatur sendiri
+-- Fungsi simpan rekaman (simulasi, bisa di konek DataStore untuk permanen)
+local function saveRecording()
+    if #recordedPositions > 0 then
+        print("Recording saved with "..#recordedPositions.." frames")
+        -- Tambahkan kode penyimpanan ke DataStore jika perlu
+    else
+        print("No recording to save")
+    end
+end
+
+-- Fungsi putar rekaman dengan memindahkan karakter ke posisi yang direkam
+local function playRecording()
+    if #recordedPositions == 0 then
+        print("No recording available for playback")
+        return
+    end
+
+    spawn(function()
+        for _, pos in ipairs(recordedPositions) do
+            if char and char.PrimaryPart then
+                char:SetPrimaryPartCFrame(CFrame.new(pos))
+            end
+            wait(0.1) -- jeda antar frame
+        end
+        print("Playback finished")
+    end)
+end
+
+-- Fungsi stop playback (belum implementasi stop dinamis)
+local function stopPlayback()
+    print("Stop playback pressed (feature not implemented)")
+end
+
+-- Eksekusi Auto Walk dan rekam posisi tiap frame jika aktif
+runService.RenderStepped:Connect(function()
+    if autoWalkActive then
+        hum:Move(Vector3.new(0, 0, -1), true) -- jalan maju relatif ke kamera
+    end
+    if recording and char and char.PrimaryPart then
+        table.insert(recordedPositions, char.PrimaryPart.Position)
+    end
+end)
+
+-- Event input key untuk kendali fitur (atau bisa sesuaikan input mobile di executor)
+userInput.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+
+    if input.KeyCode == Enum.KeyCode.P then
+        toggleAutoWalk()
+    elseif input.KeyCode == Enum.KeyCode.R then
+        startRecording()
+    elseif input.KeyCode == Enum.KeyCode.T then
+        stopRecording()
+    elseif input.KeyCode == Enum.KeyCode.Y then
+        deleteRecording()
+    elseif input.KeyCode == Enum.KeyCode.U then
+        saveRecording()
+    elseif input.KeyCode == Enum.KeyCode.I then
+        playRecording()
+    elseif input.KeyCode == Enum.KeyCode.O then
+        stopPlayback()
+    end
+end)
+
+print("Script loaded: Use keys P,AUTO WALK; R,START REC; T,STOP REC; Y,DELETE; U,SAVE; I,PLAY; O,STOP PLAYBACK")

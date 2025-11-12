@@ -1,150 +1,293 @@
+-- ZeroKageゼロ影 2
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 local ok, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 end)
 if not ok or not Rayfield then
-    warn("Gagal load Rayfield GUI.")
+    warn("Gagal load Rayfield GUI. Periksa koneksi atau URL Rayfield.")
     return
 end
 
-local recordedSessions = {}
-local currentRecording = nil
-local playingBack = false
-local playbackConnection = nil
+-- Key system
+local localKeys = {
+    { key = "rafelll", expiry = "2025-11-25" }
+}
 
-local Window = Rayfield:CreateWindow({
-    Name = "Recording Controller",
-    LoadingTitle = "Recording",
-    LoadingSubtitle = "Simple record/playback system"
-})
-
-local Tab = Window:CreateTab("Recording", 4483362458)
-
-local displayFrame = Instance.new("Frame")
-displayFrame.Size = UDim2.new(1, 0, 0, 200)
-displayFrame.BackgroundTransparency = 1
-
-local UIListLayout = Instance.new("UIListLayout", displayFrame)
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-Tab:AddCustomElement(displayFrame)
-
-local function refreshRecordingList()
-    for _, child in pairs(displayFrame:GetChildren()) do
-        if child:IsA("TextLabel") then
-            child:Destroy()
-        end
-    end
-
-    for i, rec in ipairs(recordedSessions) do
-        local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, 0, 0, 30)
-        label.BackgroundTransparency = 0.5
-        label.BackgroundColor3 = Color3.new(0, 0, 0)
-        label.TextColor3 = Color3.new(1,1,1)
-        label.Text = string.format("Rekaman ke-%d: %d posisi", i, #rec)
-        label.LayoutOrder = i
-        label.Parent = displayFrame
-    end
+local function parseExpiry(str)
+    local y, m, d = str:match("^(%d+)%-(%d+)%-(%d+)$")
+    if not y then return nil end
+    return { year = tonumber(y), month = tonumber(m), day = tonumber(d) }
 end
 
-Tab:CreateButton({
-    Name = "⏺️ Start Recording",
-    Callback = function()
-        if currentRecording then
-            Rayfield:Notify({Title = "⚠️ Error", Content = "Recording already in progress", Duration = 3})
-            return
-        end
-        currentRecording = {}
-        Rayfield:Notify({Title = "Recording started", Duration = 3})
-    end,
-})
+local function getLocalDate()
+    local t = os.date("*t")
+    return { year = t.year, month = t.month, day = t.day }
+end
 
-Tab:CreateButton({
-    Name = "⏹️ Stop Recording",
-    Callback = function()
-        if not currentRecording then
-            Rayfield:Notify({Title = "⚠️ Error", Content = "No recording in progress", Duration = 3})
-            return
-        end
-        table.insert(recordedSessions, currentRecording)
-        currentRecording = nil
-        refreshRecordingList()
-        Rayfield:Notify({Title = "Recording stopped", Duration = 3})
-    end,
-})
+local function isExpired(expiry, now)
+    if now.year > expiry.year then return true end
+    if now.year < expiry.year then return false end
+    if now.month > expiry.month then return true end
+    if now.month < expiry.month then return false end
+    if now.day > expiry.day then return true end
+    return false
+end
 
-local selectedIndex = nil
-
-Tab:CreateButton({
-    Name = "💾 Save Last Recording (simulated)",
-    Callback = function()
-        if #recordedSessions == 0 then
-            Rayfield:Notify({Title = "⚠️ Error", Content = "No recordings to save", Duration = 3})
-            return
-        end
-        Rayfield:Notify({Title = "Saved", Content = "Simulated saving of last recording", Duration = 3})
-    end,
-})
-
-Tab:CreateButton({
-    Name = "▶️ Play Last Recording",
-    Callback = function()
-        if playingBack then
-            Rayfield:Notify({Title = "⚠️ Error", Content = "Already playing back", Duration = 3})
-            return
-        end
-        if #recordedSessions == 0 then
-            Rayfield:Notify({Title = "⚠️ Error", Content = "No recordings to play", Duration = 3})
-            return
-        end
-        local char = player.Character
-        if not char or not char.PrimaryPart then
-            Rayfield:Notify({Title = "⚠️ Error", Content = "Character not ready", Duration = 3})
-            return
-        end
-        playingBack = true
-        local playbackData = {}
-        for _, pos in ipairs(recordedSessions[#recordedSessions]) do
-            table.insert(playbackData, pos)
-        end
-        Rayfield:Notify({Title = "Playback started", Duration = 3})
-
-        playbackConnection = RunService.RenderStepped:Connect(function()
-            if #playbackData == 0 then
-                playbackConnection:Disconnect()
-                playingBack = false
-                Rayfield:Notify({Title = "Playback complete", Duration = 3})
-                return
-            end
-            local pos = table.remove(playbackData, 1)
-            char:SetPrimaryPartCFrame(CFrame.new(pos))
-        end)
-    end,
-})
-
-Tab:CreateButton({
-    Name = "⏹️ Stop Playback",
-    Callback = function()
-        if playingBack and playbackConnection then
-            playbackConnection:Disconnect()
-            playingBack = false
-            Rayfield:Notify({Title = "Playback stopped", Duration = 3})
-        else
-            Rayfield:Notify({Title = "⚠️ Error", Content = "No playback active", Duration = 3})
-        end
-    end,
-})
-
--- Record position each frame while recording
-RunService.RenderStepped:Connect(function()
-    if currentRecording then
-        local char = player.Character
-        if char and char.PrimaryPart then
-            table.insert(currentRecording, char.PrimaryPart.Position)
+local function validateKey(inputKey, keyList, now)
+    for _, entry in ipairs(keyList) do
+        if entry.key == inputKey then
+            local expiry = parseExpiry(entry.expiry)
+            if not expiry then return false, "invalid_expiry" end
+            if isExpired(expiry, now) then return false, "expired" end
+            return true, expiry
         end
     end
-end)
+    return false, "invalid"
+end
+
+local keyVerified = false
+local expiryDate = nil
+local KeyWindow
+
+local function showKeyWindow()
+    KeyWindow = Rayfield:CreateWindow({
+        Name = "🕸️ ZeroKageゼロ影",
+        LoadingTitle = "ZeroKage Security",
+        LoadingSubtitle = "Verifikasi Key Access"
+    })
+
+    local Tab = KeyWindow:CreateTab("Verifikasi", 4483362458)
+    Tab:CreateInput({
+        Name = "Masukkan Key",
+        PlaceholderText = "Contoh: abcd",
+        RemoveTextAfterFocusLost = false,
+        Callback = function(input)
+            Rayfield:Notify({
+                Title = "🔍 Memeriksa Key...",
+                Content = "Harap tunggu...",
+                Duration = 1.5
+            })
+
+            local now = getLocalDate()
+            local valid, info = validateKey(input, localKeys, now)
+            if valid then
+                keyVerified = true
+                expiryDate = info
+                Rayfield:Notify({
+                    Title = "✅ Key Diterima",
+                    Content = "Akses disetujui hingga " ..
+                        string.format("%02d/%02d/%04d", info.day, info.month, info.year),
+                    Duration = 4
+                })
+                KeyWindow.Visible = false
+                task.wait(0.2)
+                loadMainGUI()
+            else
+                local messages = {
+                    expired = "Key sudah kadaluarsa.",
+                    invalid_expiry = "Periksa format expiry pada key.",
+                    invalid = "Periksa kembali key kamu."
+                }
+                Rayfield:Notify({
+                    Title = "❌ Key Tidak Valid",
+                    Content = messages[info] or "Key tidak valid.",
+                    Duration = 3
+                })
+            end
+        end
+    })
+end
+
+function loadMainGUI()
+    if not keyVerified then return end
+
+    local flying = false
+    local flySpeed = 60
+    local walkSpeed = 16
+    local jumpPower = 50
+    local antiAFKEnabled = false
+    local autoWalkActive = false
+
+    local bodyGyro, bodyVel
+    local flyConnection
+    local antiAFKConnection
+
+    local recordedSessions = {}
+    local currentRecording = nil
+    local playingBack = false
+    local playbackConnection = nil
+
+    local Window = Rayfield:CreateWindow({
+        Name = "ZeroKageゼロ影",
+        LoadingTitle = "ZeroKage Menu",
+        LoadingSubtitle = "Key aktif hingga " .. string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
+    })
+
+    local Tab = Window:CreateTab("Fitur", 4483362458)
+
+    local displayFrame = Instance.new("Frame")
+    displayFrame.Size = UDim2.new(1, 0, 0, 200)
+    displayFrame.BackgroundTransparency = 1
+    displayFrame.LayoutOrder = 10
+
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Parent = displayFrame
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 5)
+
+    Tab:AddCustomElement(displayFrame)
+
+    local function refreshRecordingList()
+        for _, child in pairs(displayFrame:GetChildren()) do
+            if child:IsA("TextLabel") then
+                child:Destroy()
+            end
+        end
+        for i, rec in ipairs(recordedSessions) do
+            local label = Instance.new("TextLabel")
+            label.Size = UDim2.new(1, 0, 0, 30)
+            label.BackgroundTransparency = 0.5
+            label.BackgroundColor3 = Color3.new(0, 0, 0)
+            label.TextColor3 = Color3.new(1, 1, 1)
+            label.Text = string.format("Rekaman ke-%d: %d posisi", i, #rec)
+            label.LayoutOrder = i
+            label.Parent = displayFrame
+        end
+    end
+
+    Tab:CreateToggle({
+        Name = "🚶 Auto Walk (ON/OFF)",
+        CurrentValue = false,
+        Flag = "AutoWalkToggle",
+        Callback = function(state)
+            autoWalkActive = state
+            Rayfield:Notify({
+                Title = "Auto Walk",
+                Content = state and "Aktif" or "Nonaktif",
+                Duration = 3
+            })
+        end
+    })
+
+    Tab:CreateButton({
+        Name = "⏺️ Mulai Rekam",
+        Callback = function()
+            if currentRecording then
+                Rayfield:Notify({ Title = "⚠️ Warning", Content = "Rekaman sedang berlangsung!", Duration = 3 })
+                return
+            end
+            currentRecording = {}
+            Rayfield:Notify({ Title = "Rekaman dimulai", Duration = 3 })
+        end
+    })
+
+    Tab:CreateButton({
+        Name = "⏹️ Berhenti Rekam",
+        Callback = function()
+            if not currentRecording then
+                Rayfield:Notify({ Title = "⚠️ Warning", Content = "Belum ada rekaman berjalan!", Duration = 3 })
+                return
+            end
+            table.insert(recordedSessions, currentRecording)
+            currentRecording = nil
+            refreshRecordingList()
+            Rayfield:Notify({ Title = "Rekaman berhenti", Duration = 3 })
+        end
+    })
+
+    Tab:CreateButton({
+        Name = "💾 Simpan Rekaman (Simulasi)",
+        Callback = function()
+            if #recordedSessions == 0 then
+                Rayfield:Notify({ Title = "⚠️ Warning", Content = "Tidak ada rekaman untuk disimpan!", Duration = 3 })
+                return
+            end
+            Rayfield:Notify({ Title = "Simpan", Content = "Simulasi penyimpanan rekaman berhasil", Duration = 3 })
+        end
+    })
+
+    Tab:CreateButton({
+        Name = "▶️ Putar Rekaman Terakhir",
+        Callback = function()
+            if playingBack then
+                Rayfield:Notify({ Title = "⚠️ Warning", Content = "Sedang memutar rekaman lain!", Duration = 3 })
+                return
+            end
+            if #recordedSessions == 0 then
+                Rayfield:Notify({ Title = "⚠️ Warning", Content = "Tidak ada rekaman untuk diputar!", Duration = 3 })
+                return
+            end
+            local char = player.Character
+            if not char or not char.PrimaryPart then
+                Rayfield:Notify({ Title = "⚠️ Warning", Content = "Karakter belum siap!", Duration = 3 })
+                return
+            end
+
+            playingBack = true
+            local playbackData = {}
+            for _, pos in ipairs(recordedSessions[#recordedSessions]) do
+                table.insert(playbackData, pos)
+            end
+            Rayfield:Notify({ Title = "Memulai Playback", Content = "Memutar rekaman...", Duration = 3 })
+
+            playbackConnection = RunService.RenderStepped:Connect(function()
+                if #playbackData == 0 then
+                    playbackConnection:Disconnect()
+                    playingBack = false
+                    Rayfield:Notify({ Title = "Playback selesai", Content = "Rekaman telah selesai diputar.", Duration = 3 })
+                    return
+                end
+                local pos = table.remove(playbackData, 1)
+                char:SetPrimaryPartCFrame(CFrame.new(pos))
+            end)
+        end
+    })
+
+    Tab:CreateButton({
+        Name = "⏹️ Hentikan Playback",
+        Callback = function()
+            if playingBack and playbackConnection then
+                playbackConnection:Disconnect()
+                playingBack = false
+                Rayfield:Notify({ Title = "Playback dihentikan", Content = "Pemutaran rekaman dihentikan.", Duration = 3 })
+            else
+                Rayfield:Notify({ Title = "⚠️ Warning", Content = "Tidak ada pemutaran rekaman.", Duration = 3 })
+            end
+        end
+    })
+
+    -- Posisi rekam saat berjalan
+    RunService.RenderStepped:Connect(function()
+        if currentRecording then
+            local char = player.Character
+            if char and char.PrimaryPart then
+                table.insert(currentRecording, char.PrimaryPart.Position)
+            end
+        end
+    end)
+
+    -- Auto Walk saat aktif
+    RunService.RenderStepped:Connect(function()
+        if autoWalkActive then
+            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                local direction = workspace.CurrentCamera.CFrame.LookVector
+                direction = Vector3.new(direction.X, 0, direction.Z).Unit
+                hum:Move(direction, false)
+            end
+        end
+    end)
+
+    player.CharacterAdded:Connect(function(char)
+        local hum = char:WaitForChild("Humanoid")
+        hum.WalkSpeed = 16
+        hum.JumpPower = 50
+    end)
+end
+
+showKeyWindow()

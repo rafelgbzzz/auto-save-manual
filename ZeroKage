@@ -1,22 +1,18 @@
--- ZeroKageゼロ影
+-- Pastikan Rayfield sudah di-load dengan benar dari Sirius
+local ok, Rayfield = pcall(function()
+    return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+end)
+if not ok or not Rayfield then
+    warn("Gagal load Rayfield GUI.")
+    return
+end
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
--- Load Rayfield aman
-local ok, Rayfield = pcall(function()
-    return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
-end)
-if not ok or not Rayfield then
-    warn("Gagal load Rayfield GUI. Periksa koneksi atau URL Rayfield.")
-    return
-end
-
--------------------------------------------------
--- 🔑 Key Lokal & Expiry
--------------------------------------------------
+-- Data Key Lokal
 local localKeys = {
     { key = "rafelll", expiry = "2025-11-25" },
 }
@@ -54,32 +50,95 @@ local function validateKey(inputKey, keyList, now)
 end
 
 -------------------------------------------------
--- 🔑 Key System
+-- Replay & Auto Walk
 -------------------------------------------------
-local keyVerified = false
-local expiryDate = nil
-local KeyWindow = nil
+local recordings, currentRecording = {}, {}
+local recordingActive, replayActive, autoWalkEnabled = false, false, false
+local selectedReplay, replayConnection, autoWalkConnection
+local replayOptions = {}
+
+local function getHRP()
+    local c = player.Character
+    if not c then return nil end
+    return c:FindFirstChild("HumanoidRootPart")
+end
+
+local function startRecording()
+    recordingActive = true
+    currentRecording = {}
+    Rayfield:Notify({Title = "🔴 Mulai Rekaman", Content = "Rekaman telah dimulai.", Duration = 2})
+end
+
+local function saveRecording()
+    if not recordingActive or #currentRecording == 0 then
+        Rayfield:Notify({Title = "⚠️ Belum Ada Rekaman", Content = "Rekam dulu sebelum simpan.", Duration = 2})
+        return
+    end
+    recordingActive = false
+    local name = "Replay" .. tostring(#recordings+1)
+    table.insert(recordings, {name=name, data=currentRecording})
+    Rayfield:Notify({Title = "💾 Replay Disimpan", Content = string.format("Replay %d disimpan.", #recordings), Duration = 2})
+end
+
+local function playReplay(replay)
+    if not replay or replayActive then return end
+    local hrp = getHRP()
+    if not hrp then
+        Rayfield:Notify({Title = "⚠️ Gagal", Content = "Karakter belum siap.", Duration = 2})
+        return
+    end
+    replayActive = true
+    replayConnection = RunService.RenderStepped:Connect(function()
+        if not replayActive or not player.Character or not player.Character.Parent then
+            if replayConnection then replayConnection:Disconnect() replayConnection = nil end
+            return
+        end
+        if #replay.data > 0 then
+            local record = table.remove(replay.data, 1)
+            hrp.CFrame = record.cframe
+        else
+            replayActive = false
+            Rayfield:Notify({Title = "✅ Selesai", Content = "Replay telah selesai.", Duration = 2})
+            if replayConnection then replayConnection:Disconnect() replayConnection = nil end
+        end
+    end)
+end
+
+local function stopReplay()
+    if replayActive then
+        replayActive = false
+        if replayConnection then
+            replayConnection:Disconnect()
+            replayConnection = nil
+        end
+        Rayfield:Notify({Title = "⏹️ Replay Dihentikan", Content = "Replay dihentikan.", Duration = 2})
+    end
+end
+
+local function updateReplayOptions(dropdown)
+    replayOptions = {}
+    for _, v in ipairs(recordings) do table.insert(replayOptions, v.name) end
+    if dropdown and dropdown.SetOptions then dropdown:SetOptions(replayOptions) end
+end
+
+-------------------------------------------------
+-- Key Verification & Window
+-------------------------------------------------
+local keyVerified, expiryDate = false, nil
 
 local function showKeyWindow()
-    KeyWindow = Rayfield:CreateWindow({
-        Name = "🕸️ ZeroKageゼロ影",
-        LoadingTitle = "ZeroKage Security",
+    local KeyWindow = Rayfield:CreateWindow({
+        Name = "zyn || Eploit",
+        LoadingTitle = "zynXCode",
         LoadingSubtitle = "Verifikasi Key Access"
     })
-
     local Tab = KeyWindow:CreateTab("Verifikasi", 4483362458)
-
     Tab:CreateInput({
         Name = "Masukkan Key",
-        PlaceholderText = "Contoh: abcd",
+        PlaceholderText = "cth: rafelll",
         RemoveTextAfterFocusLost = false,
         Callback = function(input)
-            Rayfield:Notify({
-                Title = "🔍 Memeriksa Key...",
-                Content = "Harap tunggu...",
-                Duration = 1.5
-            })
-
+            Rayfield:Notify({Title = "🔍 Memeriksa Key...", Content = "Tunggu sebentar...", Duration = 1.5})
             local now = getLocalDate()
             local valid, info = validateKey(input, localKeys, now)
             if valid then
@@ -87,33 +146,19 @@ local function showKeyWindow()
                 expiryDate = info
                 Rayfield:Notify({
                     Title = "✅ Key Diterima",
-                    Content = "Akses disetujui hingga " ..
-                        string.format("%02d/%02d/%04d", info.day, info.month, info.year),
+                    Content = "Akses hingga " .. string.format("%02d/%02d/%04d", info.day, info.month, info.year),
                     Duration = 4
                 })
-
                 KeyWindow.Visible = false
                 task.wait(0.2)
                 loadMainGUI()
             else
                 if info == "expired" then
-                    Rayfield:Notify({
-                        Title = "⏰ Key Kadaluarsa",
-                        Content = "Key sudah kadaluarsa.",
-                        Duration = 4
-                    })
+                    Rayfield:Notify({Title = "⏰ Key Kadaluarsa", Content = "Key sudah expired.", Duration = 4})
                 elseif info == "invalid_expiry" then
-                    Rayfield:Notify({
-                        Title = "❌ Format Expiry Salah",
-                        Content = "Periksa format expiry pada key.",
-                        Duration = 4
-                    })
+                    Rayfield:Notify({Title = "❌ Format Expiry Salah", Content = "Periksa expiry di data.", Duration = 4})
                 else
-                    Rayfield:Notify({
-                        Title = "❌ Key Tidak Valid",
-                        Content = "Periksa kembali key kamu.",
-                        Duration = 3
-                    })
+                    Rayfield:Notify({Title = "❌ Key Tidak Valid", Content = "Key salah.", Duration = 3})
                 end
             end
         end
@@ -121,7 +166,7 @@ local function showKeyWindow()
 end
 
 -------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Speed + Copy Pos + Jump)
+-- MAIN GUI (Semua Fitur)
 -------------------------------------------------
 function loadMainGUI()
     if not keyVerified then return end
@@ -131,87 +176,55 @@ function loadMainGUI()
         {name = "Mount Tatansutarma", pos = Vector3.new(-2234.73, 565.96, 1402.06)}
     }
 
-    local flying = false
-    local flySpeed = 60
-    local walkSpeed = 16
-    local jumpPower = 50
-    local antiAFKEnabled = false
-    local bodyGyro, bodyVel
-    local flyConnection
-    local antiAFKConnection
-
-    local function getHRP()
-        local c = player.Character
-        if not c then return nil end
-        return c:FindFirstChild("HumanoidRootPart")
-    end
+    local flying, flySpeed, walkSpeed, jumpPower, antiAFKEnabled = false, 60, 16, 50, false
+    local bodyGyro, bodyVel, flyConnection, antiAFKConnection
 
     local function teleportTo(pos)
         local hrp = getHRP()
         if hrp then
             hrp.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
         else
-            Rayfield:Notify({
-                Title = "⚠️ Gagal Teleport",
-                Content = "Character belum siap.",
-                Duration = 2
-            })
+            Rayfield:Notify({Title = "⚠️ Gagal Teleport", Content = "Karakter belum siap.", Duration = 2})
         end
     end
 
-    -- ✈️ Fly System
+    -- Fly System
     local function startFly()
         local hrp = getHRP()
         if not hrp then
-            Rayfield:Notify({
-                Title = "⚠️ Gagal Fly",
-                Content = "Character belum siap.",
-                Duration = 2
-            })
+            Rayfield:Notify({Title = "⚠️ Gagal Fly", Content = "Karakter belum siap.", Duration = 2})
             return
         end
-
         flying = true
-
         bodyGyro = Instance.new("BodyGyro")
         bodyGyro.P = 9e4
         bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-        
         local cam = workspace.CurrentCamera
         local lookVector = cam.CFrame.LookVector
         lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
         bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + lookVector)
         bodyGyro.Parent = hrp
-
         bodyVel = Instance.new("BodyVelocity")
         bodyVel.Velocity = Vector3.zero
         bodyVel.MaxForce = Vector3.new(9e9, 9e9, 9e9)
         bodyVel.Parent = hrp
-
         flyConnection = RunService.RenderStepped:Connect(function()
             if not flying or not hrp or not hrp.Parent then return end
-
             local cam = workspace.CurrentCamera
             local lookVector = cam.CFrame.LookVector
             lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
             bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + lookVector)
-
             local moveDir = Vector3.zero
-
-            -- Keyboard (PC)
             if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir += lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir -= cam.CFrame.RightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += cam.CFrame.RightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0, 1, 0) end
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0, 1, 0) end
-
-            -- Mobile Joystick (HP)
             local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.MoveDirection.Magnitude > 0 then
                 moveDir = Vector3.new(humanoid.MoveDirection.X, 0, humanoid.MoveDirection.Z)
             end
-
             if moveDir.Magnitude > 0 then
                 bodyVel.Velocity = moveDir.Unit * flySpeed
             else
@@ -219,7 +232,6 @@ function loadMainGUI()
             end
         end)
     end
-
     local function stopFly()
         flying = false
         if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
@@ -227,113 +239,146 @@ function loadMainGUI()
         if flyConnection then flyConnection:Disconnect() flyConnection = nil end
     end
 
-    -- GUI Utama
     local Window = Rayfield:CreateWindow({
-        Name = "ZeroKageゼロ影",
-        LoadingTitle = "ZeroKage Menu",
-        LoadingSubtitle = "Key Aktif hingga " ..
-            string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
+        Name = "zyn || Eploit",
+        LoadingTitle = "zynXCode",
+        LoadingSubtitle = "V1.0.1 (Key aktif hingga " ..
+            string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year) .. ")"
+    })
+    local TabMain = Window:CreateTab("Main", 4483362458)
+    local TabTools = Window:CreateTab("Tools", 4483362458)
+    local TabTampilan = Window:CreateTab("Tampilan", 4483362458)
+    local TabInfo = Window:CreateTab("Info", 4483362458)
+
+    -- Contoh fitur utama di TabMain, TabTools, dsb.
+    -- Speed & related card
+    TabMain:CreateSlider({
+        Name = "Speed",
+        Range = {1, 5},
+        Increment = 0.1,
+        Suffix = "x",
+        CurrentValue = 1,
+        Callback = function(v) -- Implementasikan logika sesuai kebutuhan
+        end
+    })
+    TabMain:CreateToggle({
+        Name = "Interval Flip",
+        Description = "ON → Hadap belakang tiap frame",
+        CurrentValue = false,
+        Callback = function(val) -- Callback flip
+        end
+    })
+    TabMain:CreateToggle({
+        Name = "Anti Beton Ultra-Smooth",
+        Description = "Mencegah jatuh secara kaku saat melayang",
+        CurrentValue = false,
+        Callback = function(val) -- Callback anti beton
+        end
+    })
+    TabMain:CreateButton({
+        Name = "START",
+        Description = "Mulai dari checkpoint terdekat",
+        Callback = function() -- logic
+        end
+    })
+    TabMain:CreateButton({
+        Name = "AWAL KE AKHIR",
+        Description = "Jalankan semua checkpoint",
+        Callback = function() -- logic
+        end
     })
 
-    -- 🌍 TAB TELEPORT
-    local TabTeleport = Window:CreateTab("Teleport", 4483362458)
+    -- Teleport
+    TabTools:CreateLabel("Teleport")
     for _, wp in ipairs(waypoints) do
-        TabTeleport:CreateButton({
+        TabTools:CreateButton({
             Name = "🌍 Teleport ke: " .. wp.name,
             Callback = function() teleportTo(wp.pos) end
         })
     end
 
-    -------------------------------------------------
-    -- ⚙️ TAB FITUR
-    -------------------------------------------------
-    local TabFitur = Window:CreateTab("Fitur", 4483362458)
-
-    -- 💾 Copy Koordinat
-    TabFitur:CreateButton({
-        Name = "💾 Copy Koordinat Sekarang",
-        Callback = function()
-            local hrp = getHRP()
-            if not hrp then
-                Rayfield:Notify({
-                    Title = "⚠️ Gagal",
-                    Content = "Character belum siap.",
-                    Duration = 2
-                })
-                return
-            end
-            local pos = hrp.Position
-            local koordinat = string.format("Vector3.new(%.2f, %.2f, %.2f)", pos.X, pos.Y, pos.Z)
-            setclipboard(koordinat)
-            Rayfield:Notify({
-                Title = "✅ Koordinat Disalin",
-                Content = koordinat,
-                Duration = 4
-            })
-        end
-    })
-
-    -- 💤 Anti AFK Toggle
-    TabFitur:CreateToggle({
-        Name = "🛡️ Anti AFK (ON/OFF)",
+    -- Anti AFK & Auto Walk - Fitur Toggle
+    TabTools:CreateToggle({
+        Name = "🛡️ Anti AFK",
+        Description = "Aktifkan Anti-AFK",
         CurrentValue = false,
         Callback = function(value)
             antiAFKEnabled = value
             if value then
                 if antiAFKConnection then antiAFKConnection:Disconnect() end
                 antiAFKConnection = player.Idled:Connect(function()
-                    VirtualUser = game:service('VirtualUser')
-                    VirtualUser:CaptureController()
-                    VirtualUser:ClickButton2(Vector2.new())
+                    local vu = game:service('VirtualUser')
+                    vu:CaptureController()
+                    vu:ClickButton2(Vector2.new())
                 end)
-                Rayfield:Notify({
-                    Title = "🛡️ Anti AFK Aktif",
-                    Content = "Kamu aman dari kick AFK!",
-                    Duration = 4
-                })
             else
-                if antiAFKConnection then
-                    antiAFKConnection:Disconnect()
-                    antiAFKConnection = nil
-                end
-                Rayfield:Notify({
-                    Title = "💤 Anti AFK Nonaktif",
-                    Content = "AFK protection dimatikan.",
-                    Duration = 3
-                })
+                if antiAFKConnection then antiAFKConnection:Disconnect() end
+                antiAFKConnection = nil
+            end
+        end
+    })
+    TabTools:CreateToggle({
+        Name = "🚶‍♂️ Auto Walk",
+        Description = "Auto berjalan ke depan",
+        CurrentValue = false,
+        Callback = function(state)
+            autoWalkEnabled = state
+            if autoWalkConnection then autoWalkConnection:Disconnect() autoWalkConnection = nil end
+            if state then
+                autoWalkConnection = RunService.RenderStepped:Connect(function()
+                    local hrp = getHRP()
+                    if hrp then
+                        local look = workspace.CurrentCamera.CFrame.LookVector * 0.5
+                        hrp.CFrame = hrp.CFrame + Vector3.new(look.X, 0, look.Z) * 0.4
+                    end
+                end)
             end
         end
     })
 
-    -------------------------------------------------
-    -- ⚡ TAB KECEPATAN
-    -------------------------------------------------
-    local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
-
-    -- 🕊️ Fly Toggle
-    TabSpeed:CreateToggle({
-        Name = "🕊️ Mode Fly",
+    -- Replay Fitur di TabTampilan
+    TabTampilan:CreateButton({
+        Name = "🔴 Start Recording",
+        Callback = function() startRecording() end
+    })
+    TabTampilan:CreateButton({
+        Name = "💾 Save Recording",
+        Callback = function() saveRecording(); updateReplayOptions(dropdownReplay) end
+    })
+    local dropdownReplay
+    dropdownReplay = TabTampilan:CreateDropdown({
+        Name = "Pilih Replay",
+        Options = replayOptions,
+        Callback = function(selected)
+            for _, v in ipairs(recordings) do
+                if v.name == selected then selectedReplay = v break end
+            end
+        end
+    })
+    TabTampilan:CreateToggle({
+        Name = "▶️ Play Replay",
         CurrentValue = false,
         Callback = function(state)
-            if state then
-                startFly()
-                Rayfield:Notify({
-                    Title = "✈️ Fly Aktif",
-                    Content = "Gunakan W A S D / Joystick untuk bergerak.",
-                    Duration = 3
-                })
-            else
-                stopFly()
-                Rayfield:Notify({
-                    Title = "🛑 Fly Dimatikan",
-                    Content = "Mode fly telah berhenti.",
-                    Duration = 2
-                })
-            end
-        end,
+            if state and selectedReplay then playReplay({name=selectedReplay.name, data={table.unpack(selectedReplay.data)}})
+            else stopReplay() end
+        end
+    })
+    TabTampilan:CreateButton({
+        Name = "⏹️ Stop Replay",
+        Callback = function() stopReplay() end
     })
 
-    -- ⚡ Kecepatan Fly
+    -- Speed Tab
+    local TabSpeed = Window:CreateTab("Kecepatan", 4483362458)
+    TabSpeed:CreateToggle({
+        Name = "🕊️ Mode Fly",
+        Description = "Aktifkan mode terbang",
+        CurrentValue = false,
+        Callback = function(state)
+            if state then startFly()
+            else stopFly() end
+        end,
+    })
     TabSpeed:CreateSlider({
         Name = "⚡ Kecepatan Fly",
         Range = {10, 200},
@@ -342,9 +387,7 @@ function loadMainGUI()
         CurrentValue = flySpeed,
         Callback = function(v) flySpeed = v end
     })
-
-    -- 🏃 Kecepatan Lari
-    local SpeedSlider = TabSpeed:CreateSlider({
+    TabSpeed:CreateSlider({
         Name = "🏃 Kecepatan Lari",
         Range = {16, 200},
         Increment = 1,
@@ -353,16 +396,11 @@ function loadMainGUI()
         Callback = function(value)
             local char = player.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hum then
-                hum.WalkSpeed = value
-                walkSpeed = value
-            end
+            if hum then hum.WalkSpeed = value; walkSpeed = value end
         end,
     })
-
-    -- 🦘 Kekuatan Lompatan (Jump Power)
-    local JumpSlider = TabSpeed:CreateSlider({
-        Name = "🦘 Kekuatan Lompatan",
+    TabSpeed:CreateSlider({
+        Name = "🦘 Jump Power",
         Range = {50, 500},
         Increment = 10,
         Suffix = "Power",
@@ -370,41 +408,31 @@ function loadMainGUI()
         Callback = function(value)
             local char = player.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hum then
-                hum.UseJumpPower = true
-                hum.JumpPower = value
-                jumpPower = value
-            end
+            if hum then hum.UseJumpPower = true hum.JumpPower = value jumpPower = value end
         end,
     })
-
-    -- 🔄 Reset Speed & Jump
     TabSpeed:CreateButton({
-        Name = "↩️ Reset Kecepatan & Lompatan (Normal)",
+        Name = "🔄 Reset Speed & Jump",
         Callback = function()
             local char = player.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hum then
-                hum.WalkSpeed = 16
-                hum.JumpPower = 50
-            end
-            SpeedSlider:Set(16)
-            JumpSlider:Set(50)
-            Rayfield:Notify({
-                Title = "Reset Berhasil",
-                Content = "WalkSpeed & JumpPower dikembalikan ke normal.",
-                Duration = 3
-            })
+            if hum then hum.WalkSpeed = 16 hum.JumpPower = 50 end
         end,
     })
 
-    -- Jaga nilai tetap sama pas respawn
     player.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid")
         hum.WalkSpeed = walkSpeed
         hum.JumpPower = jumpPower
     end)
+
+    RunService.RenderStepped:Connect(function()
+        if recordingActive then
+            local hrp = getHRP()
+            if hrp then table.insert(currentRecording, {cframe = hrp.CFrame}) end
+        end
+    end)
 end
 
--- 🔑 Tampilkan GUI Key
+-- Tampilkan key GUI
 showKeyWindow()

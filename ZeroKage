@@ -1,11 +1,11 @@
--- ZeroKageゼロ影 2
+-- ZeroKageゼロ影
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
--- Load Rayfield aman
+-- Load Rayfield GUI
 local ok, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 end)
@@ -14,21 +14,22 @@ if not ok or not Rayfield then
     return
 end
 
--------------------------------------------------
--- 🔑 Key Lokal & Expiry
--------------------------------------------------
+-- Key Lokal dan Expiry
 local localKeys = {
     { key = "rafelll", expiry = "2025-11-25" },
 }
+
 local function parseExpiry(str)
     local y, m, d = str:match("^(%d+)%-(%d+)%-(%d+)$")
     if not y then return nil end
     return { year = tonumber(y), month = tonumber(m), day = tonumber(d) }
 end
+
 local function getLocalDate()
     local t = os.date("*t")
     return { year = t.year, month = t.month, day = t.day }
 end
+
 local function isExpired(expiry, now)
     if now.year > expiry.year then return true end
     if now.year < expiry.year then return false end
@@ -37,6 +38,7 @@ local function isExpired(expiry, now)
     if now.day > expiry.day then return true end
     return false
 end
+
 local function validateKey(inputKey, keyList, now)
     for _, entry in ipairs(keyList) do
         if entry.key == inputKey then
@@ -49,12 +51,10 @@ local function validateKey(inputKey, keyList, now)
     return false, "invalid"
 end
 
--------------------------------------------------
--- 🔑 Key System
--------------------------------------------------
+-- Key System
 local keyVerified = false
 local expiryDate = nil
-local KeyWindow = nil
+local KeyWindow
 
 local function showKeyWindow()
     KeyWindow = Rayfield:CreateWindow({
@@ -87,38 +87,26 @@ local function showKeyWindow()
                         string.format("%02d/%02d/%04d", info.day, info.month, info.year),
                     Duration = 4
                 })
-
                 KeyWindow.Visible = false
                 task.wait(0.2)
                 loadMainGUI()
             else
-                if info == "expired" then
-                    Rayfield:Notify({
-                        Title = "⏰ Key Kadaluarsa",
-                        Content = "Key sudah kadaluarsa.",
-                        Duration = 4
-                    })
-                elseif info == "invalid_expiry" then
-                    Rayfield:Notify({
-                        Title = "❌ Format Expiry Salah",
-                        Content = "Periksa format expiry pada key.",
-                        Duration = 4
-                    })
-                else
-                    Rayfield:Notify({
-                        Title = "❌ Key Tidak Valid",
-                        Content = "Periksa kembali key kamu.",
-                        Duration = 3
-                    })
-                end
+                local messages = {
+                    expired = "Key sudah kadaluarsa.",
+                    invalid_expiry = "Periksa format expiry pada key.",
+                    invalid = "Periksa kembali key kamu."
+                }
+                Rayfield:Notify({
+                    Title = "❌ Key Tidak Valid",
+                    Content = messages[info] or "Key tidak valid.",
+                    Duration = 3
+                })
             end
         end
     })
 end
 
--------------------------------------------------
--- ✈️ MAIN GUI (Fly + Teleport + Speed + Copy Pos + Jump + Auto Walk + Recording)
--------------------------------------------------
+-- MAIN GUI
 function loadMainGUI()
     if not keyVerified then return end
 
@@ -154,35 +142,25 @@ function loadMainGUI()
         if hrp then
             hrp.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
         else
-            Rayfield:Notify({
-                Title = "⚠️ Gagal Teleport",
-                Content = "Character belum siap.",
-                Duration = 2
-            })
+            Rayfield:Notify({Title = "⚠️ Gagal Teleport", Content = "Character belum siap.", Duration = 2})
         end
     end
 
     local function startFly()
         local hrp = getHRP()
         if not hrp then
-            Rayfield:Notify({
-                Title = "⚠️ Gagal Fly",
-                Content = "Character belum siap.",
-                Duration = 2
-            })
+            Rayfield:Notify({Title = "⚠️ Gagal Fly", Content = "Character belum siap.", Duration = 2})
             return
         end
         flying = true
         bodyGyro = Instance.new("BodyGyro")
         bodyGyro.P = 9e4
         bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-        
         local cam = workspace.CurrentCamera
         local lookVector = cam.CFrame.LookVector
         lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
         bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + lookVector)
         bodyGyro.Parent = hrp
-
         bodyVel = Instance.new("BodyVelocity")
         bodyVel.Velocity = Vector3.zero
         bodyVel.MaxForce = Vector3.new(9e9, 9e9, 9e9)
@@ -190,7 +168,6 @@ function loadMainGUI()
 
         flyConnection = RunService.RenderStepped:Connect(function()
             if not flying or not hrp or not hrp.Parent then return end
-
             local cam = workspace.CurrentCamera
             local lookVector = cam.CFrame.LookVector
             lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
@@ -201,8 +178,8 @@ function loadMainGUI()
             if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir -= cam.CFrame.RightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += cam.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0, 1, 0) end
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0, 1, 0) end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0,1,0) end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0,1,0) end
 
             local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.MoveDirection.Magnitude > 0 then
@@ -224,17 +201,17 @@ function loadMainGUI()
         if flyConnection then flyConnection:Disconnect() flyConnection = nil end
     end
 
-    -- Auto Walk logic tiap frame
+    -- Auto Walk tiap frame
     RunService.RenderStepped:Connect(function()
         if autoWalkActive then
             local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
             if hum then
                 local direction = workspace.CurrentCamera.CFrame.LookVector
-                direction = Vector3.new(direction.X, 0, direction.Z).Unit
+                direction = Vector3.new(direction.X,0,direction.Z).Unit
                 hum:Move(direction, false)
             end
         end
-
+        -- Simpan posisi saat rekam
         if currentRecording then
             local char = player.Character
             if char and char.PrimaryPart then
@@ -246,10 +223,10 @@ function loadMainGUI()
     local Window = Rayfield:CreateWindow({
         Name = "ZeroKageゼロ影",
         LoadingTitle = "ZeroKage Menu",
-        LoadingSubtitle = "Key Aktif hingga " ..
-            string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
+        LoadingSubtitle = "Key Aktif hingga " .. string.format("%02d/%02d/%04d", expiryDate.day, expiryDate.month, expiryDate.year)
     })
 
+    -- Teleport Tab
     local TabTeleport = Window:CreateTab("Teleport", 4483362458)
     for _, wp in ipairs(waypoints) do
         TabTeleport:CreateButton({
@@ -258,6 +235,7 @@ function loadMainGUI()
         })
     end
 
+    -- Fitur Tab
     local TabFitur = Window:CreateTab("Fitur", 4483362458)
 
     local selectedRecordingIndex = nil
@@ -266,7 +244,7 @@ function loadMainGUI()
     local function updateDropdown()
         local list = {}
         for i, rec in ipairs(recordedSessions) do
-            table.insert(list, "Rekaman ke-" .. i .. " (" .. #rec .. " posisi)")
+            table.insert(list, "Rekaman ke-"..i.." ("..#rec.." posisi)")
         end
         if recordingDropdown then
             recordingDropdown:UpdateOptions(list)
@@ -351,7 +329,7 @@ function loadMainGUI()
                 Rayfield:Notify({Title="⚠️", Content="Tidak ada rekaman untuk disimpan.", Duration=2})
                 return
             end
-            Rayfield:Notify({Title="💾 Rekaman Disimpan", Content=#recordedSessions .. " rekaman disimpan (simulasi).", Duration=3})
+            Rayfield:Notify({Title="💾 Rekaman Disimpan", Content=#recordedSessions.." rekaman disimpan (simulasi).", Duration=3})
         end,
     })
 
@@ -407,13 +385,14 @@ function loadMainGUI()
         end,
     })
 
-    -- Speed & Jump Tabs (sesuai kode Anda, tidak berubah)
+    -- Speed & Jump Power Tabs (sesuai kebutuhan)
 
     player.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid")
         hum.WalkSpeed = walkSpeed
         hum.JumpPower = jumpPower
     end)
+
 end
 
 showKeyWindow()

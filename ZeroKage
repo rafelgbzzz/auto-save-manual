@@ -1,4 +1,4 @@
--- ZeroKageゼロ影
+-- ZeroKageゼロ影 2
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -15,7 +15,7 @@ if not ok or not Rayfield then
 end
 
 -------------------------------------------------
--- 🔑 Key Lokal & Expiry (tidak berubah)
+-- 🔑 Key Lokal & Expiry
 -------------------------------------------------
 local localKeys = {
     { key = "rafelll", expiry = "2025-11-25" },
@@ -260,6 +260,21 @@ function loadMainGUI()
 
     local TabFitur = Window:CreateTab("Fitur", 4483362458)
 
+    local selectedRecordingIndex = nil
+    local recordingDropdown
+
+    local function updateDropdown()
+        local list = {}
+        for i, rec in ipairs(recordedSessions) do
+            table.insert(list, "Rekaman ke-" .. i .. " (" .. #rec .. " posisi)")
+        end
+        if recordingDropdown then
+            recordingDropdown:UpdateOptions(list)
+            recordingDropdown:Set(nil)
+        end
+        return list
+    end
+
     TabFitur:CreateToggle({
         Name = "🚶 Auto Walk (ON/OFF)",
         CurrentValue = false,
@@ -295,21 +310,9 @@ function loadMainGUI()
             table.insert(recordedSessions, currentRecording)
             currentRecording = nil
             Rayfield:Notify({Title="⏹️ Rekaman Berhenti", Content="Rekaman disimpan ke daftar.", Duration=3})
-            updateDropdown() -- Refresh list
+            updateDropdown()
         end,
     })
-
-    local selectedRecordingIndex = nil
-    local recordingDropdown
-
-    local function updateDropdown()
-        local list = {}
-        for i, rec in ipairs(recordedSessions) do
-            table.insert(list, "Rekaman ke-" .. i .. " (" .. #rec .. " posisi)")
-        end
-        if recordingDropdown then recordingDropdown:UpdateOptions(list) end
-        return list
-    end
 
     recordingDropdown = TabFitur:CreateDropdown({
         Name = "📂 Pilih Rekaman",
@@ -364,7 +367,7 @@ function loadMainGUI()
                 return
             end
             local playData = {}
-            for _,pos in ipairs(recordedSessions[selectedRecordingIndex]) do
+            for _, pos in ipairs(recordedSessions[selectedRecordingIndex]) do
                 table.insert(playData, pos)
             end
             local char = player.Character
@@ -404,9 +407,8 @@ function loadMainGUI()
         end,
     })
 
-    -- Speed & Jump Power Tabs sama seperti kode Anda (tidak berubah)
+    -- Speed & Jump Tabs (sesuai kode Anda, tidak berubah)
 
-    -- Jaga nilai tetap sama pas respawn
     player.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid")
         hum.WalkSpeed = walkSpeed

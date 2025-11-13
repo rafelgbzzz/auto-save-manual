@@ -1,0 +1,64 @@
+--// JZ Round Button + Fast Red-Blue Aura + Clean Dark UI
+--// by Jenosz&Zero
+
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+
+-- Tombol utama bulat
+local Btn = Instance.new("ImageButton", ScreenGui)
+Btn.Size = UDim2.new(0, 60, 0, 60)
+Btn.Position = UDim2.new(0.05, 0, 0.1, 0)
+Btn.Image = "rbxassetid://133071874216852" -- ganti dengan asset ID kamu
+Btn.BackgroundTransparency = 1
+Btn.Active = true
+Btn.Draggable = true
+
+-- Biar tombolnya bulat
+local BtnCorner = Instance.new("UICorner", Btn)
+BtnCorner.CornerRadius = UDim.new(1, 0)
+
+-- Garis aura menyala di pinggir tombol
+local Stroke = Instance.new("UIStroke", Btn)
+Stroke.Thickness = 4
+Stroke.Transparency = 0
+Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+Stroke.Color = Color3.fromRGB(255, 0, 0)
+
+-- Efek kedap-kedip cepat merah-biru halus
+task.spawn(function()
+    while true do
+        local pulse = math.abs(math.sin(tick() * 5))
+        local r = pulse
+        local b = 1 - pulse
+        local brightness = 1.5
+
+        local red = math.clamp(255 * r * brightness, 0, 255)
+        local blue = math.clamp(255 * b * brightness, 0, 255)
+
+        Stroke.Color = Color3.fromRGB(red, 0, blue)
+        task.wait(0.015)
+    end
+end)
+
+-- UI utama (gelap, halus, bisa digeser)
+local MainUI = Instance.new("Frame", ScreenGui)
+MainUI.Size = UDim2.new(0, 480, 0, 300)
+MainUI.Position = UDim2.new(0.3, 0, 0.3, 0)
+MainUI.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+MainUI.BackgroundTransparency = 0
+MainUI.Visible = false
+MainUI.Active = true
+MainUI.Draggable = true
+
+local UICorner = Instance.new("UICorner", MainUI)
+UICorner.CornerRadius = UDim.new(0, 12)
+
+-- Efek outline lembut di UI
+local Outline = Instance.new("UIStroke", MainUI)
+Outline.Thickness = 2
+Outline.Transparency = 0.2
+Outline.Color = Color3.fromRGB(30, 30, 40)
+
+-- Fungsi klik tombol JZ untuk munculin / sembunyiin UI
+Btn.MouseButton1Click:Connect(function()
+    MainUI.Visible = not MainUI.Visible
+end)

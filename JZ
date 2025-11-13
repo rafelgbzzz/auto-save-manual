@@ -1,5 +1,5 @@
 --// JZ Round Button + Fast Red-Blue Aura + Clean Dark UI
---// by Jenosz&Zero
+--// by Jenosz&Zero 2
 
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 

@@ -1,0 +1,732 @@
+-- ZeroKage v1.0
+--// SERVICES
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+--// CONFIG (ganti sesuai kebutuhan)
+--local LogoAssetID = "rbxassetid://133071874216852"      -- tombol logo yang muncul setelah key valid
+local ProfileImageID = "rbxassetid://0"                -- ganti dengan asset id profil kamu
+local Icon_Main_ID = "rbxassetid://0"            -- sidebar icon placeholders
+local Icon_Setting_ID = "rbxassetid://0"
+local githubURL = "https://raw.githubusercontent.com/rafelgbzzz/auto-save-manual/refs/heads/main/KEY_BUYER" -- Ganti dengan URL yang benar
+
+--// SCREEN GUI PARENT
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ZeroKageUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = PlayerGui
+
+--========================================
+-- KEY FRAME (input key)
+--========================================
+local KeyFrame = Instance.new("Frame", ScreenGui)
+KeyFrame.Name = "KeyFrame"
+KeyFrame.Size = UDim2.new(0, 340, 0, 192)
+KeyFrame.Position = UDim2.new(0.5, -170, 0.4, -96)
+KeyFrame.BackgroundColor3 = Color3.fromRGB(32, 34, 41)
+KeyFrame.BackgroundTransparency = 0.18
+KeyFrame.Active = true
+KeyFrame.Visible = true
+Instance.new("UICorner", KeyFrame).CornerRadius = UDim.new(0, 18)
+
+local Shadow = Instance.new("ImageLabel", KeyFrame)
+Shadow.Name = "Shadow"
+Shadow.Image = "rbxassetid://1316045217"
+Shadow.Size = UDim2.new(1.1, 10, 1.1, 10)
+Shadow.Position = UDim2.new(-0.05, 0, -0.05, 0)
+Shadow.BackgroundTransparency = 1
+Shadow.ImageTransparency = 0.7
+Shadow.ZIndex = 0
+
+local Title = Instance.new("TextLabel", KeyFrame)
+Title.Name = "Title"
+Title.Size = UDim2.new(1, -32, 0, 38)
+Title.Position = UDim2.new(0, 16, 0, 8)
+Title.Text = "Input the access key"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 24
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.BackgroundTransparency = 1
+
+local InputFrame = Instance.new("Frame", KeyFrame)
+InputFrame.Name = "InputFrame"
+InputFrame.Size = UDim2.new(1, -32, 0, 44)
+InputFrame.Position = UDim2.new(0, 16, 0, 56)
+InputFrame.BackgroundColor3 = Color3.fromRGB(40, 45, 55)
+InputFrame.BackgroundTransparency = 0.11
+Instance.new("UICorner", InputFrame).CornerRadius = UDim.new(0, 10)
+
+local InputStroke = Instance.new("UIStroke", InputFrame)
+InputStroke.Thickness = 2
+InputStroke.Color = Color3.fromRGB(85,135,255)
+InputStroke.Transparency = 0.13
+
+local KeyBox = Instance.new("TextBox", InputFrame)
+KeyBox.Name = "KeyBox"
+KeyBox.Size = UDim2.new(1, -16, 1, -12)
+KeyBox.Position = UDim2.new(0, 8, 0, 6)
+KeyBox.PlaceholderText = "Contoh: abcd"
+KeyBox.Font = Enum.Font.Gotham
+KeyBox.TextSize = 18
+KeyBox.TextColor3 = Color3.fromRGB(220,235,255)
+KeyBox.BackgroundTransparency = 1
+KeyBox.BorderSizePixel = 0
+KeyBox.Text = ""
+KeyBox.ClearTextOnFocus = false
+
+KeyBox.Focused:Connect(function()
+    InputStroke.Color = Color3.fromRGB(0,255,200)
+end)
+
+KeyBox.FocusLost:Connect(function()
+    InputStroke.Color = Color3.fromRGB(85,135,255)
+end)
+
+local SubmitBtn = Instance.new("TextButton", KeyFrame)
+SubmitBtn.Name = "SubmitBtn"
+SubmitBtn.Size = UDim2.new(1, -32, 0, 40)
+SubmitBtn.Position = UDim2.new(0, 16, 0, 112)
+SubmitBtn.Text = "Access key"
+SubmitBtn.Font = Enum.Font.GothamBold
+SubmitBtn.TextSize = 19
+SubmitBtn.BackgroundColor3 = Color3.fromRGB(50, 125, 255)
+SubmitBtn.TextColor3 = Color3.new(1, 1, 1)
+SubmitBtn.AutoButtonColor = true
+Instance.new("UICorner", SubmitBtn).CornerRadius = UDim.new(0, 12)
+
+SubmitBtn.MouseEnter:Connect(function()
+    SubmitBtn.BackgroundColor3 = Color3.fromRGB(38, 200, 255)
+end)
+
+SubmitBtn.MouseLeave:Connect(function()
+    SubmitBtn.BackgroundColor3 = Color3.fromRGB(50, 125, 255)
+end)
+
+local MsgLabel = Instance.new("TextLabel", KeyFrame)
+MsgLabel.Name = "MsgLabel"
+MsgLabel.Size = UDim2.new(1, -32, 0, 28)
+MsgLabel.Position = UDim2.new(0, 16, 0, 160)
+MsgLabel.TextColor3 = Color3.fromRGB(255, 75, 95)
+MsgLabel.BackgroundTransparency = 1
+MsgLabel.Font = Enum.Font.Gotham
+MsgLabel.TextSize = 17
+MsgLabel.Text = ""
+MsgLabel.TextWrapped = true
+
+-- initial fade-in keyframe
+KeyFrame.BackgroundTransparency = 1
+Shadow.ImageTransparency = 1
+Title.TextTransparency = 1
+InputFrame.BackgroundTransparency = 1
+MsgLabel.TextTransparency = 1
+SubmitBtn.BackgroundTransparency = 1
+
+task.spawn(function()
+    for i = 1, 13 do
+        KeyFrame.BackgroundTransparency = 1 - i*0.06
+        Shadow.ImageTransparency = 1 - i*0.07
+        Title.TextTransparency = 1 - i*0.07
+        InputFrame.BackgroundTransparency = 1 - i*0.07
+        MsgLabel.TextTransparency = 1 - i*0.075
+        SubmitBtn.BackgroundTransparency = 1 - i*0.075
+        task.wait(0.02)
+    end
+    KeyFrame.BackgroundTransparency = 0.18
+    Shadow.ImageTransparency = 0.7
+    Title.TextTransparency = 0
+    InputFrame.BackgroundTransparency = 0.11
+    MsgLabel.TextTransparency = 0
+    SubmitBtn.BackgroundTransparency = 0
+end)
+
+--========================================
+-- SISTEM KEY LOGIC (dari GitHub)
+--========================================
+local localKeys = {} -- table kosong, akan diisi dari GitHub
+
+-- fetch key dari GitHub
+local success, keyData = pcall(function()
+    local content = game:HttpGet(githubURL)
+    return loadstring(content)()
+end)
+
+if success and type(keyData) == "table" then
+    localKeys = keyData
+    print("Key list loaded:", #localKeys, "keys")
+else
+    warn("Gagal load key list dari GitHub, pakai local fallback")
+    -- fallback minimal
+    localKeys = {
+        { key = "JZofficial", expiry = "2025-11-25" },
+    }
+end
+
+local function parseExpiry(str)
+    local y, m, d = str:match("^(%d+)%-(%d+)%-(%d+)$")
+    if not y then return nil end
+    return { year = tonumber(y), month = tonumber(m), day = tonumber(d) }
+end
+
+local function getLocalDate()
+    local t = os.date("*t")
+    return { year = t.year, month = t.month, day = t.day }
+end
+
+local function isExpired(expiry, now)
+    if now.year > expiry.year then return true end
+    if now.year < expiry.year then return false end
+    if now.month > expiry.month then return true end
+    if now.month < expiry.month then return false end
+    if now.day > expiry.day then return true end
+    return false
+end
+
+local function validateKey(inputKey)
+    local now = getLocalDate()
+    for _, entry in ipairs(localKeys) do
+        if entry.key == inputKey then
+            local expiry = parseExpiry(entry.expiry)
+            if not expiry then return false, "Format expiry salah" end
+            if isExpired(expiry, now) then return false, "Key sudah kadaluarsa" end
+            return true
+        end
+    end
+    return false, "Key tidak valid"
+end
+
+--========================================
+-- BUTTON (logo) kecil yang muncul setelah key valid
+--========================================
+-- Tombol "ZeroKage" baru
+local ZeroKageButton = Instance.new("TextButton", ScreenGui)
+ZeroKageButton.Name = "ZeroKageButton"
+ZeroKageButton.Text = "🕸️  ZeroKage"
+ZeroKageButton.Font = Enum.Font.SourceSansBold
+ZeroKageButton.TextSize = 18
+ZeroKageButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ZeroKageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Latar belakang hitam
+ZeroKageButton.BackgroundTransparency = 0.5 -- Transparan
+ZeroKageButton.Size = UDim2.new(0, 150, 0, 30) -- Sesuaikan ukuran sesuai kebutuhan
+-- Posisi awal tombol
+local initialXScale = 0.05
+local initialXOffset = 300
+local initialYScale = 0.1
+local initialYOffset = -38
+ZeroKageButton.Position = UDim2.new(initialXScale, initialXOffset, initialYScale, initialYOffset) -- Sesuaikan posisi sesuai kebutuhan
+ZeroKageButton.Visible = false -- Awalnya tidak terlihat
+ZeroKageButton.Draggable = true -- Aktifkan fitur seret
+
+-- Efek lampu di pinggir
+local Stroke = Instance.new("UIStroke", ZeroKageButton)
+Stroke.Thickness = 3
+Stroke.Transparency = 0
+Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+Stroke.Color = Color3.fromRGB(100, 0, 255) -- Warna awal: ungu
+task.spawn(function()
+    while true do
+        local pulse = math.abs(math.sin(tick() * 3))
+        local red = math.clamp(255 * pulse, 0, 100) -- Cyan
+        local green = math.clamp(255 * (1 - pulse), 0, 0) -- Hijau
+        local blue = math.clamp(255 * pulse, 100, 255) -- Biru
+        Stroke.Color = Color3.fromRGB(red, green, blue)
+        task.wait(0.02)
+    end
+end)
+
+-- Membuat ujung setengah bulat
+local UICorner = Instance.new("UICorner", ZeroKageButton)
+UICorner.CornerRadius = UDim.new(0.5, 0) -- Setengah bulat
+
+-- Fungsi opsional jika tombol "ZeroKage" diklik
+ZeroKageButton.MouseButton1Click:Connect(function()
+    print("Tombol diklik!")
+    -- Tambahkan fungsi yang ingin Anda jalankan di sini
+end)
+
+--========================================
+-- MAIN UI - awalnya hidden
+--========================================
+local MainUI = Instance.new("Frame", ScreenGui)
+MainUI.Name = "MainUI"
+MainUI.Size = UDim2.new(0, 520, 0, 340)
+MainUI.Position = UDim2.new(0.5, -260, 0.5, -170) -- tengah layar
+MainUI.AnchorPoint = Vector2.new(0.5, 0.5)
+MainUI.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+MainUI.BackgroundTransparency = 1 -- akan fade-in
+MainUI.Visible = false
+MainUI.Active = true
+MainUI.Draggable = true
+Instance.new("UICorner", MainUI).CornerRadius = UDim.new(0, 12)
+
+local Outline = Instance.new("UIStroke", MainUI)
+Outline.Thickness = 2
+Outline.Transparency = 0.2
+Outline.Color = Color3.fromRGB(30, 30, 40)
+
+-- Header (modifikasi menampilkan profil Roblox)
+local Header = Instance.new("Frame", MainUI)
+Header.Name = "Header"
+Header.Size = UDim2.new(1, 0, 0, 44)
+Header.Position = UDim2.new(0, 0, 0, 0)
+Header.BackgroundTransparency = 1
+
+local HeaderImage = Instance.new("ImageLabel", Header)
+HeaderImage.Name = "HeaderImage"
+HeaderImage.Size = UDim2.new(0, 36, 0, 36)
+HeaderImage.Position = UDim2.new(0, 10, 0.5, -18)
+HeaderImage.BackgroundTransparency = 1
+HeaderImage.Image = "http://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=48&height=48&format=png"
+HeaderImage.ZIndex = 2
+
+local HeaderTitle = Instance.new("TextLabel", Header)
+HeaderTitle.Size = UDim2.new(0, 200, 0, 36)
+HeaderTitle.Position = UDim2.new(0, 52, 0, -4)
+HeaderTitle.Text = "🕸️ ZeroKage"
+HeaderTitle.Font = Enum.Font.GothamBold
+HeaderTitle.TextSize = 18
+HeaderTitle.TextColor3 = Color3.fromRGB(230,230,230)
+HeaderTitle.BackgroundTransparency = 1
+HeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Label kotak hijau untuk v1.0
+local VersionLabel = Instance.new("TextLabel", Header)
+VersionLabel.Size = UDim2.new(0, 30, 0, 20)
+VersionLabel.Position = UDim2.new(0, 150, 0, 5)
+VersionLabel.Text = "v1.0"
+VersionLabel.Font = Enum.Font.GothamBold
+VersionLabel.TextSize = 14
+VersionLabel.TextColor3 = Color3.fromRGB(255,255,255)
+VersionLabel.BackgroundColor3 = Color3.fromRGB(0,200,0)
+VersionLabel.TextXAlignment = Enum.TextXAlignment.Center
+VersionLabel.TextYAlignment = Enum.TextYAlignment.Center
+VersionLabel.ClipsDescendants = true
+Instance.new("UICorner", VersionLabel).CornerRadius = UDim.new(0, 4)
+
+-- Tambahkan nama player di bawah HeaderTitle
+local PlayerNameLabel = Instance.new("TextLabel", Header)
+PlayerNameLabel.Name = "PlayerNameLabel"
+PlayerNameLabel.Size = UDim2.new(0.6, -54, 0, 16)
+PlayerNameLabel.Position = UDim2.new(0, 52, 0, 26)
+PlayerNameLabel.BackgroundTransparency = 1
+PlayerNameLabel.Font = Enum.Font.Gotham
+PlayerNameLabel.TextSize = 14
+PlayerNameLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+PlayerNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+PlayerNameLabel.Text = "Player: " .. LocalPlayer.Name
+
+-- Container: sidebar + content
+local Container = Instance.new("Frame", MainUI)
+Container.Name = "Container"
+Container.Size = UDim2.new(1, -24, 1, -54)
+Container.Position = UDim2.new(0, 12, 0, 44)
+Container.BackgroundTransparency = 1
+
+-- Sidebar (kiri)
+local Sidebar = Instance.new("Frame", Container)
+Sidebar.Name = "Sidebar"
+Sidebar.Size = UDim2.new(0, 130, 1, 0)
+Sidebar.Position = UDim2.new(0, -12, 0, 0)
+Sidebar.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 10)
+
+local SidebarLayout = Instance.new("UIListLayout", Sidebar)
+SidebarLayout.Padding = UDim.new(0, 8)
+SidebarLayout.FillDirection = Enum.FillDirection.Vertical
+SidebarLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+SidebarLayout.SortOrder = Enum.SortOrder.LayoutOrder
+SidebarLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+
+-- profile area bottom left
+local ProfileFrame = Instance.new("Frame", Sidebar)
+ProfileFrame.Name = "ProfileFrame"
+ProfileFrame.Size = UDim2.new(1, -12, 0, 70)
+ProfileFrame.Position = UDim2.new(0, 6, 1, -86)
+ProfileFrame.BackgroundTransparency = 1
+
+local ProfileImage = Instance.new("ImageLabel", ProfileFrame)
+ProfileImage.Name = "ProfileImage"
+ProfileImage.Size = UDim2.new(0, 48, 0, 48)
+ProfileImage.Position = UDim2.new(0, 8, 0, 12)
+ProfileImage.Image = ProfileImageID
+ProfileImage.BackgroundTransparency = 1
+Instance.new("UICorner", ProfileImage).CornerRadius = UDim.new(1, 0)
+
+-- helper: buat sidebar button (icon + label)
+local function createSidebarButton(name, iconAsset, layoutOrder)
+    local btnFrame = Instance.new("Frame", Sidebar)
+    btnFrame.Name = name .. "Btn"
+    btnFrame.Size = UDim2.new(1, -12, 0, 30)
+    btnFrame.BackgroundTransparency = 1
+    btnFrame.LayoutOrder = layoutOrder
+
+    local inner = Instance.new("TextButton", btnFrame)
+    inner.Name = "Inner"
+    inner.Size = UDim2.new(1, 0, 1, 0)
+    inner.Position = UDim2.new(0, 0, 0, 0)
+    inner.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+    inner.BorderSizePixel = 0
+    inner.AutoButtonColor = true
+    inner.Font = Enum.Font.Gotham
+    inner.Text = ""
+    inner.TextTransparency = 1
+    Instance.new("UICorner", inner).CornerRadius = UDim.new(0, 8)
+
+    local stroke = Instance.new("UIStroke", inner)
+    stroke.Thickness = 1
+    stroke.Transparency = 0.6
+    stroke.Color = Color3.fromRGB(24,24,28)
+
+    local ico = Instance.new("ImageLabel", inner)
+    ico.Name = "Icon"
+    ico.Size = UDim2.new(0, 22, 0, 22)
+    ico.Position = UDim2.new(0, 12, 0.5, -11)
+    ico.Image = iconAsset
+    ico.BackgroundTransparency = 1
+
+    local lbl = Instance.new("TextLabel", inner)
+    lbl.Name = "Label"
+    lbl.Size = UDim2.new(1, -44, 1, 0)
+    lbl.Position = UDim2.new(0, 15, 0, 0)
+    lbl.Text = name
+    lbl.Font = Enum.Font.Gotham
+    lbl.TextSize = 15
+    lbl.TextColor3 = Color3.fromRGB(200,200,200)
+    lbl.BackgroundTransparency = 1
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+
+    return inner
+end
+
+-- create only 2 sidebar buttons: Main & SETTINGS
+local btnMain = createSidebarButton("🖥️  Main", Icon_Main_ID, 1)
+local btnSetting = createSidebarButton("⚙️  Settings", Icon_Setting_ID, 2)
+
+-- Content area (kanan)
+local Content = Instance.new("Frame", Container)
+Content.Name = "Content"
+Content.Size = UDim2.new(1, -115, 1, 0)
+Content.Position = UDim2.new(0, 122, 0, 5)
+Content.BackgroundTransparency = 1
+
+-- Card in content
+local Card = Instance.new("Frame", Content)
+Card.Name = "Card"
+Card.Size = UDim2.new(1, 0, 1, 0)
+Card.BackgroundColor3 = Color3.fromRGB(24, 26, 32)
+Instance.new("UICorner", Card).CornerRadius = UDim.new(0, 10)
+
+local CardStroke = Instance.new("UIStroke", Card)
+CardStroke.Thickness = 1
+CardStroke.Transparency = 0.75
+CardStroke.Color = Color3.fromRGB(34,34,40)
+
+-- Body area (content)
+local Body = Instance.new("Frame", Card)
+Body.Name = "Body"
+Body.Size = UDim2.new(1, -20, 1, -80)
+Body.Position = UDim2.new(0, 10, 0, 66)
+Body.BackgroundTransparency = 1
+
+--========================================
+-- UNIVERSAL FLY (PC + MOBILE) + SPEED SLIDER (FIXED)
+--========================================
+
+local Flying = false
+local FlySpeed = 80
+
+local function setFlying(active)
+    Flying = active
+
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    local hum = char:FindFirstChild("Humanoid")
+
+    if hum then
+        if Flying then
+            hum:ChangeState(Enum.HumanoidStateType.Physics)
+            hum.AutoRotate = false      -- STOP auto muter
+        else
+            hum.AutoRotate = true
+        end
+    end
+end
+
+
+-----------------------------------------------------------
+-- DIRECTION HANDLING (MOBILE)
+-----------------------------------------------------------
+local function getMobileDirection()
+    local hum = LocalPlayer.Character:FindFirstChild("Humanoid")
+    local move = hum and hum.MoveDirection or Vector3.zero
+
+    local cam = workspace.CurrentCamera
+    local look = cam.CFrame.LookVector
+
+    local vertical = 0
+    if look.Y > 0.35 then vertical = 1 end
+    if look.Y < -0.35 then vertical = -1 end
+
+    return Vector3.new(move.X, vertical, move.Z)
+end
+
+
+-----------------------------------------------------------
+-- PC DIRECTION HANDLING
+-----------------------------------------------------------
+local function getPCDirection(root)
+    local dir = Vector3.zero
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+        dir += root.CFrame.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+        dir -= root.CFrame.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+        dir -= root.CFrame.RightVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+        dir += root.CFrame.RightVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        dir += Vector3.new(0,1,0)
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+        dir -= Vector3.new(0,1,0)
+    end
+
+    return dir
+end
+
+
+-----------------------------------------------------------
+-- UPDATE FLY LOOP
+-----------------------------------------------------------
+local function updateFly()
+    if not Flying then return end
+
+    local char = LocalPlayer.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+
+    local root = char.HumanoidRootPart
+
+    -- STOP MUTER-MUTER
+    root.AssemblyAngularVelocity = Vector3.zero
+
+    -- LOCK ROTATION agar ga spin walau lompat
+    local cam = workspace.CurrentCamera
+    root.CFrame = CFrame.new(root.Position, root.Position + cam.CFrame.LookVector)
+
+    local dir
+    if UserInputService.TouchEnabled then
+        dir = getMobileDirection()
+    else
+        dir = getPCDirection(root)
+    end
+
+    if dir.Magnitude > 0 then
+        dir = dir.Unit
+        root.AssemblyLinearVelocity = dir * FlySpeed
+    else
+        root.AssemblyLinearVelocity = Vector3.zero  -- DIAM STABIL
+    end
+end
+
+RunService.Stepped:Connect(updateFly)
+
+
+--========================================
+-- BUTTON TOGGLE FLY
+--========================================
+
+local FlyToggleBtn = Instance.new("TextButton")
+FlyToggleBtn.Name = "FlyToggleBtn"
+FlyToggleBtn.Size = UDim2.new(0, 120, 0, 32)
+FlyToggleBtn.Position = UDim2.new(0, 10, 0, 10)   -- POSISI FIX
+FlyToggleBtn.BackgroundColor3 = Color3.fromRGB(128, 128, 128)
+FlyToggleBtn.TextColor3 = Color3.new(1, 1, 1)
+FlyToggleBtn.Font = Enum.Font.GothamBold
+FlyToggleBtn.TextSize = 14
+FlyToggleBtn.Text = "Fly: OFF"
+FlyToggleBtn.AutoButtonColor = false
+FlyToggleBtn.ZIndex = 10
+Instance.new("UICorner", FlyToggleBtn).CornerRadius = UDim.new(0, 8)
+
+FlyToggleBtn.MouseButton1Click:Connect(function()
+    setFlying(not Flying)
+    FlyToggleBtn.Text = Flying and "Fly: ON" or "Fly: OFF"
+end)
+
+FlyToggleBtn.Parent = Body
+
+
+--========================================
+-- Fade-in/fade-out for MainUI and toggle RightShift
+--========================================
+local function fadeInMainUI()
+    MainUI.Visible = true
+    MainUI.BackgroundTransparency = 1
+
+    -- set initial transparency for text/images
+    for _, obj in ipairs(MainUI:GetDescendants()) do
+        if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+            pcall(function() obj.TextTransparency = 1 end)
+            pcall(function() obj.ImageTransparency = 1 end)
+        end
+    end
+
+    -- fade background
+    TweenService:Create(MainUI, TweenInfo.new(0.35, Enum.EasingStyle.Quad), {BackgroundTransparency = 0}):Play()
+    wait(0.06)
+
+    -- reveal main sections
+    local revealList = {HeaderTitle, Sidebar, Card}
+    for i, v in ipairs(revealList) do
+        if v:IsA("Frame") then
+            TweenService:Create(v, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {BackgroundTransparency = 0}):Play()
+        else
+            pcall(function() v.TextTransparency = 0 end)
+        end
+        wait(0.08)
+    end
+
+    -- reveal inner text/images
+    for _, obj in ipairs(MainUI:GetDescendants()) do
+        if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+            if pcall(function() return obj.TextTransparency end) then
+                TweenService:Create(obj, TweenInfo.new(0.22, Enum.EasingStyle.Quad), {TextTransparency = 0}):Play()
+            end
+        elseif obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+            if pcall(function() return obj.ImageTransparency end) then
+                TweenService:Create(obj, TweenInfo.new(0.22, Enum.EasingStyle.Quad), {ImageTransparency = 0}):Play()
+            end
+        end
+    end
+end
+
+local function fadeOutMainUI()
+    -- fade out descendant visuals
+    for _, obj in ipairs(MainUI:GetDescendants()) do
+        if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+            pcall(function() obj.TextTransparency = 1 end)
+            pcall(function() obj.ImageTransparency = 1 end)
+        end
+    end
+
+    TweenService:Create(MainUI, TweenInfo.new(0.35, Enum.EasingStyle.Quad), {BackgroundTransparency = 1}):Play()
+    wait(0.36)
+    MainUI.Visible = false
+end
+
+-- toggle via RightShift
+UserInputService.InputBegan:Connect(function(io, gameProcessed)
+    if gameProcessed then return end
+    if io.KeyCode == Enum.KeyCode.RightShift then
+        if MainUI.Visible then
+            fadeOutMainUI()
+        else
+            fadeInMainUI()
+        end
+    end
+end)
+
+-- toggle via ZeroKageButton click
+ZeroKageButton.MouseButton1Click:Connect(function()
+    if MainUI.Visible then
+        fadeOutMainUI()
+    else
+        fadeInMainUI()
+    end
+end)
+
+--========================================
+-- Integrasi Key validation -> tampilkan Btn kalau valid
+--========================================
+SubmitBtn.MouseButton1Click:Connect(function()
+    local success, msg = validateKey(KeyBox.Text)
+    if success then
+        MsgLabel.TextColor3 = Color3.fromRGB(75,255,110)
+        MsgLabel.Text = "Key diterima. Selamat datang!"
+        wait(0.8)
+        KeyFrame.Visible = false
+        --Btn.Visible = true -- Menonaktifkan tombol logo lama
+        ZeroKageButton.Visible = true -- Menampilkan tombol ZeroKageButton
+        -- pop animation for btn
+        --Btn.Size = UDim2.new(0, 1, 0, 1) -- Menonaktifkan animasi tombol logo lama
+        ZeroKageButton.Size = UDim2.new(0, 150, 0, 30)
+        --Btn.Visible = true -- Menonaktifkan tombol logo lama
+
+        local tween = TweenService:Create(ZeroKageButton, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 150, 0, 30)})
+        tween:Play()
+        MsgLabel.Text = ""
+        -- optionally auto open the main UI once (fade-in)
+        -- fadeInMainUI()
+    else
+        MsgLabel.TextColor3 = Color3.fromRGB(255, 75, 95)
+        MsgLabel.Text = msg
+    end
+end)
+
+KeyBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        SubmitBtn:Activate()
+    end
+end)
+
+--========================================
+-- Fungsi Validasi Key (dari GitHub)
+--========================================
+local localKeys = {}
+
+local success, keyData = pcall(function()
+    local content = game:HttpGet(githubURL)
+    return loadstring(content)()
+end)
+
+if success and type(keyData) == "table" then
+    localKeys = keyData
+    print("Key list loaded:", #localKeys, "keys")
+else
+    warn("Failed to load key list from GitHub, using local fallback")
+    localKeys = {
+        {key = "JZofficial", expiry = "2025-11-25"},
+    }
+end
+
+local function parseExpiry(str)
+    local y, m, d = str:match("^(%d+)%-(%d+)%-(%d+)$")
+    if not y then return nil end
+    return {year = tonumber(y), month = tonumber(m), day = tonumber(d)}
+end
+
+local function getLocalDate()
+    local t = os.date("*t")
+    return {year = t.year, month = t.month, day = t.day}
+end
+
+local function isExpired(expiry, now)
+    if now.year > expiry.year then return true end
+    if now.year < expiry.year then return false end
+    if now.month > expiry.month then return true end
+    if now.month < expiry.month then return false end
+    if now.day > expiry.day then return true end
+    return false
+end
+
+local function validateKey(inputKey)
+    local now = getLocalDate()
+    for _, entry in ipairs(localKeys) do
+        if entry.key == inputKey then
+            local expiry = parseExpiry(entry.expiry)
+            if not expiry then return false, "Invalid expiry format" end
+            if isExpired(expiry, now) then return false, "Key has expired" end
+            return true
+        end
+    end
+    return false, "Invalid key"
+end

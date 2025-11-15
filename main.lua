@@ -1,69 +1,69 @@
--- Pastikan sudah load library WindUI yang kamu lampirkan
-
--- Misal: loadstring(game:HttpGet('https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua'))()
-local WindUI = loadfile('main.lua')() -- gunakan file lokal jika di executor mendukung
-
+-- Buat Window utama
 local ui = WindUI.CreateWindow({
     Title = "STREE HUB",
     Author = "KinoseC - flux li",
-    Icon = "rbxassetid://7733765398", -- gunakan ikon sesuai kebutuhanmu
+    Icon = "rbxassetid://7733765398", -- bebas ganti icon
     Size = UDim2.new(0, 640, 0, 420),
-    Theme = WindUI.Themes.Dark,
+    Theme = WindUI.Themes.Dark, -- pakai tema gelap
     Folder = "StreeHub",
     MinSize = Vector2.new(480,325),
     Acrylic = false,
-    -- Untuk draggable, resizable, dsb., bisa diatur juga di sini
 })
 
--- Badge/label versi & status freemium (seperti pada atas window)
+-- Label badge di header window
 ui.Tag({Title = "v0.0.2.8", Color = Color3.fromRGB(34, 197, 94)})
 ui.Tag({Title = "Freemium", Color = Color3.fromRGB(255, 193, 7)})
 
--- Sisi sidebar kiri: Daftar menu utama
-local tabNames = {
-    {"Info", "info"}, 
+-- Buat Tab sidebar (sidebar di kiri)
+local tabs = {
+    {"Info", "info"},
     {"Players", "users"},
     {"Main", "key"},
     {"Shop", "shopping-bag"},
     {"Teleport", "map"},
     {"Settings", "settings"},
 }
-local sidebarTabs = {}
-for _, data in ipairs(tabNames) do
-    local tab = ui.Tab({Title = data[1], Icon = data[2]})
-    table.insert(sidebarTabs, tab)
-    -- Contoh: Setiap tab punya section untuk isian masing-masing
-    tab.Section({Title=data[1].." Section"})
+local tabSections = {}
+for i, v in ipairs(tabs) do
+    local tab = ui.Tab({Title = v[1], Icon = v[2]})
+    tabSections[v[1]] = tab.Section({Title = v[1]})
 end
 
--- Section anonim user profile (bagian paling bawah sidebar)
+-- Section USER Anonymous (paling bawah sidebar)
 ui.User.SetAnonymous(true)
 ui.User.Enable()
--- Kalau ingin menambahkan klik untuk info lebih lanjut:
 ui.User.Callback = function()
-    WindUI.Notify({Title="Anonymous", Content="Profil klik!", Duration=2})
+    WindUI.Notify({Title="Anonymous", Content="Info user klik!", Duration=2})
 end
 
--- Contoh: Mengisi elemen di Tab Info
-local infoSection = sidebarTabs[1].Section({Title="Deskripsi", Icon="info"})
-infoSection.Paragraph({Title="Ini adalah Stree Hub v0.0.2.8 Freemium.
-Script hub universal untuk berbagai game Roblox. Menu di sidebar kiri untuk fitur lengkap."})
+-- Tab Info - Tambahkan penjelasan sederhana
+local sectionInfo = tabSections["Info"]
+sectionInfo.Paragraph({Title = "Ini adalah tampilan Stree Hub v0.0.2.8 Freemium versi polos.
+Menu di sidebar kiri untuk akses fitur berbeda."})
 
--- Friend system, boost, coin dsb bisa ditaruh di Section berikutnya
-infoSection.Paragraph({Title="🟡 Friendlist: +0%
-🪙 1.6kk
-Lokasi: Pulau Yakushima"})
+-- Tab Players - Polosan saja
+local sectionPlayers = tabSections["Players"]
+sectionPlayers.Paragraph({Title = "Daftar player akan tampil di sini (polosan)."})
 
--- Custom button contoh di tab "Main"
-local mainSection = sidebarTabs[3].Section({Title="Script Utama"})
-mainSection.Button({Title = "Memunculkan Kapal", Callback = function()
+-- Tab Main - Tombol contoh
+local sectionMain = tabSections["Main"]
+sectionMain.Paragraph({Title = "Menu utama script, contoh tombol di bawah."})
+sectionMain.Button({Title = "Memunculkan Kapal", Callback = function()
     WindUI.Notify({Title = "Kapal berhasil dimunculkan.", Duration=2})
 end})
 
--- Untuk tab/tab menu lainnya, tambahkan sesuai kebutuhan, gunakan Section/Input/Toggle/Button WindUI
+-- Tab Shop
+local sectionShop = tabSections["Shop"]
+sectionShop.Paragraph({Title = "Toko, info, atau menu pembelian bisa kamu taruh di sini."})
 
--- Agar jendela muncul di tengah layar (opsional)
+-- Tab Teleport
+local sectionTeleport = tabSections["Teleport"]
+sectionTeleport.Paragraph({Title = "Fitur teleportasi, pilih tujuan atau interaksi lainnya."})
+
+-- Tab Settings
+local sectionSettings = tabSections["Settings"]
+sectionSettings.Paragraph({Title = "Pengaturan dan preferensi bisa diatur di sini."})
+
+-- Window muncul di tengah
 ui.SetToTheCenter()
-
--- Buka window otomatis
 ui.Open()

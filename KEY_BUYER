@@ -3,3 +3,4 @@ return {
     { key = "PLAYER123", expiry = "2025-12-31" },
     { key = "TESTKEY",    expiry = "2026-01-15" },
 }
+hallo

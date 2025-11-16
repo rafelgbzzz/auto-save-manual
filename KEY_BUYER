@@ -1,5 +1,6 @@
-return {
-    { key = "JZofficial", expiry = "2025-11-25" },
-    { key = "PLAYER123", expiry = "2025-12-31" },
-    { key = "TESTKEY",    expiry = "2026-01-15" },
-}
+return [
+    {
+        key = "salom",
+        expiry = "2026-01-01"
+    }
+]

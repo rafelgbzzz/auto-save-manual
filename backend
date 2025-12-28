@@ -1,5 +1,12 @@
 [
-  { "user": "zerokage", "pass": "zerokage123" },
-  { "user": "rafel", "pass": "passwordganteng" },
-  { "user": "guest", "pass": "12345" }
+  {
+    "user": "zerokage",
+    "pass": "123",
+    "role": "admin"
+  },
+  {
+    "user": "zerokage",
+    "pass": "321",
+    "role": "member"
+  }
 ]

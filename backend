@@ -2,13 +2,12 @@
   {
     "user": "zerokage",
     "pass": "123",
-    "role": "admin",
-    "expired": "2030-12-31"
+    "role": "admin"
   },
   {
     "user": "budi",
     "pass": "123",
     "role": "member",
-    "expired": "2025-12-29"
+    "expired": "2025-12-27"
   }
 ]

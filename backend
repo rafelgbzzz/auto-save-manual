@@ -9,5 +9,11 @@
     "pass": "123",
     "role": "member",
     "expired": "2025-12-27"
+  },
+  {
+    "user": "bodo",
+    "pass": "123",
+    "role": "member",
+    "expired": "2025-12-27"
   }
 ]

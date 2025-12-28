@@ -1,5 +1,5 @@
-[User: rafel | Pass: rafel123]
-[User: tes | Pass: tes]
-
-User: rafel | Pass: rafel123 | Date: 28/12/2025, 17.37.02
-User: rafel | Pass: rafel123 | Date: 28/12/2025, 17.37.23
+[
+  { "user": "zerokage", "pass": "zerokage123" },
+  { "user": "rafel", "pass": "passwordganteng" },
+  { "user": "guest", "pass": "12345" }
+]

@@ -9,7 +9,7 @@
         "user": "asep",
         "pass": "123",
         "role": "member",
-        "expired": "2025-12-31"
+        "expired": "PERMANENT"
     },
     {
         "user": "soleh",

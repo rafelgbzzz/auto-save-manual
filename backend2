@@ -1,0 +1,10 @@
+[
+  {
+    "key": "zero",
+    "pass": "123"
+  },
+  {
+    "key": "ADMIN",
+    "pass": "zero"
+  }
+]

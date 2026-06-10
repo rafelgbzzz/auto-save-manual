@@ -1,35 +1,17 @@
 {
-  "stok_gmail": [],
+  "stok_gmail": [
+    "gmail1@gmail.com",
+    "gmail2@gmail.com"
+  ],
+
   "hasil_setoran": [
     {
-      "user": "zerokage",
-      "email_dikirim": "bangganteng202@gmail.com",
-      "waktu": "10/6/2026, 18.57.32"
+      "email": "test1@gmail.com",
+      "status": "PENDING"
     },
     {
-      "user": "zerokage",
-      "email_dikirim": "slebewakun771@gmail.com",
-      "waktu": "10/6/2026, 18.56.25"
-    },
-    {
-      "user": "zerokage",
-      "email_dikirim": "zerokagemod889@gmail.com",
-      "waktu": "10/6/2026, 18.56.25"
-    },
-    {
-      "user": "zerokage",
-      "email_dikirim": "rogernotodipuro543@gmail.com",
-      "waktu": "10/6/2026, 18.56.25"
-    },
-    {
-      "user": "zerokage",
-      "email_dikirim": "garridocook112@gmail.com",
-      "waktu": "10/6/2026, 18.56.25"
-    },
-    {
-      "user": "Guest",
-      "email_dikirim": "garridocook112@gmail.com",
-      "waktu": "2026-06-10 18:45"
+      "email": "test2@gmail.com",
+      "status": "PENDING"
     }
   ]
 }

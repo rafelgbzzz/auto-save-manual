@@ -2,8 +2,8 @@
   "users": [
     {
       "id_login": 1001,
-      "username": "admin",
-      "password": "admin123",
+      "user": "admin",
+      "pass": "admin123",
       "role": "admin",
       "saldo": 0,
       "total_setoran": 0,

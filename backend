@@ -1,20 +1,17 @@
-[
+{
+  "users": [
     {
-        "user": "zerokage",
-        "pass": "123",
-        "role": "admin",
-        "expired": "PERMANENT"
-    },
-    {
-        "user": "asep",
-        "pass": "123",
-        "role": "member",
-        "expired": "PERMANENT"
-    },
-    {
-        "user": "soleh",
-        "pass": "123",
-        "role": "member",
-        "expired": "2025-12-31"
+      "id_login": 1001,
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin",
+      "saldo": 0,
+      "total_setoran": 0,
+      "pending": 0,
+      "success": 0,
+      "invalid": 0,
+      "riwayat": []
     }
-]
+  ],
+  "global_history": []
+}

@@ -4,6 +4,10 @@
   ],
   "hasil_setoran": [
     {
+      "email": "gmail1@gmail.com",
+      "status": "PENDING"
+    },
+    {
       "email": "test1@gmail.com",
       "status": "PENDING"
     },

@@ -19,10 +19,15 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 6,
+      "pending": 7,
       "success": 0,
       "invalid": 0,
       "riwayat": [
+        {
+          "email": "gmail1@gmail.com",
+          "status": "PENDING",
+          "catatan": "Menunggu pengecekan oleh admin web"
+        },
         {
           "email": "bangganteng202@gmail.com",
           "status": "PENDING",

@@ -13,7 +13,7 @@
     },
     {
       "email": "test2@gmail.com",
-      "status": "PENDING"
+      "status": "REJECT"
     }
   ]
 }

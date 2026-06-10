@@ -19,10 +19,16 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 0,
+      "pending": 1,
       "success": 0,
       "invalid": 0,
-      "riwayat": []
+      "riwayat": [
+        {
+          "email": "payoutcepat207@gmail.com",
+          "status": "PENDING",
+          "catatan": "Menunggu pengecekan oleh admin web"
+        }
+      ]
     }
   ],
   "global_history": []

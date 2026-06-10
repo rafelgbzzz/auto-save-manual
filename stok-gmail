@@ -9,7 +9,7 @@
     },
     {
       "email": "test1@gmail.com",
-      "status": "PENDING"
+      "status": "REJECT"
     },
     {
       "email": "test2@gmail.com",

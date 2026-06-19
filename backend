@@ -17,38 +17,12 @@
       "user": "zerokage",
       "pass": "123",
       "role": "member",
-      "saldo": 9000,
+      "saldo": 10000,
       "total_setoran": 0,
       "pending": 0,
       "success": 5,
       "invalid": 0,
-      "riwayat": [
-        {
-          "email": "akunstok10@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "akunstok9@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "WITHDRAW [DANA]",
-          "status": "SUCCESS",
-          "catatan": "Tarik Rp 12.000 ke 083175513695. Sedang diproses."
-        },
-        {
-          "email": "akunstok8@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "akunstok6@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        }
-      ]
+      "riwayat": []
     },
     {
       "id_login": 906706,

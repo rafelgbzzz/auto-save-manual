@@ -43,5 +43,10 @@
       ]
     }
   ],
-  "global_history": []
+  "global_history": [],
+  "pengumuman": {
+    "estimasi": "tanggal 20 di ACC guys",
+    "darurat": "",
+    "status_darurat": "mati"
+  }
 }

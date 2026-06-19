@@ -31,7 +31,7 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 1,
+      "pending": 0,
       "success": 0,
       "invalid": 0,
       "riwayat": []

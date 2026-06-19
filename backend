@@ -19,10 +19,15 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 0,
+      "pending": 1,
       "success": 1,
       "invalid": 0,
       "riwayat": [
+        {
+          "email": "tll@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
+        },
         {
           "email": "pea@gmail.com",
           "status": "SUCCESS",

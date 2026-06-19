@@ -2,6 +2,14 @@
   "riwayat_wd": [
     {
       "username": "zerokage",
+      "nominal": 10000,
+      "metode": "DANA",
+      "nomor": "083175513695",
+      "status": "PENDING",
+      "tanggal": "19 Juni 2026"
+    },
+    {
+      "username": "zerokage",
       "nominal": 12000,
       "metode": "DANA",
       "nomor": "083175513695",

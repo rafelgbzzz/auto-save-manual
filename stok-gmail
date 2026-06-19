@@ -1,14 +1,19 @@
 {
   "stok_gmail": [
-    { "email": "cloverzora77@gmail.com" },
-    { "email": "vortexshadow91@gmail.com" },
-    { "email": "alphaknight20@gmail.com" },
-    { "email": "neondusk88@gmail.com" },
-    { "email": "silentstorm44@gmail.com" },
-    { "email": "frostbyte09@gmail.com" },
-    { "email": "quantumfox55@gmail.com" },
-    { "email": "ironpulse12@gmail.com" },
-    { "email": "crypticwave66@gmail.com" },
-    { "email": "zenithray33@gmail.com" }
+    {
+      "email": "frostbyte09@gmail.com"
+    },
+    {
+      "email": "quantumfox55@gmail.com"
+    },
+    {
+      "email": "ironpulse12@gmail.com"
+    },
+    {
+      "email": "crypticwave66@gmail.com"
+    },
+    {
+      "email": "zenithray33@gmail.com"
+    }
   ]
 }

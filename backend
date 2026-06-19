@@ -49,10 +49,36 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 0,
+      "pending": 5,
       "success": 0,
       "invalid": 0,
-      "riwayat": []
+      "riwayat": [
+        {
+          "email": "gospin11buluk@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
+        {
+          "email": "jordannia55@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
+        {
+          "email": "arfanganteng@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
+        {
+          "email": "kantorbebeksalam@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
+        {
+          "email": "yanzzaje5@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        }
+      ]
     }
   ],
   "global_history": [],

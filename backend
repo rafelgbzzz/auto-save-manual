@@ -41,6 +41,18 @@
       "success": 0,
       "invalid": 0,
       "riwayat": []
+    },
+    {
+      "id_login": 182892,
+      "user": "riyanaje11",
+      "pass": "yanzzaje5",
+      "role": "member",
+      "saldo": 0,
+      "total_setoran": 0,
+      "pending": 0,
+      "success": 0,
+      "invalid": 0,
+      "riwayat": []
     }
   ],
   "global_history": [],

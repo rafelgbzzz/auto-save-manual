@@ -34,13 +34,7 @@
       "pending": 1,
       "success": 0,
       "invalid": 0,
-      "riwayat": [
-        {
-          "email": "raff@gmail.com",
-          "status": "PENDING",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        }
-      ]
+      "riwayat": []
     }
   ],
   "global_history": [],

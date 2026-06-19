@@ -21,11 +21,11 @@
       "total_setoran": 0,
       "pending": 0,
       "success": 5,
-      "invalid": 0,
+      "invalid": 1,
       "riwayat": [
         {
           "email": "WITHDRAW [DANA]",
-          "status": "PENDING",
+          "status": "INVALID",
           "catatan": "Tarik Rp 10.000 ke 083175513695. Sedang diproses."
         }
       ]

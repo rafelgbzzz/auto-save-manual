@@ -59,6 +59,18 @@
           "catatan": "Menunggu pengecekan oleh admin web"
         }
       ]
+    },
+    {
+      "id_login": 906706,
+      "user": "rafel",
+      "pass": "123",
+      "role": "member",
+      "saldo": 0,
+      "total_setoran": 0,
+      "pending": 0,
+      "success": 0,
+      "invalid": 0,
+      "riwayat": []
     }
   ],
   "global_history": []

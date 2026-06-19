@@ -17,10 +17,10 @@
       "user": "zerokage",
       "pass": "123",
       "role": "member",
-      "saldo": 12000,
+      "saldo": 0,
       "total_setoran": 0,
       "pending": 0,
-      "success": 4,
+      "success": 0,
       "invalid": 0,
       "riwayat": [
     },

@@ -22,43 +22,7 @@
       "pending": 7,
       "success": 0,
       "invalid": 0,
-      "riwayat": [
-        {
-          "email": "gmail1@gmail.com",
-          "status": "succes",
-          "catatan": "Menunggu pengecekan oleh admin web"
-        },
-        {
-          "email": "bangganteng202@gmail.com",
-          "status": "PENDING",
-          "catatan": "Menunggu pengecekan oleh admin web"
-        },
-        {
-          "email": "slebewakun771@gmail.com",
-          "status": "PENDING",
-          "catatan": "Menunggu pengecekan oleh admin web"
-        },
-        {
-          "email": "zerokagemod889@gmail.com",
-          "status": "PENDING",
-          "catatan": "Menunggu pengecekan oleh admin web"
-        },
-        {
-          "email": "rogernotodipuro543@gmail.com",
-          "status": "PENDING",
-          "catatan": "Menunggu pengecekan oleh admin web"
-        },
-        {
-          "email": "garridocook112@gmail.com",
-          "status": "PENDING",
-          "catatan": "Menunggu pengecekan oleh admin web"
-        },
-        {
-          "email": "payoutcepat207@gmail.com",
-          "status": "PENDING",
-          "catatan": "Menunggu pengecekan oleh admin web"
-        }
-      ]
+      "riwayat": []
     },
     {
       "id_login": 906706,

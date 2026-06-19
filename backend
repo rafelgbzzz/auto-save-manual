@@ -17,7 +17,7 @@
       "user": "zerokage",
       "pass": "123",
       "role": "member",
-      "saldo": 12000,
+      "saldo": 0,
       "total_setoran": 0,
       "pending": 0,
       "success": 4,
@@ -42,6 +42,15 @@
           "email": "g@gmail.com",
           "status": "SUCCESS",
           "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
+        }
+      ],
+      "withdraw": [
+        {
+          "nominal": 12000,
+          "metode": "DANA",
+          "tujuan": "9594548494",
+          "status": "PENDING",
+          "tanggal": "19 Juni 2026"
         }
       ]
     },

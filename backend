@@ -17,7 +17,7 @@
       "user": "zerokage",
       "pass": "123",
       "role": "member",
-      "saldo": 0,
+      "saldo": 3700,
       "total_setoran": 0,
       "pending": 2,
       "success": 1,
@@ -39,7 +39,7 @@
           "nominal": 3700,
           "metode": "DANA",
           "tujuan": "9595956565",
-          "status": "PENDING",
+          "status": "INVALID",
           "tanggal": "19 Juni 2026"
         }
       ]

@@ -19,10 +19,16 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 0,
+      "pending": 1,
       "success": 0,
       "invalid": 0,
-      "riwayat": []
+      "riwayat": [
+        {
+          "email": "@pra@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
+        }
+      ]
     },
     {
       "id_login": 906706,

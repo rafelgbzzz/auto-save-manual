@@ -1,17 +1,14 @@
 {
-  "stok_gmail": [],
-  "hasil_setoran": [
-    {
-      "email": "gmai100@gmail.com",
-      "status": "SUCCES"
-    },
-    {
-      "email": "test1@gmail.com",
-      "status": "REJECT"
-    },
-    {
-      "email": "test2@gmail.com",
-      "status": "REJECT"
-    }
+  "stok_gmail": [
+    "akunstok1@gmail.com",
+    "akunstok2@gmail.com",
+    "akunstok3@gmail.com",
+    "akunstok4@gmail.com",
+    "akunstok5@gmail.com",
+    "akunstok6@gmail.com",
+    "akunstok7@gmail.com",
+    "akunstok8@gmail.com",
+    "akunstok9@gmail.com",
+    "akunstok10@gmail.com"
   ]
 }

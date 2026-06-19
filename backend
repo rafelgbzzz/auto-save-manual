@@ -31,23 +31,17 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 1,
+      "pending": 0,
       "success": 0,
       "invalid": 0,
-      "riwayat": [
-        {
-          "email": "iseng@gmail.com",
-          "status": "PENDING",
-          "catatan": "Menunggu pengecekan oleh admin web"
-        }
-      ]
+      "riwayat": []
     }
   ],
   "global_history": [],
   "pengumuman": {
     "estimasi": "tanggal 20 di ACC guys",
     "darurat": "HARAP TUNGGU WEBSITE SEDANG ERROR!!",
-    "status_darurat": "aktif"
-    "status_rooom": "buka"
+    "status_darurat": "aktif",
+    "status_room": "buka"
   }
 }

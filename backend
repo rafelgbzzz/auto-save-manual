@@ -19,10 +19,15 @@
       "role": "member",
       "saldo": 3700,
       "total_setoran": 0,
-      "pending": 2,
+      "pending": 3,
       "success": 1,
       "invalid": 1,
       "riwayat": [
+        {
+          "email": "tll@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
+        },
         {
           "email": "Raffertybuntip346@gmail.com",
           "status": "INVALID",

@@ -19,10 +19,20 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 0,
+      "pending": 2,
       "success": 2,
       "invalid": 0,
       "riwayat": [
+        {
+          "email": "akunstok10@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
+        },
+        {
+          "email": "akunstok9@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
+        },
         {
           "email": "WITHDRAW [DANA]",
           "status": "PENDING",

@@ -19,42 +19,10 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 3,
-      "success": 2,
-      "invalid": 1,
-      "riwayat": [
-        {
-          "email": "tll@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "Raffertybuntip346@gmail.com",
-          "status": "INVALID",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "@pra@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        }
-      ],
-      "withdraw": [
-        {
-          "nominal": 7400,
-          "metode": "DANA",
-          "tujuan": "083175513695",
-          "status": "SUCCESS",
-          "tanggal": "19 Juni 2026"
-        },
-        {
-          "nominal": 3700,
-          "metode": "DANA",
-          "tujuan": "9595956565",
-          "status": "INVALID",
-          "tanggal": "19 Juni 2026"
-        }
-      ]
+      "pending": 0,
+      "success": 0,
+      "invalid": 0,
+      "riwayat": []
     },
     {
       "id_login": 906706,

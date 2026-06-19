@@ -92,10 +92,36 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 0,
+      "pending": 5,
       "success": 0,
       "invalid": 0,
-      "riwayat": []
+      "riwayat": [
+        {
+          "email": "wademisawa294@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
+        {
+          "email": "salabimzarate139@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
+        {
+          "email": "petechukwuemekx750@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
+        {
+          "email": "mundzirvelarde107@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
+        {
+          "email": "tarmonxreyes54@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        }
+      ]
     }
   ],
   "global_history": [],

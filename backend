@@ -31,10 +31,16 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 0,
+      "pending": 1,
       "success": 0,
       "invalid": 0,
-      "riwayat": []
+      "riwayat": [
+        {
+          "email": "akunstok2@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
+        }
+      ]
     }
   ],
   "global_history": [],

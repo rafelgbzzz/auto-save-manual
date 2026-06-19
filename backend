@@ -23,36 +23,6 @@
       "success": 4,
       "invalid": 0,
       "riwayat": [
-        {
-          "email": "g@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "g@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "g@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "g@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        }
-      ],
-      "withdraw": [
-        {
-          "nominal": 12000,
-          "metode": "DANA",
-          "tujuan": "9594548494",
-          "status": "INVALID",
-          "tanggal": "19 Juni 2026"
-        }
-      ]
     },
     {
       "id_login": 906706,

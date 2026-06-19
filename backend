@@ -20,25 +20,9 @@
       "saldo": 6000,
       "total_setoran": 0,
       "pending": 0,
-      "success": 2,
-      "invalid": 1,
-      "riwayat": [
-        {
-          "email": "akunstok5@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "akunstok4@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "akunstok3@gmail.com",
-          "status": "INVALID",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        }
-      ]
+      "success": 0,
+      "invalid": 0,
+      "riwayat": []
     },
     {
       "id_login": 906706,
@@ -48,15 +32,9 @@
       "saldo": 0,
       "total_setoran": 0,
       "pending": 0,
-      "success": 1,
+      "success": 0,
       "invalid": 0,
-      "riwayat": [
-        {
-          "email": "akunstok2@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        }
-      ]
+      "riwayat": []
     }
   ],
   "global_history": [],

@@ -17,12 +17,17 @@
       "user": "zerokage",
       "pass": "123",
       "role": "member",
-      "saldo": 12000,
+      "saldo": 0,
       "total_setoran": 0,
       "pending": 0,
       "success": 2,
       "invalid": 0,
       "riwayat": [
+        {
+          "email": "WITHDRAW [DANA]",
+          "status": "PENDING",
+          "catatan": "Tarik Rp 12.000 ke 083175513695. Sedang diproses."
+        },
         {
           "email": "akunstok8@gmail.com",
           "status": "SUCCESS",

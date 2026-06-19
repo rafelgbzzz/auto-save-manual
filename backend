@@ -17,15 +17,15 @@
       "user": "zerokage",
       "pass": "123",
       "role": "member",
-      "saldo": 3000,
+      "saldo": 6000,
       "total_setoran": 0,
-      "pending": 1,
-      "success": 1,
+      "pending": 0,
+      "success": 2,
       "invalid": 1,
       "riwayat": [
         {
           "email": "akunstok5@gmail.com",
-          "status": "PENDING",
+          "status": "SUCCESS",
           "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
         },
         {

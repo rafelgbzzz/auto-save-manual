@@ -19,10 +19,15 @@
       "role": "member",
       "saldo": 3000,
       "total_setoran": 0,
-      "pending": 0,
+      "pending": 1,
       "success": 1,
       "invalid": 1,
       "riwayat": [
+        {
+          "email": "akunstok5@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
+        },
         {
           "email": "akunstok4@gmail.com",
           "status": "SUCCESS",

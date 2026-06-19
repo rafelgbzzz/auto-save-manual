@@ -1,12 +1,3 @@
 {
-  "riwayat_wd": [
-    {
-      "username": "rafel",
-      "nominal": 15000,
-      "metode": "DANA",
-      "nomor": "0812345678",
-      "status": "PENDING",
-      "tanggal": "19 Juni 2026"
-    }
-  ]
+  "riwayat_wd": []
 }

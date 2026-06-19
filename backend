@@ -51,7 +51,7 @@
       "total_setoran": 0,
       "pending": 6,
       "success": 0,
-      "invalid": 2,
+      "invalid": 3,
       "riwayat": [
         {
           "email": "raffertybuntip346@gmail.com",
@@ -70,7 +70,7 @@
         },
         {
           "email": "arfanganteng@gmail.com",
-          "status": "PENDING",
+          "status": "INVALID",
           "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
         },
         {

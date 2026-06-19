@@ -19,10 +19,15 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 0,
+      "pending": 1,
       "success": 2,
       "invalid": 0,
       "riwayat": [
+        {
+          "email": "gblk@gmai.com",
+          "status": "PENDING",
+          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
+        },
         {
           "email": "tll@gmail.com",
           "status": "SUCCESS",

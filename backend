@@ -17,7 +17,7 @@
       "user": "zerokage",
       "pass": "123",
       "role": "member",
-      "saldo": 3700,
+      "saldo": 0,
       "total_setoran": 0,
       "pending": 0,
       "success": 2,
@@ -35,6 +35,13 @@
         }
       ],
       "withdraw": [
+        {
+          "nominal": 3700,
+          "metode": "DANA",
+          "tujuan": "85899988",
+          "status": "PENDING",
+          "tanggal": "19 Juni 2026"
+        },
         {
           "nominal": 3700,
           "metode": "DANA",

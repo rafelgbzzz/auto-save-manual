@@ -20,9 +20,9 @@
       "saldo": 0,
       "total_setoran": 0,
       "pending": 0,
-      "success": 5,
+      "success": 0,
       "invalid": 1,
-      "riwayat": [
+      "riwayat": []
     },
     {
       "id_login": 906706,

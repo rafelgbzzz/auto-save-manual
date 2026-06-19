@@ -94,11 +94,11 @@
       "total_setoran": 0,
       "pending": 5,
       "success": 0,
-      "invalid": 0,
+      "invalid": 1,
       "riwayat": [
         {
           "email": "wademisawa294@gmail.com",
-          "status": "PENDING",
+          "status": "INVALID",
           "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
         },
         {

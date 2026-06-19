@@ -19,49 +19,10 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 1,
-      "success": 3,
+      "pending": 0,
+      "success": 0,
       "invalid": 0,
-      "riwayat": [
-        {
-          "email": "gblk@gmai.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "tll@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        },
-        {
-          "email": "pea@gmail.com",
-          "status": "SUCCESS",
-          "catatan": "Room 19 Juni 2026 - Menunggu pengecekan admin"
-        }
-      ],
-      "withdraw": [
-        {
-          "nominal": 3700,
-          "metode": "DANA",
-          "tujuan": "5464649464",
-          "status": "SUCCESS",
-          "tanggal": "19 Juni 2026"
-        },
-        {
-          "nominal": 3700,
-          "metode": "DANA",
-          "tujuan": "85899988",
-          "status": "SUCCESS",
-          "tanggal": "19 Juni 2026"
-        },
-        {
-          "nominal": 3700,
-          "metode": "DANA",
-          "tujuan": "083175513695",
-          "status": "SUCCESS",
-          "tanggal": "19 Juni 2026"
-        }
-      ]
+      "riwayat": []
     },
     {
       "id_login": 906706,

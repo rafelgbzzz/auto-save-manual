@@ -142,7 +142,7 @@
       "total_setoran": 0,
       "pending": 2,
       "success": 0,
-      "invalid": 1,
+      "invalid": 2,
       "riwayat": [
         {
           "email": "gussastraatmadja62@gmail.com",
@@ -151,7 +151,7 @@
         },
         {
           "email": "gussastraatmadja62@gmail.com",
-          "status": "PENDING",
+          "status": "INVALID",
           "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
         }
       ]

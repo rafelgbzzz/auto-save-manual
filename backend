@@ -19,10 +19,15 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 1,
+      "pending": 2,
       "success": 0,
       "invalid": 1,
       "riwayat": [
+        {
+          "email": "ramdaniharahap952@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
         {
           "email": "artika08@gmail.com",
           "status": "INVALID",

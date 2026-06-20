@@ -19,10 +19,15 @@
       "role": "member",
       "saldo": 0,
       "total_setoran": 0,
-      "pending": 2,
+      "pending": 3,
       "success": 0,
       "invalid": 1,
       "riwayat": [
+        {
+          "email": "tarmonxreyes54@gmail.com",
+          "status": "PENDING",
+          "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
+        },
         {
           "email": "ramdaniharahap952@gmail.com",
           "status": "PENDING",

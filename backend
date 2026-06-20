@@ -23,6 +23,19 @@
       "success": 0,
       "invalid": 0,
       "riwayat": []
+    },
+    {
+      "id_login": 371499,
+      "user": "rafel",
+      "pass": "28383848484",
+      "gmail": "rafelseptaaa@gmail.com",
+      "role": "member",
+      "saldo": 0,
+      "total_setoran": 0,
+      "pending": 0,
+      "success": 0,
+      "invalid": 0,
+      "riwayat": []
     }
   ],
   "global_history": [],

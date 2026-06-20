@@ -41,6 +41,19 @@
         "nomor_rekening": "083175513695",
         "nama_pemilik": "rafel"
       }
+    },
+    {
+      "id_login": 131267,
+      "user": "hhhshs",
+      "pass": "3333",
+      "gmail": "kkk@gmail.com",
+      "role": "member",
+      "saldo": 0,
+      "total_setoran": 0,
+      "pending": 0,
+      "success": 0,
+      "invalid": 0,
+      "riwayat": []
     }
   ],
   "global_history": [],

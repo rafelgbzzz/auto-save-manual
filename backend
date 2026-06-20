@@ -35,7 +35,12 @@
       "pending": 0,
       "success": 0,
       "invalid": 0,
-      "riwayat": []
+      "riwayat": [],
+      "rekening_terikat": {
+        "nama_bank": "DANA",
+        "nomor_rekening": "083175513695",
+        "nama_pemilik": "rafel"
+      }
     }
   ],
   "global_history": [],

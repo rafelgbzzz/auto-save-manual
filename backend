@@ -122,6 +122,18 @@
           "catatan": "Room 20 Juni 2026 - Menunggu pengecekan admin"
         }
       ]
+    },
+    {
+      "id_login": 170947,
+      "user": "acaa",
+      "pass": "siti nur alisaa",
+      "role": "member",
+      "saldo": 0,
+      "total_setoran": 0,
+      "pending": 0,
+      "success": 0,
+      "invalid": 0,
+      "riwayat": []
     }
   ],
   "global_history": [],

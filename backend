@@ -28,6 +28,19 @@
         "nomor_rekening": "083175513695",
         "nama_pemilik": "rafel"
       }
+    },
+    {
+      "id_login": 451469,
+      "user": "BanzzOnlyy",
+      "pass": "tuluayek12",
+      "gmail": "maretminggu63@gmail.com",
+      "role": "member",
+      "saldo": 0,
+      "total_setoran": 0,
+      "pending": 0,
+      "success": 0,
+      "invalid": 0,
+      "riwayat": []
     }
   ],
   "global_history": [],

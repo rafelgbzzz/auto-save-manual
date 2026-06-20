@@ -23,37 +23,6 @@
       "success": 0,
       "invalid": 0,
       "riwayat": []
-    },
-    {
-      "id_login": 371499,
-      "user": "rafel",
-      "pass": "rafel270911",
-      "gmail": "rafelseptaaa@gmail.com",
-      "role": "member",
-      "saldo": 0,
-      "total_setoran": 0,
-      "pending": 0,
-      "success": 0,
-      "invalid": 0,
-      "riwayat": [],
-      "rekening_terikat": {
-        "nama_bank": "DANA",
-        "nomor_rekening": "083175513695",
-        "nama_pemilik": "rafel"
-      }
-    },
-    {
-      "id_login": 131267,
-      "user": "hhhshs",
-      "pass": "3333",
-      "gmail": "kkk@gmail.com",
-      "role": "member",
-      "saldo": 0,
-      "total_setoran": 0,
-      "pending": 0,
-      "success": 0,
-      "invalid": 0,
-      "riwayat": []
     }
   ],
   "global_history": [],

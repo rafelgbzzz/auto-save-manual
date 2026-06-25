@@ -43,7 +43,8 @@
           "status": "INVALID",
           "tanggal": "25 Juni 2026"
         }
-      ]
+      ],
+      "blocked": true
     },
     {
       "id_login": 451469,

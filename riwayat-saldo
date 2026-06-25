@@ -1,3 +1,12 @@
 {
-  "riwayat_wd": []
+  "riwayat_wd": [
+    {
+      "username": "zerokage",
+      "nominal": 12000,
+      "metode": "GOPAY",
+      "nomor": "083175513695",
+      "status": "PENDING",
+      "tanggal": "25 Juni 2026"
+    }
+  ]
 }

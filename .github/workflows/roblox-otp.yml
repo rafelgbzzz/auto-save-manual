@@ -1,0 +1,58 @@
+name: Send Roblox OTP
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: 'Target Gmail'
+        required: true
+      otp:
+        description: 'OTP Code'
+        required: true
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Nodemailer
+        run: npm install nodemailer
+
+      - name: Send OTP via Nodemailer
+        uses: actions/github-script@v7
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASS: ${{ secrets.GMAIL_APP_PASS }}
+          TARGET_EMAIL: ${{ github.event.inputs.email }}
+          OTP_CODE: ${{ github.event.inputs.otp }}
+        with:
+          script: |
+            const nodemailer = require('nodemailer');
+            
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.GMAIL_USER,
+                    pass: process.env.GMAIL_APP_PASS
+                }
+            });
+
+            const mailOptions = {
+                from: `"ZeroKage Security" <${process.env.GMAIL_USER}>`,
+                to: process.env.TARGET_EMAIL,
+                subject: '🔒 Your ZeroKage Script OTP Verification Code',
+                text: `Kode OTP Anda adalah: ${process.env.OTP_CODE}.\n\nKode ini berlaku selama 5 menit. Jangan bagikan kode ini kepada siapapun.`
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log('Error:', error);
+                    core.setFailed(error.message);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });

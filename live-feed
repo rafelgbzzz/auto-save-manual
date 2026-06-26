@@ -1,0 +1,202 @@
+[
+  {
+    "jenis": "setor_gmail",
+    "teks": "@R***F*** berhasil menyetor 8 Gmail, sedang diproses"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@A***N*** mengajukan penarikan Rp 125.000 ke DANA"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@S***T*** berhasil menyetor 12 Gmail, menunggu verifikasi"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@B***D*** mengajukan penarikan Rp 75.000 ke GOPAY"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@D***N*** berhasil menyetor 5 Gmail, sedang diperiksa"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@M***R*** mengajukan penarikan Rp 220.000 ke OVO"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@J***K*** berhasil menyetor 15 Gmail, menunggu pengecekan"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@L***M*** mengajukan penarikan Rp 90.000 ke DANA"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@E***P*** berhasil menyetor 20 Gmail, sedang diproses admin"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@F***R*** mengajukan penarikan Rp 150.000 ke GOPAY"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@G***H*** berhasil menyetor 7 Gmail, menunggu verifikasi data"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@H***I*** mengajukan penarikan Rp 300.000 ke OVO"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@I***J*** berhasil menyetor 25 Gmail, dalam antrian"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@K***L*** mengajukan penarikan Rp 50.000 ke DANA"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@N***O*** berhasil menyetor 10 Gmail, sedang divalidasi"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@O***P*** mengajukan penarikan Rp 180.000 ke GOPAY"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@Q***R*** berhasil menyetor 30 Gmail, menunggu persetujuan"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@S***U*** mengajukan penarikan Rp 275.000 ke OVO"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@T***U*** berhasil menyetor 9 Gmail, sedang diproses sistem"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@V***W*** mengajukan penarikan Rp 65.000 ke DANA"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@W***X*** berhasil menyetor 18 Gmail, menunggu pengecekan manual"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@X***Y*** mengajukan penarikan Rp 210.000 ke GOPAY"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@Y***Z*** berhasil menyetor 14 Gmail, dalam proses verifikasi"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@Z***A*** mengajukan penarikan Rp 350.000 ke OVO"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@A***B*** berhasil menyetor 22 Gmail, menunggu konfirmasi"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@B***C*** mengajukan penarikan Rp 110.000 ke DANA"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@C***D*** berhasil menyetor 6 Gmail, sedang diperiksa keaslian"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@D***E*** mengajukan penarikan Rp 195.000 ke GOPAY"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@E***F*** berhasil menyetor 28 Gmail, antrian sedang berjalan"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@F***G*** mengajukan penarikan Rp 240.000 ke OVO"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@G***I*** berhasil menyetor 11 Gmail, menunggu verifikasi server"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@H***J*** mengajukan penarikan Rp 85.000 ke DANA"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@I***K*** berhasil menyetor 17 Gmail, sedang diproses tim"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@J***L*** mengajukan penarikan Rp 260.000 ke GOPAY"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@K***M*** berhasil menyetor 24 Gmail, dalam tahap pengecekan"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@L***N*** mengajukan penarikan Rp 320.000 ke OVO"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@M***O*** berhasil menyetor 4 Gmail, menunggu respon sistem"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@N***P*** mengajukan penarikan Rp 70.000 ke DANA"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@O***Q*** berhasil menyetor 19 Gmail, sedang divalidasi data"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@P***R*** mengajukan penarikan Rp 175.000 ke GOPAY"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@Q***S*** berhasil menyetor 26 Gmail, antrian posisi 12"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@R***T*** mengajukan penarikan Rp 290.000 ke OVO"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@S***V*** berhasil menyetor 13 Gmail, menunggu pemeriksaan"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@T***W*** mengajukan penarikan Rp 95.000 ke DANA"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@U***X*** berhasil menyetor 21 Gmail, sedang diproses otomatis"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@V***Y*** mengajukan penarikan Rp 235.000 ke GOPAY"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@W***Z*** berhasil menyetor 29 Gmail, menunggu konfirmasi admin"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@X***A*** mengajukan penarikan Rp 375.000 ke OVO"
+  },
+  {
+    "jenis": "setor_gmail",
+    "teks": "@Y***B*** berhasil menyetor 7 Gmail, dalam proses pengecekan"
+  },
+  {
+    "jenis": "tarik_saldo",
+    "teks": "@Z***C*** mengajukan penarikan Rp 140.000 ke DANA"
+  }
+]

@@ -17,7 +17,7 @@
       "user": "zerokage",
       "pass": "123",
       "role": "member",
-      "saldo": 63000,
+      "saldo": 0,
       "total_setoran": 0,
       "pending": 0,
       "success": 0,
@@ -29,6 +29,13 @@
         "nama_pemilik": "rafel"
       },
       "withdraw": [
+        {
+          "nominal": 63000,
+          "metode": "GOPAY",
+          "tujuan": "083175513695",
+          "status": "PENDING",
+          "tanggal": "26 Juni 2026"
+        },
         {
           "nominal": 1000,
           "metode": "DANA",

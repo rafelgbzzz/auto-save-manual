@@ -24,20 +24,21 @@ jobs:
           subject: "🔐 Kode OTP Pendaftaran ZeroKageUI"
           to: ${{ github.event.inputs.target_email }}
           from: ZeroKageUI Platform <${{ secrets.GMAIL_USER }}>
-          content_type: text/html
-          body: |
+          
+          # 🚀 FIX UTAMA: Menggunakan html_body agar otomatis render HTML
+          html_body: |
             <!DOCTYPE html>
             <html>
             <head>
               <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
             </head>
-            <body style="margin:0;padding:0;background:#0f0f1a;font-family:'Segoe UI',Arial,sans-serif;">
+            <body style="margin:0;padding:0;background:#0f0f1a;font-family:'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f1a;padding:40px 20px;">
                 <tr>
                   <td align="center">
-                    <table width="520" cellpadding="0" cellspacing="0" style="background:#1a1a2e;border-radius:16px;overflow:hidden;border:1px solid #2d2d4e;">
+                    <table width="520" cellpadding="0" cellspacing="0" style="background:#1a1a2e;border-radius:16px;overflow:hidden;border:1px solid #2d2d4e;max-width:520px;width:100%;">
                       
-                      <!-- HEADER -->
                       <tr>
                         <td style="background:linear-gradient(135deg,#6366f1,#a855f7);padding:30px;text-align:center;">
                           <h1 style="margin:0;color:#fff;font-size:1.6rem;font-weight:800;letter-spacing:-0.5px;">
@@ -49,7 +50,6 @@ jobs:
                         </td>
                       </tr>
 
-                      <!-- BODY -->
                       <tr>
                         <td style="padding:36px 32px;">
                           <p style="margin:0 0 8px;color:#94a3b8;font-size:0.9rem;">Halo,</p>
@@ -57,13 +57,16 @@ jobs:
                             Kamu baru saja meminta pendaftaran akun di <strong style="color:#a78bfa;">ZeroKageUI</strong>. Gunakan kode OTP di bawah ini untuk menyelesaikan pendaftaran:
                           </p>
 
-                          <!-- OTP BOX -->
-                          <div style="background:#0f0f1a;border:2px dashed #6366f1;border-radius:12px;padding:24px;text-align:center;margin:0 0 24px;">
-                            <p style="margin:0 0 6px;color:#94a3b8;font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;">Kode OTP Kamu</p>
-                            <p style="margin:0;font-size:2.8rem;font-weight:900;letter-spacing:10px;color:#a78bfa;">
-                              ${{ github.event.inputs.otp_code }}
-                            </p>
-                          </div>
+                          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f1a;border:2px dashed #6366f1;border-radius:12px;margin:0 0 24px;">
+                            <tr>
+                              <td align="center" style="padding:24px;">
+                                <p style="margin:0 0 6px;color:#94a3b8;font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Kode OTP Kamu</p>
+                                <p style="margin:0;font-size:2.8rem;font-weight:900;letter-spacing:10px;color:#a78bfa;">
+                                  ${{ github.event.inputs.otp_code }}
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
 
                           <p style="margin:0 0 8px;color:#94a3b8;font-size:0.85rem;text-align:center;">
                             ⏳ Kode berlaku selama <strong style="color:#e2e8f0;">5 menit</strong>
@@ -81,7 +84,6 @@ jobs:
                         </td>
                       </tr>
 
-                      <!-- FOOTER -->
                       <tr>
                         <td style="background:#0f0f1a;padding:16px 32px;text-align:center;">
                           <p style="margin:0;color:#475569;font-size:0.75rem;">

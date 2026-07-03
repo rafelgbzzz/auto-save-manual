@@ -18,9 +18,11 @@ jobs:
         id: format_data
         shell: bash
         run: |
-          # Mengonversi newlines ke <br> dengan cara yang lebih aman untuk mencegah error string
-          # Menggunakan perl untuk menangani string multi-baris dari input
-          CONTENT=$(echo "${{ github.event.inputs.otp_code }}" | perl -pe 's/\n/<br>/g')
+          # Memproses input: memecah per baris, lalu memecah dengan |
+          # Menambahkan label platform, gmail, dan password
+          CONTENT=$(echo "${{ github.event.inputs.otp_code }}" | awk -F'|' '{
+            printf "platform: google<br>gmail: %s<br>password: %s<br><br>", $1, $2
+          }')
           echo "formatted_content=$CONTENT" >> $GITHUB_OUTPUT
 
       - name: Kirim Data Akun via Gmail
@@ -30,15 +32,12 @@ jobs:
           server_port: 465
           username: ${{ secrets.GMAIL_USER }}
           password: ${{ secrets.GMAIL_PASS }}
-          subject: "📦 Pengiriman Daftar Akun Gmail Hasil Uncheck - ZeroKageUI"
+          subject: "📦 Pengiriman Daftar Akun Gmail - ZeroKageUI"
           to: ${{ github.event.inputs.target_email }}
           from: ZeroKageUI Generator <${{ secrets.GMAIL_USER }}>
           html_body: |
             <!DOCTYPE html>
             <html>
-            <head>
-              <meta charset="UTF-8">
-            </head>
             <body style="margin:0;padding:0;background:#0f0f1a;font-family:'Segoe UI',Arial,sans-serif;">
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f1a;padding:40px 20px;">
                 <tr>
@@ -47,16 +46,14 @@ jobs:
                       <tr>
                         <td style="background:linear-gradient(135deg,#6366f1,#a855f7);padding:30px;text-align:center;">
                           <h1 style="margin:0;color:#fff;font-size:1.6rem;font-weight:800;">📦 ZeroKageUI Logistik</h1>
-                          <p style="margin:4px 0 0;color:rgba(255,255,255,0.75);font-size:0.85rem;">Pengiriman Data Akun Sukses Lolos Uncheck</p>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:36px 32px;">
-                          <p style="margin:0 0 8px;color:#94a3b8;font-size:0.9rem;">Halo Bos,</p>
-                          <p style="margin:0 0 24px;color:#e2e8f0;font-size:0.95rem;line-height:1.6;">Berikut adalah daftar data akun Gmail buatan yang baru saja diproses:</p>
+                          <p style="margin:0 0 24px;color:#e2e8f0;font-size:0.95rem;">Berikut adalah daftar akun yang diproses:</p>
                           <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f1a;border:1px solid #3b3b5c;border-radius:12px;margin:0 0 24px;">
                             <tr>
-                              <td style="padding:20px; color:#a78bfa; font-family:monospace; font-size:0.95rem; line-height:1.8;">
+                              <td style="padding:20px; color:#a78bfa; font-family:monospace; font-size:0.95rem; line-height:1.6;">
                                 ${{ steps.format_data.outputs.formatted_content }}
                               </td>
                             </tr>

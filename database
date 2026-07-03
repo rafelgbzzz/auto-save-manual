@@ -1,25 +1,25 @@
 {
   "system_config": {
-    "gate_open": true,
-    "maintenance_mode": false
+    "maintenance": false,
+    "uncheck_gate": "open"
   },
   "users": [
     {
-      "user": "admin",
-      "pass": "123",
-      "gmail": "rafelseptahidayah@gmail.com",
+      "id_login": 100001,
+      "user": "ZeroKage",
+      "pass": "admin123",
       "role": "admin",
-      "status": "online",
-      "success": 0,
-      "riwayat": []
+      "status": "offline"
     },
     {
-      "user": "zero",
-      "pass": "123",
-      "gmail": "zero@gmail.com",
+      "id_login": 100002,
+      "user": "Budi",
+      "pass": "member123",
       "role": "member",
       "status": "offline",
+      "pending": 0,
       "success": 0,
+      "failed": 0,
       "riwayat": []
     }
   ]

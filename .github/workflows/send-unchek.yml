@@ -50,7 +50,7 @@ jobs:
                       </tr>
                       <tr>
                         <td style="padding:36px 32px;">
-                          <p style="margin:0 0 24px;color:#e2e8f0;font-size:0.95rem;">Berikut adalah daftar akun yang diproses:</p>
+                          <p style="margin:0 0 24px;color:#e2e8f0;font-size:0.95rem;">Berikut adalah akun hasil uncheck:</p>
                           <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f1a;border:1px solid #3b3b5c;border-radius:12px;margin:0 0 24px;">
                             <tr>
                               <td style="padding:20px; color:#a78bfa; font-family:monospace; font-size:0.95rem; line-height:1.6;">
@@ -58,7 +58,8 @@ jobs:
                               </td>
                             </tr>
                           </table>
-                          <p style="margin:0;color:#64748b;font-size:0.75rem;text-align:center;">Mohon tidak membalas pesan ini.</p>
+                          <p style="margin:0;color:#64748b;font-size:0.75rem;text-align:center;">Mohon tidak membalas pesan ini.
+                          Contact admin: https://t.me/ZeroKageUi</p>
                         </td>
                       </tr>
                     </table>

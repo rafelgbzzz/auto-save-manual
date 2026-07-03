@@ -1,0 +1,26 @@
+{
+  "system_config": {
+    "gate_open": true,
+    "maintenance_mode": false
+  },
+  "users": [
+    {
+      "user": "admin",
+      "pass": "123",
+      "gmail": "absolute",
+      "role": "admin",
+      "status": "offline",
+      "success": 0,
+      "riwayat": []
+    },
+    {
+      "user": "zero",
+      "pass": "123",
+      "gmail": "zero@gmail.com",
+      "role": "member",
+      "status": "offline",
+      "success": 0,
+      "riwayat": []
+    }
+  ]
+}

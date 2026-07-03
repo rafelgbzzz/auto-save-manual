@@ -34,7 +34,7 @@ jobs:
           password: ${{ secrets.GMAIL_PASS }}
           subject: "📦 Pengiriman Daftar Akun Gmail - ZeroKageUI"
           to: ${{ github.event.inputs.target_email }}
-          from: ZeroKageUI Generator <${{ secrets.GMAIL_USER }}>
+          from: ZeroKageUI Jasteb🔥🚀 <${{ secrets.GMAIL_USER }}>
           html_body: |
             <!DOCTYPE html>
             <html>

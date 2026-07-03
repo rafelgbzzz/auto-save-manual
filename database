@@ -6,15 +6,15 @@
   "users": [
     {
       "id_login": 100001,
-      "user": "ZeroKage",
-      "pass": "admin123",
+      "user": "admin",
+      "pass": "123",
       "role": "admin",
       "status": "online"
     },
     {
       "id_login": 100002,
-      "user": "Budi",
-      "pass": "member123",
+      "user": "zero",
+      "pass": "123",
       "role": "member",
       "status": "online",
       "pending": 0,

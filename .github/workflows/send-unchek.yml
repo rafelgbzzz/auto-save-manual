@@ -1,0 +1,103 @@
+Name: Send Account Data Massal
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_email:
+        description: 'Target Gmail Penerima Laporan'
+        required: true
+      otp_code:
+        description: 'Data Akun Gmail Buatan (Dari Website)'
+        required: true
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Format Data Akun ke HTML
+        id: format_data
+        run: |
+          # Mengambil input data akun, mengamankan karakter khusus, dan mengubah baris baru (\n) menjadi <br> untuk HTML
+          RAW_DATA="${{ github.event.inputs.otp_code }}"
+          HTML_DATA=$(echo "$RAW_DATA" | sed 's/$/<br>/g' | tr -d '\n' | tr -d '\r')
+          echo "formatted_content=$HTML_DATA" >> $GITHUB_OUTPUT
+
+      - name: Kirim Data Akun via Gmail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_PASS }}
+          subject: "📦 Pengiriman Daftar Akun Gmail Hasil Uncheck - ZeroKageUI"
+          to: ${{ github.event.inputs.target_email }}
+          from: ZeroKageUI Generator <${{ secrets.GMAIL_USER }}>
+          
+          # Render otomatis sebagai halaman HTML modern bertema cyber glassmorphism
+          html_body: |
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin:0;padding:0;background:#0f0f1a;font-family:'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f1a;padding:40px 20px;">
+                <tr>
+                  <td align="center">
+                    <table width="520" cellpadding="0" cellspacing="0" style="background:#1a1a2e;border-radius:16px;overflow:hidden;border:1px solid #2d2d4e;max-width:520px;width:100%;">
+                      
+                      <tr>
+                        <td style="background:linear-gradient(135deg,#6366f1,#a855f7);padding:30px;text-align:center;">
+                          <h1 style="margin:0;color:#fff;font-size:1.6rem;font-weight:800;letter-spacing:-0.5px;">
+                            📦 ZeroKageUI Logistik
+                          </h1>
+                          <p style="margin:4px 0 0;color:rgba(255,255,255,0.75);font-size:0.85rem;">
+                            Pengiriman Data Akun Sukses Lolos Uncheck
+                          </p>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="padding:36px 32px;">
+                          <p style="margin:0 0 8px;color:#94a3b8;font-size:0.9rem;">Halo Bos,</p>
+                          <p style="margin:0 0 24px;color:#e2e8f0;font-size:0.95rem;line-height:1.6;">
+                            Berikut adalah daftar data akun Gmail buatan yang baru saja diproses dan dikirimkan melalui panel website Anda:
+                          </p>
+
+                          <!-- Box data akun hasil generate & uncheck massal -->
+                          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f1a;border:1px solid #3b3b5c;border-radius:12px;margin:0 0 24px;">
+                            <tr>
+                              <td style="padding:20px; color:#a78bfa; font-family:'Courier New',Courier,monospace; font-size:0.95rem; line-height:1.8; white-space: pre-wrap;">
+                                ${{ steps.format_data.outputs.formatted_content }}
+                              </td>
+                            </tr>
+                          </table>
+
+                          <p style="margin:0 0 8px;color:#94a3b8;font-size:0.85rem;text-align:center;">
+                            ✅ Silakan amankan data akun di atas secepatnya.
+                          </p>
+
+                          <hr style="border:none;border-top:1px solid #2d2d4e;margin:24px 0;">
+
+                          <p style="margin:0;color:#64748b;font-size:0.78rem;text-align:center;line-height:1.6;">
+                            Email ini dibuat otomatis berdasarkan instruksi API dispatches GitHub dari ZeroKageUI.<br>
+                            Mohon tidak membalas pesan ini.
+                          </p>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="background:#0f0f1a;padding:16px 32px;text-align:center;">
+                          <p style="margin:0;color:#475569;font-size:0.75rem;">
+                            © 2026 ZeroKageUI Profesional. All rights reserved.
+                          </p>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+            </html>
